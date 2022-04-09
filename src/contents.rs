@@ -13,11 +13,11 @@ pub static CONTENTS: TableOfContents = [
 
 /// Expands to a tuple that ties together the two partial solution functions, as well as the puzzle
 /// input.
-/// 
+///
 /// Relies on the convention that the crate `aocXXX::dayXX` contains the functions `one` and
 /// `two`, representing two parts of the solution respectively; and that there is a textfile with
 /// the puzzle input at "src/data/aocXXX/dayXX.txt".
-/// 
+///
 /// Textfiles are compiled into the program, and thus are only required at compile time.
 macro_rules! day {
     ($y:ident::$d:ident) => {
@@ -43,7 +43,7 @@ static AOC2015: Section = [
     day!(aoc2015::day05),
     day!(aoc2015::day06),
     day!(aoc2015::day07),
-    None,
+    day!(aoc2015::day08),
     None,
     None,
     None,

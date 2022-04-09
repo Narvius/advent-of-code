@@ -22,7 +22,7 @@ type Distances = HashMap<(usize, usize), usize>;
 
 /// Returns the lengths of all possible routes.
 fn all_route_lengths(locations: usize, distances: Distances) -> impl Iterator<Item = usize> {
-    // Returns all possible permutations of the digits in `0..k`, using Heap's algorithm.
+    // Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.
     fn permutations(k: usize) -> Vec<Vec<usize>> {
         fn inner(k: usize, values: &mut [usize]) -> Vec<Vec<usize>> {
             let mut result = Vec::new();

@@ -1,4 +1,7 @@
-use std::time::Instant;
+use std::{
+    borrow::Cow,
+    time::{Duration, Instant},
+};
 
 use crate::contents::CONTENTS;
 
@@ -22,8 +25,7 @@ fn main() {
                 // The highest day with a solution.
                 for day in (1..=25).rev() {
                     if contents::CONTENTS[ASSUMED_YEAR - 2015][day - 1].is_some() {
-                        eval_single(ASSUMED_YEAR, day);
-                        return Ok(());
+                        return eval([ASSUMED_YEAR], [day]);
                     }
                 }
                 Err(Error::NoSolutions)
@@ -143,7 +145,7 @@ where
     Y: IntoIterator<Item = usize>,
     D: Clone + IntoIterator<Item = usize>,
 {
-    let mut executed = 0;
+    let mut runtime = Duration::new(0, 0);
     for year in years {
         for day in days.clone() {
             if !valid_input(year, day) {
@@ -151,24 +153,26 @@ where
                 continue;
             }
 
-            executed += if eval_single(year, day) { 1 } else { 0 };
+            runtime += eval_single(year, day).unwrap_or_else(|| Duration::new(0, 0));
         }
     }
 
-    if executed > 0 {
+    if runtime.as_secs_f64() > 0.0 {
+        println!("\nTotal runtime: {}", format_duration(runtime));
         Ok(())
     } else {
         Err(Error::NoSolutions)
     }
 }
 
-/// Runs the solution for a given day. Returns whether anything was executed.
-fn eval_single(year: usize, day: usize) -> bool {
+/// Runs the solution for a given day. Returns the runtime, if anything was executed.
+fn eval_single(year: usize, day: usize) -> Option<Duration> {
     if !valid_input(year, day) {
         eprintln!("out of range input to eval_single ({}, {})", year, day);
-        return false;
+        return None;
     }
 
+    let mut runtime = Duration::new(0, 0);
     if let Some((a, b, s)) = CONTENTS[year - 2015][day - 1] {
         for (part, f) in [('a', a), ('b', b)] {
             let start = Instant::now();
@@ -177,13 +181,8 @@ fn eval_single(year: usize, day: usize) -> bool {
 
             match result {
                 Ok(val) => {
-                    let d = (end - start).as_secs_f64();
-                    let d = if d < 0.001 {
-                        format!("< 0.001s")
-                    } else {
-                        format!("{:>7.3}s", d)
-                    };
-
+                    runtime += end - start;
+                    let d = format_duration(end - start);
                     println!("Day {:04}-{:02}{}  [{}]  = {}", year, day, part, d, val);
                 }
                 Err(why) => println!("Day {:04}-{:02}{}  [ FAILED ]  = {}", year, day, part, why),
@@ -191,7 +190,17 @@ fn eval_single(year: usize, day: usize) -> bool {
         }
     }
 
-    CONTENTS[year - 2015][day - 1].is_some()
+    (runtime.as_secs_f64() > 0.0).then(|| runtime)
+}
+
+/// Formats a [`Duration`](std::time::Duration) for output.
+fn format_duration(d: Duration) -> Cow<'static, str> {
+    let d = d.as_secs_f64();
+    if d < 0.001 {
+        Cow::Borrowed("< 0.001s")
+    } else {
+        Cow::Owned(format!("{:>7.3}s", d))
+    }
 }
 
 /// Checks whether all input numbers are within their respective valid ranges.

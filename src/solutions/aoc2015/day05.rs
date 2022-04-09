@@ -20,7 +20,7 @@ pub fn two(input: &str) -> Result<String, String> {
     fn nice(line: &&str) -> bool {
         let double_pair = {
             let mut found = HashSet::new();
-            let mut last= None;
+            let mut last = None;
             let mut result = false;
 
             for w in line.as_bytes().windows(2).map(|w| (w[0], w[1])) {

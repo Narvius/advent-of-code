@@ -41,13 +41,11 @@ fn run_circuit(input: &str, initial: impl IntoIterator<Item = (&'static str, usi
     }
 
     let mut pending: VecDeque<_> = input.lines().filter_map(parse).collect();
-    let mut memory = HashMap::new();
-
-    for (s, v) in initial {
-        if let Some(s) = from_name(s) {
-            memory.insert(s, v);
-        }
-    }
+    let mut memory = HashMap::from_iter(
+        initial
+            .into_iter()
+            .filter_map(|(s, v)| Some((as_number(s)?, v))),
+    );
 
     while !pending.is_empty() {
         let instruction = pending.pop_front().unwrap();
@@ -56,9 +54,7 @@ fn run_circuit(input: &str, initial: impl IntoIterator<Item = (&'static str, usi
         }
     }
 
-    from_name("a")
-        .and_then(|n| memory.get(&n).copied())
-        .unwrap_or(0)
+    memory.get(&as_number("a").unwrap()).copied().unwrap_or(0)
 }
 
 type Instruction<'a> = (&'a str, Val, Val, usize);
@@ -71,41 +67,25 @@ enum Val {
 }
 
 /// Parses a line of puzzle input.
-fn parse<'a>(line: &str) -> Option<Instruction> {
-    fn get_val(s: &str) -> Option<Val> {
-        Some(if let Some(name) = from_name(s) {
-            Val::Named(name)
-        } else {
-            Val::Const(s.parse().ok()?)
+fn parse(line: &str) -> Option<Instruction> {
+    fn val(s: &str) -> Option<Val> {
+        Some(match as_number(s) {
+            Some(name) => Val::Named(name),
+            None => Val::Const(s.parse().ok()?),
         })
     }
 
-    let tokens: Vec<_> = line.split(' ').collect();
-    Some(match tokens.len() {
-        3 => (
-            tokens[1],
-            get_val(tokens[0])?,
-            Val::Const(0),
-            from_name(tokens[2])?,
-        ),
-        4 => (
-            tokens[0],
-            get_val(tokens[1])?,
-            Val::Const(0),
-            from_name(tokens[3])?,
-        ),
-        5 => (
-            tokens[1],
-            get_val(tokens[0])?,
-            get_val(tokens[2])?,
-            from_name(tokens[4])?,
-        ),
+    let line: Vec<_> = line.split(' ').collect();
+    Some(match line.len() {
+        3 => (line[1], val(line[0])?, Val::Const(0), as_number(line[2])?),
+        4 => (line[0], val(line[1])?, Val::Const(0), as_number(line[3])?),
+        5 => (line[1], val(line[0])?, val(line[2])?, as_number(line[4])?),
         _ => None?,
     })
 }
 
 /// Converts a variable name from the input into a numeric representation.
-fn from_name(s: &str) -> Option<usize> {
+fn as_number(s: &str) -> Option<usize> {
     Some(if s.bytes().all(|b| b'a' <= b && b <= b'z') {
         s.bytes().fold(0, |acc, b| (acc << 8) + b as usize)
     } else {

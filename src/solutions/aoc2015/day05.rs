@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 /// Counts how many strings are nice, according to some arbitrary rules.
 pub fn one(input: &str) -> Result<String, String> {
@@ -18,25 +18,17 @@ pub fn one(input: &str) -> Result<String, String> {
 /// Counts how many strings are nice, according to some other arbitrary rules.
 pub fn two(input: &str) -> Result<String, String> {
     fn nice(line: &&str) -> bool {
-        let double_pair = {
-            let mut found = HashSet::new();
-            let mut last = None;
-            let mut result = false;
+        let mut found = HashMap::new();
+        let mut last = None;
 
-            for w in line.as_bytes().windows(2).map(|w| (w[0], w[1])) {
-                if last.take().map(|l| l != w).unwrap_or(true) {
-                    if found.contains(&w) {
-                        result = true;
-                        break;
-                    } else {
-                        found.insert(w);
-                        last = Some(w);
-                    }
-                }
+        for w in line.as_bytes().windows(2).map(|w| (w[0], w[1])) {
+            if last.take() != Some(w) {
+                *found.entry(w).or_insert(0) += 1;
+                last = Some(w);
             }
+        }
 
-            result
-        };
+        let double_pair = found.values().any(|&v| v > 1);
         let bracket = line.as_bytes().windows(3).any(|w| w[0] == w[2]);
 
         double_pair && bracket

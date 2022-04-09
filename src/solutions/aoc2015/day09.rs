@@ -64,17 +64,17 @@ fn parse(input: &str) -> Option<(usize, Distances)> {
     let mut distances = HashMap::new();
 
     for line in input.lines() {
-        let tokens: Vec<_> = line.split(' ').collect();
-        for location in [tokens[0], tokens[2]] {
+        let line: Vec<_> = line.split(' ').collect();
+        for location in [line[0], line[2]] {
             if !locations.contains_key(location) {
                 locations.insert(location, locations.len());
             }
         }
 
         let (l1, l2, v) = (
-            locations[tokens[0]],
-            locations[tokens[2]],
-            tokens[4].parse().ok()?,
+            locations[line[0]],
+            locations[line[2]],
+            line[4].parse().ok()?,
         );
         distances.insert((l1, l2), v);
         distances.insert((l2, l1), v);

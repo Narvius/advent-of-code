@@ -3,7 +3,7 @@
 pub fn one(input: &str) -> Result<String, String> {
     Ok(input
         .lines()
-        .map(|s| s.len() - memory_chars(s))
+        .map(extra_representation_chars)
         .sum::<usize>()
         .to_string())
 }
@@ -18,27 +18,19 @@ pub fn two(input: &str) -> Result<String, String> {
         .to_string())
 }
 
-/// Counts the number of characters in memory for a given string representation.
-fn memory_chars(s: &str) -> usize {
-    // Start at -2 to offset the surrounding quotes.
-    let mut count = -2;
+/// Counts how many extra characters there are in the representation than in memory.
+fn extra_representation_chars(s: &str) -> usize {
+    let mut result = 2;
     let mut escaping = false;
-    for b in s.bytes() {
-        match (escaping, b) {
-            (false, b'\\') => escaping = true,
-            (true, b'x') => {
-                // \xFF is a four-character escape that produces 1 character.
-                // The \ is ignored, the x subtracts one, and the next two add one each, working
-                // out to the expected +1 for the entire sequence.
-                escaping = false;
-                count -= 1;
-            }
-            (true, _) => {
-                escaping = false;
-                count += 1;
-            }
-            (false, _) => count += 1,
+
+    for c in s.chars() {
+        if escaping {
+            result += if c == 'x' { 3 } else { 1 };
+            escaping = false;
+        } else if c == '\\' {
+            escaping = true;
         }
     }
-    count as usize
+
+    result
 }

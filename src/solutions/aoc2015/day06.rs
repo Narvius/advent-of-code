@@ -43,7 +43,7 @@ where
             }
         }
     }
-    lights.into_iter().map(collect).sum::<usize>()
+    lights.into_iter().map(collect).sum()
 }
 
 type Line<'a> = (&'a str, (usize, usize), (usize, usize));
@@ -61,10 +61,10 @@ fn parse(line: &str) -> Option<Line> {
         ))
     }
 
-    let tokens: Vec<_> = line.split(' ').collect();
-    match tokens.len() {
-        4 => make(tokens[0], tokens[1], tokens[3]),
-        5 => make(tokens[1], tokens[2], tokens[4]),
+    let line: Vec<_> = line.split(' ').collect();
+    match line.len() {
+        4 => make(line[0], line[1], line[3]),
+        5 => make(line[1], line[2], line[4]),
         _ => None,
     }
 }

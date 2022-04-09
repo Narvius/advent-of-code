@@ -5,14 +5,13 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Find the number of steps after which the elevator first goes into the basement.
 pub fn two(input: &str) -> Result<String, String> {
+    let mut floor = 0;
     Ok((1 + input
         .chars()
-        .map(as_delta)
-        .scan(0, |s, x| {
-            *s += x;
-            Some(*s)
+        .take_while(move |&c| {
+            floor += as_delta(c);
+            floor >= 0
         })
-        .take_while(|&s| s >= 0)
         .count())
     .to_string())
 }

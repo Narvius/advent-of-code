@@ -1,13 +1,24 @@
+//! Contains all the plumbing necessary to run solutions "dynamically" from user input.
+
 use crate::solutions::aoc2015;
 
 type TableOfContents = [Section; 7];
 type Section = [Option<(SolutionFn, SolutionFn, &'static str)>; 25];
 type SolutionFn = fn(&str) -> Result<String, String>;
 
+/// The full space of Advent of Code solutions.
 pub static CONTENTS: TableOfContents = [
     AOC2015, AOC2016, AOC2017, AOC2018, AOC2019, AOC2020, AOC2021,
 ];
 
+/// Expands to a tuple that ties together the two partial solution functions, as well as the puzzle
+/// input.
+/// 
+/// Relies on the convention that the crate `aocXXX::dayXX` contains the functions `one` and
+/// `two`, representing two parts of the solution respectively; and that there is a textfile with
+/// the puzzle input at "src/data/aocXXX/dayXX.txt".
+/// 
+/// Textfiles are compiled into the program, and thus are only required at compile time.
 macro_rules! day {
     ($y:ident::$d:ident) => {
         Some((

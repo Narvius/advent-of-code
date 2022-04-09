@@ -1,3 +1,9 @@
+#![warn(missing_docs)]
+
+//! A project containing my (Phil, narvius@gmail.com) solutions to Advent of Code, written in Rust.
+//! Many of those solutions do not represent my first time ever solving the problems, but rather,
+//! the best Rust solution I am able to write as of... time of writing.
+
 use std::{
     borrow::Cow,
     time::{Duration, Instant},

@@ -27,7 +27,7 @@ type Sue<'a> = (usize, [(&'a str, usize); 3]);
 /// Parses the input into a sequence of Sues.
 fn parse<'a>(input: &'a str) -> impl Iterator<Item = Sue> + 'a {
     input.lines().filter_map(|line| {
-        let mut tokens= line.split(": ").flat_map(|s| s.split(", "));
+        let mut tokens = line.split(": ").flat_map(|s| s.split(", "));
         Some((
             tokens.next()?[4..].parse().ok()?,
             [

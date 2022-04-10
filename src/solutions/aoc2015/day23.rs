@@ -16,16 +16,25 @@ fn simulate(program: &str, mut a: usize, mut b: usize) -> usize {
         let instruction = &line[0..3];
         let register = if &line[4..5] == "a" { &mut a } else { &mut b };
         match instruction {
-            "hlf" => { *register /= 2; ptr += 1 },
-            "tpl" => { *register *= 3; ptr += 1 },
-            "inc" => { *register += 1; ptr += 1 },
+            "hlf" => {
+                *register /= 2;
+                ptr += 1
+            }
+            "tpl" => {
+                *register *= 3;
+                ptr += 1
+            }
+            "inc" => {
+                *register += 1;
+                ptr += 1
+            }
             jump if jump == "jmp"
                 || (jump == "jio" && *register == 1)
                 || (jump == "jie" && *register % 2 == 0) =>
             {
                 let offset = line.split(" ").last().unwrap().parse::<i32>().unwrap();
                 ptr = (ptr as i32 + offset) as usize;
-            },
+            }
             _ => ptr += 1,
         }
     }

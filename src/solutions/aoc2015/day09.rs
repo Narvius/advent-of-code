@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 /// Find the shortest possible route that visits all cities.
 pub fn one(input: &str) -> Result<String, String> {
-    let (locations, distances) = parse(input).ok_or(format!("failed to parse puzzle input"))?;
+    let (locations, distances) = parse(input)?;
     Ok(all_route_lengths(locations, distances)
         .min()
         .ok_or(format!("no input locations"))?
@@ -11,7 +11,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Find the longest possible route that visits all cities.
 pub fn two(input: &str) -> Result<String, String> {
-    let (locations, distances) = parse(input).ok_or(format!("failed to parse puzzle input"))?;
+    let (locations, distances) = parse(input)?;
     Ok(all_route_lengths(locations, distances)
         .max()
         .ok_or(format!("no input locations"))?
@@ -59,7 +59,7 @@ fn all_route_lengths(locations: usize, distances: Distances) -> impl Iterator<It
 }
 
 /// Parses the puzzle input into an amount of locations and a map of the distances between them.
-fn parse(input: &str) -> Option<(usize, Distances)> {
+fn parse(input: &str) -> Result<(usize, Distances), String> {
     let mut locations = HashMap::new();
     let mut distances = HashMap::new();
 
@@ -74,11 +74,13 @@ fn parse(input: &str) -> Option<(usize, Distances)> {
         let (l1, l2, v) = (
             locations[line[0]],
             locations[line[2]],
-            line[4].parse().ok()?,
+            line[4]
+                .parse()
+                .map_err(|_| format!("failed to parse input"))?,
         );
         distances.insert((l1, l2), v);
         distances.insert((l2, l1), v);
     }
 
-    Some((locations.len(), distances))
+    Ok((locations.len(), distances))
 }

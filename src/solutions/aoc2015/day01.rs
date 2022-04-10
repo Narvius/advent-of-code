@@ -1,26 +1,25 @@
 /// Find the final floor the elevator stops at.
 pub fn one(input: &str) -> Result<String, String> {
-    Ok(input.chars().map(as_delta).sum::<i32>().to_string())
+    Ok(parse(input).sum::<i32>().to_string())
 }
 
 /// Find the number of steps after which the elevator first goes into the basement.
 pub fn two(input: &str) -> Result<String, String> {
-    let mut floor = 0;
-    Ok((1 + input
-        .chars()
-        .take_while(move |&c| {
-            floor += as_delta(c);
-            floor >= 0
-        })
-        .count())
-    .to_string())
+    let (mut floor, mut count) = (0, 0);
+    for c in parse(input) {
+        (floor, count) = (floor + c, count + 1);
+        if floor < 0 {
+            return Ok(count.to_string());
+        }
+    }
+    Err(format!("never reached the basement"))
 }
 
 /// Turns an input character into a floor delta.
-fn as_delta(c: char) -> i32 {
-    match c {
+fn parse<'a>(input: &'a str) -> impl Iterator<Item = i32> + 'a {
+    input.chars().map(|c| match c {
         '(' => 1,
         ')' => -1,
         _ => 0,
-    }
+    })
 }

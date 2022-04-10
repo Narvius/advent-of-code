@@ -3,8 +3,7 @@ use std::collections::HashSet;
 /// Find the number of distinct molecules that can be built with one step of expansion using any of
 /// the available expansion rules.
 pub fn one(input: &str) -> Result<String, String> {
-    let (replaces, molecule) =
-        parse_input(input).ok_or_else(|| format!("failed to parse input"))?;
+    let (replaces, molecule) = parse(input)?;
     let mut set = HashSet::new();
     for replace in replaces {
         for (index, slice) in molecule.match_indices(replace.0) {
@@ -23,25 +22,28 @@ pub fn one(input: &str) -> Result<String, String> {
 /// implementation solves the equivalent problem of finding the number of steps required to
 /// collapse the target molecule down to `e` using the inverse rules.
 pub fn two(input: &str) -> Result<String, String> {
-    let structure = build_structural_view(input).ok_or_else(|| format!("failed to parse input"))?;
+    let structure = build_structural_view(input)?;
     let content_atoms = structure.chars().filter(|&c| c == '.').count();
     let divider_atoms = structure.chars().filter(|&c| c == '|').count();
     Ok((content_atoms - divider_atoms - 1).to_string())
 }
 
 /// Reads the expansion rules and target molecule from puzzle input.
-fn parse_input(input: &str) -> Option<(Vec<(&str, &str)>, &str)> {
+fn parse(input: &str) -> Result<(Vec<(&str, &str)>, &str), String> {
     let mut result = vec![];
 
     for line in input.lines() {
         if line.contains("=>") {
-            result.push(line.split_once(" => ")?);
+            result.push(
+                line.split_once(" => ")
+                    .ok_or_else(|| format!("invalid input format"))?,
+            );
         } else if line.len() > 0 {
-            return Some((result, line));
+            return Ok((result, line));
         }
     }
 
-    unreachable!()
+    Err(format!("did not find final line in input"))
 }
 
 /// Builds a "structural representation" of a molecule by replacing content atoms with a `.`,
@@ -116,16 +118,13 @@ fn parse_input(input: &str) -> Option<(Vec<(&str, &str)>, &str)> {
 /// ```
 ///
 /// And this is the algorithm used in the solution.
-fn build_structural_view(s: &str) -> Option<String> {
+fn build_structural_view(s: &str) -> Result<String, String> {
+    let line = s.lines().last().ok_or_else(|| format!("no puzzle input"))?;
     let s = [("Rn", "("), ("Ar", ")"), ("Y", "|")]
         .into_iter()
-        .fold(s.lines().last()?.to_string(), |s, (from, to)| {
-            s.replace(from, to)
-        });
+        .fold(line.to_string(), |s, (from, to)| s.replace(from, to));
 
-    Some(
-        ["Al", "Ca", "Mg", "Si", "Th", "Ti", "B", "F", "P", "C"]
-            .into_iter()
-            .fold(s, |s, from| s.replace(from, ".")),
-    )
+    Ok(["Al", "Ca", "Mg", "Si", "Th", "Ti", "B", "F", "P", "C"]
+        .into_iter()
+        .fold(s, |s, from| s.replace(from, ".")))
 }

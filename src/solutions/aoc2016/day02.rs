@@ -2,43 +2,42 @@ use std::collections::HashMap;
 
 /// Follow the instruction on the simple keypad, return the resulting code.
 pub fn one(input: &str) -> Result<String, String> {
-    let map = build_map(-1, -1, &["123", "456", "789"]);
-    Ok(walk(input, map))
+    let map = build_map(&["123", "456", "789"]);
+    Ok(walk(input, (1, 1), map))
 }
 
 /// Follow the instruction on the advanced keypad, return the resulting code.
 pub fn two(input: &str) -> Result<String, String> {
-    let map = build_map(-2, -2, &["  1  ", " 234 ", "56789", " ABC ", "  D  "]);
-    Ok(walk(input, map))
+    let map = build_map(&["  1  ", " 234 ", "56789", " ABC ", "  D  "]);
+    Ok(walk(input, (2, 2), map))
 }
 
 /// Follows the keypad instructions, and returns the resulting code.
-fn walk(input: &str, map: HashMap<(i32, i32), char>) -> String {
-    let mut s = String::new();
-    let mut p = (0, 0);
+fn walk(input: &str, mut pos: (i32, i32), map: HashMap<(i32, i32), char>) -> String {
+    let mut output = String::new();
     for line in input.lines() {
         for c in line.chars() {
-            let pp = match c {
-                'L' => (p.0 - 1, p.1),
-                'U' => (p.0, p.1 - 1),
-                'R' => (p.0 + 1, p.1),
-                'D' => (p.0, p.1 + 1),
-                _ => p,
+            let p = match c {
+                'L' => (pos.0 - 1, pos.1),
+                'U' => (pos.0, pos.1 - 1),
+                'R' => (pos.0 + 1, pos.1),
+                'D' => (pos.0, pos.1 + 1),
+                _ => pos,
             };
-            if map.contains_key(&pp) {
-                p = pp;
+            if map.contains_key(&p) {
+                pos = p;
             }
         }
-        s.push(map[&p]);
+        output.push(map[&pos]);
     }
-    s
+    output
 }
 
 /// Builds a map compatible with `walk`. `x` and `y` are the top left corner.
-fn build_map(x: i32, y: i32, cs: &[&str]) -> HashMap<(i32, i32), char> {
-    HashMap::from_iter((0..cs.len()).flat_map(|dy| {
-        cs[dy]
+fn build_map(cs: &[&str]) -> HashMap<(i32, i32), char> {
+    HashMap::from_iter((0..cs.len()).flat_map(|y| {
+        cs[y]
             .char_indices()
-            .filter_map(move |(dx, c)| (c != ' ').then(|| ((x + dx as i32, y + dy as i32), c)))
+            .filter_map(move |(x, c)| (c != ' ').then(|| ((x as i32, y as i32), c)))
     }))
 }

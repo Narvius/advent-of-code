@@ -36,13 +36,9 @@ fn walk(input: &str, map: HashMap<(i32, i32), char>) -> String {
 
 /// Builds a map compatible with `walk`. `x` and `y` are the top left corner.
 fn build_map(x: i32, y: i32, cs: &[&str]) -> HashMap<(i32, i32), char> {
-    let mut map = HashMap::new();
-    for dy in 0..cs.len() {
-        for (dx, c) in cs[dy].char_indices() {
-            if c != ' ' {
-                map.insert((x + dx as i32, y + dy as i32), c);
-            }
-        }
-    }
-    map
+    HashMap::from_iter((0..cs.len()).flat_map(|dy| {
+        cs[dy]
+            .char_indices()
+            .filter_map(move |(dx, c)| (c != ' ').then(|| ((x + dx as i32, y + dy as i32), c)))
+    }))
 }

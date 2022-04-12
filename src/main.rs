@@ -14,7 +14,7 @@ mod solutions;
 
 /// During 0 or 1 argument invocations, this year is assumed. Changes based on what I work on,
 /// for convenience's sake.
-const ASSUMED_YEAR: usize = 2015;
+const ASSUMED_YEAR: usize = 2016;
 
 /// The highest year for which there can be solutions. Changes every December.
 const LAST_YEAR: usize = 2021;

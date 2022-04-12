@@ -1,6 +1,6 @@
 //! Contains all the plumbing necessary to run solutions "dynamically" from user input.
 
-use crate::solutions::aoc2015;
+use crate::solutions::{aoc2015, aoc2016};
 
 type TableOfContents = [Section; 7];
 type Section = [Option<(SolutionFn, SolutionFn, &'static str)>; 25];
@@ -64,8 +64,31 @@ static AOC2015: Section = [
 ];
 
 static AOC2016: Section = [
-    None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-    None, None, None, None, None, None, None, None, None,
+    day!(aoc2016::day01),
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
+    None,
 ];
 
 static AOC2017: Section = [

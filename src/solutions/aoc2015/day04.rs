@@ -13,12 +13,7 @@ fn find_hash(input: &str, check: fn(md5::Digest) -> bool) -> usize {
     let mut cache = vec![md5::Context::new()];
     cache[0].consume(input.as_bytes());
 
-    for i in 1..10 {
-        cache.push(cache[0].clone());
-        cache[i].consume([b'0' + i as u8]);
-    }
-
-    let mut i = 10;
+    let mut i = 1;
     loop {
         let mut context = cache[i / 10].clone();
         context.consume([b'0' + (i % 10) as u8]);

@@ -92,7 +92,15 @@ fn parse(input: &str, include_extras: bool) -> State {
     let mut state = State {
         floor: 0,
         steps: 0,
-        items: [*items[0], *items[1], *items[2], *items[3], *items[4], (3, 3), (3, 3)],
+        items: [
+            *items[0],
+            *items[1],
+            *items[2],
+            *items[3],
+            *items[4],
+            (3, 3),
+            (3, 3),
+        ],
     };
 
     if include_extras {

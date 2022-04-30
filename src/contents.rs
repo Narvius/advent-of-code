@@ -83,7 +83,7 @@ static AOC2016: Section = [
     day!(aoc2016::day17),
     day!(aoc2016::day18),
     day!(aoc2016::day19),
-    None,
+    day!(aoc2016::day20),
     None,
     None,
     None,

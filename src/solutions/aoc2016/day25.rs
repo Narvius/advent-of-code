@@ -4,7 +4,10 @@ pub fn one(input: &str) -> Result<String, String> {
     let program = parse(input);
     for i in 0.. {
         let generator = SignalGenerator::new(&program, i);
-        if generator.take(10).eq([0, 1, 0, 1, 0, 1, 0, 1, 0, 1].into_iter()) {
+        if generator
+            .take(10)
+            .eq([0, 1, 0, 1, 0, 1, 0, 1, 0, 1].into_iter())
+        {
             return Ok(i.to_string());
         }
     }
@@ -65,15 +68,13 @@ impl<'a> Iterator for SignalGenerator<'a> {
                     return Some(self.get(src));
                 }
             }
-    
+
             self.pointer += 1;
         }
-    
+
         None
     }
 }
-
-
 
 /// An operation.
 #[derive(Copy, Clone, Debug)]

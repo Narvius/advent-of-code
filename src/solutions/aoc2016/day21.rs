@@ -18,7 +18,7 @@ const ROTMAP: [usize; 8] = [1, 2, 3, 4, 6, 7, 0, 1];
 /// The mapping `ROTMAP` logically inverted, for unscrambling a password. It can be derived by
 /// noting that `i + ROTMAP[i]` is the position `k` you will be at; so it is merely a matter of
 /// finding an `f(k)` such that it gives the amount of left shifts required to cancel out the
-/// right shift by ROTMAP[i].
+/// right shift by ROTMAP\[i\].
 const REV_ROTMAP: [usize; 8] = [1, 1, 6, 2, 7, 3, 0, 4];
 
 /// Applies the scrambling operations as described in the puzzle description to a given string

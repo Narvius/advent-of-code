@@ -15,7 +15,10 @@ pub fn two(input: &str) -> Result<String, String> {
 /// Runs the redistribution logic until a repeat is found, and returns both the number of total
 /// cycles ran, and how long the detected cycle is.
 fn run_distribution_until_repeat(input: &str) -> Result<(i32, i32), String> {
-    let mut cells = input.split_whitespace().map(|v| v.parse::<usize>()).collect::<Result<Vec<_>, _>>()
+    let mut cells = input
+        .split_whitespace()
+        .map(|v| v.parse::<usize>())
+        .collect::<Result<Vec<_>, _>>()
         .map_err(|_| format!("failed to parse input"))?;
     let mut seen = HashMap::new();
     let mut i = 0;
@@ -23,7 +26,12 @@ fn run_distribution_until_repeat(input: &str) -> Result<(i32, i32), String> {
 
     loop {
         i += 1;
-        let (index, v) = cells.iter().copied().enumerate().fold((0, 0), |old, new| if new.1 > old.1 { new } else { old });
+        let (index, v) =
+            cells
+                .iter()
+                .copied()
+                .enumerate()
+                .fold((0, 0), |old, new| if new.1 > old.1 { new } else { old });
 
         cells[index] = 0;
         for n in 1..=v {

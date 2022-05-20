@@ -32,7 +32,7 @@ fn simulate(program: &str, mut a: usize, mut b: usize) -> usize {
                 || (jump == "jio" && *register == 1)
                 || (jump == "jie" && *register % 2 == 0) =>
             {
-                let offset = line.split(" ").last().unwrap().parse::<i32>().unwrap();
+                let offset = line.split(' ').last().unwrap().parse::<i32>().unwrap();
                 ptr = (ptr as i32 + offset) as usize;
             }
             _ => ptr += 1,

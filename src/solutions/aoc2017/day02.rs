@@ -5,7 +5,7 @@ pub fn one(input: &str) -> Result<String, String> {
         let mut min = i32::MAX;
         let mut max = 0;
         for x in line.split_whitespace() {
-            let x = x.parse().map_err(|_| format!("failed to parse num"))?;
+            let x = x.parse().map_err(|_| "failed to parse num".to_owned())?;
             min = min.min(x);
             max = max.max(x);
         }
@@ -20,7 +20,7 @@ pub fn two(input: &str) -> Result<String, String> {
     for line in input.lines() {
         let xs = line
             .split_whitespace()
-            .map(|x| x.parse().map_err(|_| format!("failed to parse num")))
+            .map(|x| x.parse().map_err(|_| "failed to parse num".to_owned()))
             .collect::<Result<Vec<i32>, String>>()?;
         'line: for i in 0..xs.len() {
             for j in 0..xs.len() {

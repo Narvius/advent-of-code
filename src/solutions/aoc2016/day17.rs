@@ -27,7 +27,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
         for ((dx, dy, c), o) in DELTAS.into_iter().zip(hash.bytes()) {
             let (x, y) = (x + dx, y + dy);
-            if 0 <= x && x < 4 && 0 <= y && y < 4 {
+            if (0..=4).contains(&x) && (0..=4).contains(&y) {
                 match o {
                     (b'b'..=b'f') => {
                         let mut s = p.clone();
@@ -40,7 +40,7 @@ pub fn one(input: &str) -> Result<String, String> {
         }
     }
 
-    shortest.ok_or_else(|| format!("no path found"))
+    shortest.ok_or_else(|| "no path found".to_owned())
 }
 
 /// Find the length of the longest possible path to the vault.
@@ -67,7 +67,7 @@ pub fn two(input: &str) -> Result<String, String> {
 
         for ((dx, dy, c), o) in DELTAS.into_iter().zip(hash.bytes()) {
             let (x, y) = (x + dx, y + dy);
-            if 0 <= x && x < 4 && 0 <= y && y < 4 {
+            if (0..=4).contains(&x) && (0..=4).contains(&y) {
                 match o {
                     (b'b'..=b'f') => {
                         let mut d = d.clone();

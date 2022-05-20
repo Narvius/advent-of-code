@@ -17,7 +17,7 @@ pub fn two(input: &str) -> Result<String, String> {
             v3.push(c);
         }
     }
-    Ok(count_triangles([v1, v2, v3].into_iter().flat_map(|v| v)).to_string())
+    Ok(count_triangles([v1, v2, v3].into_iter().flatten()).to_string())
 }
 
 /// Given a stream of numbers, counts how many valid triangles it forms.

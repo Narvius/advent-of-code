@@ -12,7 +12,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Find the sum of all numbers in the JSON blob, excluding red objects.
 pub fn two(input: &str) -> Result<String, String> {
-    let tree = serde_json::from_str(input).map_err(|_| "failed to parse input".to_string())?;
+    let tree = serde_json::from_str(input).map_err(|_| "failed to parse input".to_owned())?;
     Ok(non_red_sum(tree).to_string())
 }
 

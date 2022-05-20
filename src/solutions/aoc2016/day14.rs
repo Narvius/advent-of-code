@@ -65,8 +65,8 @@ fn find_hash<T>(input: &str, mut check: impl FnMut(usize, md5::Digest) -> Option
 
 /// Finds all characters that appear `length` times in a row; in the order that these runs appear
 /// in.
-fn find_runs<'a>(s: &'a [u8], length: usize) -> impl Iterator<Item = u8> + 'a {
+fn find_runs(s: &[u8], length: usize) -> impl Iterator<Item = u8> + '_ {
     s.windows(length)
-        .filter(|w| w.into_iter().all(|&c| w[0] == c))
+        .filter(|w| w.iter().all(|&c| w[0] == c))
         .map(|w| w[0])
 }

@@ -2,7 +2,7 @@
 pub fn one(input: &str) -> Result<String, String> {
     Ok(run_instructions(input)
         .into_iter()
-        .flat_map(|v| v)
+        .flatten()
         .filter(|&b| b)
         .count()
         .to_string())
@@ -13,10 +13,10 @@ pub fn two(input: &str) -> Result<String, String> {
     let map = run_instructions(input);
     let mut s = String::with_capacity(51 * 6);
 
-    for y in 0..map.len() {
+    for line in &map {
         s.push('\n');
-        for x in 0..map[y].len() {
-            s.push(if map[y][x] { '#' } else { '.' });
+        for &b in line {
+            s.push(if b { '#' } else { '.' });
         }
     }
 
@@ -29,9 +29,9 @@ fn run_instructions(input: &str) -> Vec<Vec<bool>> {
     for line in parse(input) {
         match line {
             Line::Rect(x, y) => {
-                for y in 0..y {
-                    for x in 0..x {
-                        map[y][x] = true;
+                for line in map.iter_mut().take(y) {
+                    for b in line.iter_mut().take(x) {
+                        *b = true;
                     }
                 }
             }
@@ -56,11 +56,11 @@ enum Line {
 }
 
 /// Parses the puzzle input into a series of instructions.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = Line> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = Line> + '_ {
     input.lines().filter_map(
-        |line| match *line.split(" ").collect::<Vec<_>>().as_slice() {
+        |line| match *line.split(' ').collect::<Vec<_>>().as_slice() {
             ["rotate", place, coord, "by", shift] => {
-                let coord = coord.split_once("=")?.1.parse().ok()?;
+                let coord = coord.split_once('=')?.1.parse().ok()?;
                 let shift = shift.parse().ok()?;
                 Some(match place {
                     "row" => Line::RotRow(coord, shift),
@@ -69,7 +69,7 @@ fn parse<'a>(input: &'a str) -> impl Iterator<Item = Line> + 'a {
                 })
             }
             ["rect", size] => {
-                let (x, y) = size.split_once("x")?;
+                let (x, y) = size.split_once('x')?;
                 Some(Line::Rect(x.parse().ok()?, y.parse().ok()?))
             }
             _ => None,

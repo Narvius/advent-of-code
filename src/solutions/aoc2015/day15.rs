@@ -43,7 +43,7 @@ pub fn two(input: &str) -> Result<String, String> {
                 .map(|i| ingredients[i][4] * choices[i])
                 .sum();
             if calories == 500 {
-                *best = score(&ingredients, &choices).max(*best);
+                *best = score(ingredients, choices).max(*best);
             }
         } else {
             // A nested for loop for each ingredient.
@@ -80,9 +80,9 @@ pub fn two(input: &str) -> Result<String, String> {
 }
 
 /// Determines the score for a cookie recipe.
-fn score<'a>(ingredients: &[Vec<i32>], counts: &[i32]) -> i32 {
+fn score(ingredients: &[Vec<i32>], counts: &[i32]) -> i32 {
     let mut subscores = [0; 4];
-    for (ingredient, count) in ingredients.into_iter().zip(counts.into_iter()) {
+    for (ingredient, count) in ingredients.iter().zip(counts.iter()) {
         for factor in 0..4 {
             subscores[factor] += ingredient[factor] * count;
         }
@@ -91,7 +91,7 @@ fn score<'a>(ingredients: &[Vec<i32>], counts: &[i32]) -> i32 {
 }
 
 // Parses the puzzle input into a series of ingredient values.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = Vec<i32>> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = Vec<i32>> + '_ {
     input.lines().map(|line| {
         line.split(&[' ', ','][..])
             .filter_map(|v| v.parse::<i32>().ok())

@@ -11,7 +11,7 @@ pub fn one(input: &str) -> Result<String, String> {
     if let Some((id, _)) = pair {
         Ok(id.to_string())
     } else {
-        Err("no matching bot found".to_string())
+        Err("no matching bot found".into())
     }
 }
 
@@ -22,7 +22,7 @@ pub fn two(input: &str) -> Result<String, String> {
     if let (Some(a), Some(b), Some(c)) = (output.get(&0), output.get(&1), output.get(&2)) {
         Ok((a * b * c).to_string())
     } else {
-        Err("no values on required outputs".to_string())
+        Err("no values on required outputs".into())
     }
 }
 
@@ -67,7 +67,7 @@ fn run_program(input: &str) -> (HeldMap, OutputMap) {
 }
 
 /// Parses the puzzle input into a sequence of instructions.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = Op> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = Op> + '_ {
     // Parses the `index`th and `index + 1`th entries into a `Target`.
     fn target(tokens: &[&str], index: usize) -> Option<Target> {
         let n = tokens[index + 1].parse().ok()?;

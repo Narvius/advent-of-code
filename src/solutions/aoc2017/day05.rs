@@ -34,6 +34,6 @@ fn run_jumps(input: &str, morph: fn(&mut i32)) -> Result<String, String> {
 fn parse(input: &str) -> Result<Vec<i32>, String> {
     input
         .lines()
-        .map(|line| line.parse().map_err(|_| format!("failed to parse num")))
+        .map(|line| line.parse().map_err(|_| "failed to parse num".into()))
         .collect()
 }

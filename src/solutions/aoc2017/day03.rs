@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 /// Find the Manhattan distance from origin of the input number on the spiral.
 pub fn one(input: &str) -> Result<String, String> {
-    let v: usize = input.parse().map_err(|_| format!("failed to parse num"))?;
+    let v: usize = input
+        .parse()
+        .map_err(|_| "failed to parse num".to_owned())?;
 
     // Small optimization: We can skip MOST of the spiral by noting that the bottom
     // right diagonal is n^2 for odd n, and deriving a closer starting position
@@ -21,13 +23,15 @@ pub fn one(input: &str) -> Result<String, String> {
     if let Some((x, y)) = coords.nth(v - skip) {
         Ok(format!("{}", x.abs() + y.abs()))
     } else {
-        Err(format!("unreachable"))
+        Err("unreachable".into())
     }
 }
 
 /// On the "Fibonacci spiral", find the smallest number larger than the input.
 pub fn two(input: &str) -> Result<String, String> {
-    let target: i32 = input.parse().map_err(|_| format!("failed to parse num"))?;
+    let target: i32 = input
+        .parse()
+        .map_err(|_| "failed to parse num".to_owned())?;
     let mut spiral = HashMap::from([((0, 0), 1)]);
 
     for (x, y) in (SpiralCoords { x: 0, y: 0, dir: 0 }) {
@@ -44,7 +48,7 @@ pub fn two(input: &str) -> Result<String, String> {
         }
     }
 
-    Err(format!("unreachable"))
+    Err("unreachable".into())
 }
 
 /// An iterator that produces all the coordinates along a spiral.

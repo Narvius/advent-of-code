@@ -5,7 +5,7 @@ pub fn one(input: &str) -> Result<String, String> {
     let (locations, distances) = parse(input)?;
     Ok(all_route_lengths(locations, distances)
         .min()
-        .ok_or(format!("no input locations"))?
+        .ok_or_else(|| "no input locations".to_owned())?
         .to_string())
 }
 
@@ -14,7 +14,7 @@ pub fn two(input: &str) -> Result<String, String> {
     let (locations, distances) = parse(input)?;
     Ok(all_route_lengths(locations, distances)
         .max()
-        .ok_or(format!("no input locations"))?
+        .ok_or_else(|| "no input locations".to_owned())?
         .to_string())
 }
 
@@ -76,7 +76,7 @@ fn parse(input: &str) -> Result<(usize, Distances), String> {
             locations[line[2]],
             line[4]
                 .parse()
-                .map_err(|_| format!("failed to parse input"))?,
+                .map_err(|_| "failed to parse input".to_owned())?,
         );
         distances.insert((l1, l2), v);
         distances.insert((l2, l1), v);

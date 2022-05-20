@@ -1,7 +1,7 @@
 pub fn one(input: &str) -> Result<String, String> {
-    Err("unimplemented".to_string())
+    Err("unimplemented".into())
 }
 
 pub fn two(input: &str) -> Result<String, String> {
-    Err("unimplemented".to_string())
+    Err("unimplemented".into())
 }

@@ -35,14 +35,14 @@ fn run(grid: &mut [bool], rules: fn(usize, bool, u8) -> bool) -> usize {
     // Writes the next step into `target`, based on `source` and `rules`.
     fn step(source: &[bool], target: &mut [bool], rules: fn(usize, bool, u8) -> bool) {
         for i in 0..target.len() {
-            target[i] = rules(i, source[i], neighbours(&source, i));
+            target[i] = rules(i, source[i], neighbours(source, i));
         }
     }
 
     let mut buffer = vec![false; grid.len()];
 
     for _ in 0..50 {
-        step(&grid, &mut buffer, rules);
+        step(grid, &mut buffer, rules);
         step(&buffer, grid, rules);
     }
 

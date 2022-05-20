@@ -22,7 +22,7 @@ pub fn two(input: &str) -> Result<String, String> {
             }
             Some(ps)
         })
-        .flat_map(|v| v);
+        .flatten();
 
     let mut visited = HashSet::new();
     for p in positions {
@@ -44,7 +44,7 @@ fn rotated((x, y): (i32, i32), right: bool) -> (i32, i32) {
 }
 
 /// Parses the puzzle input into a sequence of instructions.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = (bool, i32)> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = (bool, i32)> + '_ {
     input
         .split(", ")
         .filter_map(|s| Some((&s[0..1] == "R", s[1..].parse().ok()?)))

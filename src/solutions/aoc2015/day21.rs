@@ -54,18 +54,18 @@ fn resolve_loadout((w, a, r1, r2): Loadout) -> Option<(Stat, i32)> {
     }
 
     let (mut gold, mut atk, mut def) = (0, 0, 0);
-    for v in [W.get(w), A.get(a), R.get(r1), R.get(r2)] {
-        if let Some(&(g, a, d)) = v {
-            gold += g;
-            atk += a;
-            def += d;
-        }
+    let loadout = [W.get(w), A.get(a), R.get(r1), R.get(r2)]
+        .into_iter()
+        .flatten();
+    for (g, a, d) in loadout {
+        gold += g;
+        atk += a;
+        def += d;
     }
     Some(((100, atk, def), gold))
 }
 
-// The stats for purchaseable gear. The first value in each pair is the gold cost, the second value
-// is the stat chance--a positive value is attack, a negative value is defense.
+// The stats for purchaseable gear. In order: Gold cost, attack, defense.
 const W: [Stat; 5] = [(8, 4, 0), (10, 5, 0), (25, 6, 0), (40, 7, 0), (74, 8, 0)];
 const A: [Stat; 5] = [(13, 0, 1), (31, 0, 2), (53, 0, 3), (75, 0, 4), (102, 0, 5)];
 const R: [Stat; 6] = [
@@ -87,6 +87,6 @@ fn parse(input: &str) -> Result<Stat, String> {
     if let &[hp, atk, def] = tokens.as_slice() {
         Ok((hp, atk, def))
     } else {
-        Err(format!("failed to parse input"))
+        Err("failed to parse input".into())
     }
 }

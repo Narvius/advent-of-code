@@ -1,11 +1,11 @@
 /// Run the provided program with an input of 7.
 pub fn one(input: &str) -> Result<String, String> {
-    run_program_v2(input, [7, 0, 0, 0]).ok_or_else(|| format!("failed to run program"))
+    run_program_v2(input, [7, 0, 0, 0]).ok_or_else(|| "failed to run program".into())
 }
 
 /// Run the provided program with an input of 12.
 pub fn two(input: &str) -> Result<String, String> {
-    run_program_v2(input, [12, 0, 0, 0]).ok_or_else(|| format!("failed to run program"))
+    run_program_v2(input, [12, 0, 0, 0]).ok_or_else(|| "failed to run program".into())
 }
 
 /// Runs a program given by the puzzle input, with the `c` register initialized to the given value.
@@ -84,19 +84,17 @@ fn toggled(op: Op) -> Op {
 fn optimize_loop(program: &mut [Op], pointer: &mut i32, reg: &mut [i32]) -> bool {
     use Op::*;
     let index = *pointer as usize;
-    if let [Cpy(src1, _), Inc(tgt), Dec(_), Jnz(_, Arg::Const(-2)), Dec(src2), Jnz(_, Arg::Const(-5))] =
+    if let [Cpy(src1, _), Inc(Arg::Reg(tgt)), Dec(_), Jnz(_, Arg::Const(-2)), Dec(src2), Jnz(_, Arg::Const(-5))] =
         program[index..index + 6]
     {
-        if let Arg::Reg(tgt) = tgt {
-            reg[tgt] += get(reg, src1) * get(reg, src2);
-            // Accounting for a side effect of the multiplication: This specific source register
-            // is zeroed due to how values get moved by increment/decrement pairs.
-            if let Arg::Reg(src2) = src2 {
-                reg[src2] = 0;
-            }
-            *pointer = *pointer + 6;
-            return true;
+        reg[tgt] += get(reg, src1) * get(reg, src2);
+        // Accounting for a side effect of the multiplication: This specific source register
+        // is zeroed due to how values get moved by increment/decrement pairs.
+        if let Arg::Reg(src2) = src2 {
+            reg[src2] = 0;
         }
+        *pointer += 6;
+        return true;
     }
     false
 }

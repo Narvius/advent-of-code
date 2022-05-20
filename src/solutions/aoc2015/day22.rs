@@ -135,6 +135,6 @@ fn parse(input: &str) -> Result<State, String> {
             ..Default::default()
         })
     } else {
-        Err(format!("failed to parse puzzle input"))
+        Err("failed to parse puzzle input".into())
     }
 }

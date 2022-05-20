@@ -12,11 +12,11 @@ pub fn two(input: &str) -> Result<String, String> {
             return Ok(count.to_string());
         }
     }
-    Err(format!("never reached the basement"))
+    Err("never reached the basement".into())
 }
 
 /// Turns an input character into a floor delta.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = i32> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = i32> + '_ {
     input.chars().map(|c| match c {
         '(' => 1,
         ')' => -1,

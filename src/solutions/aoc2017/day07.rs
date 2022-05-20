@@ -24,7 +24,7 @@ pub fn one(input: &str) -> Result<String, String> {
     top.into_iter()
         .next()
         .map(|s| s.to_string())
-        .ok_or_else(|| format!("no bottom disc found"))
+        .ok_or_else(|| "no bottom disc found".into())
 }
 
 /// Find the single incorrect value in the tree and find what it should be corrected to. A value
@@ -39,7 +39,7 @@ pub fn two(input: &str) -> Result<String, String> {
     if let Some((target, current, offender)) = deepest_unbalanced {
         Ok((tree[offender].0 + target - current).to_string())
     } else {
-        Err(format!("no result"))
+        Err("no result".into())
     }
 }
 
@@ -81,12 +81,12 @@ fn parse(input: &str) -> impl Iterator<Item = (&str, usize, Vec<&str>)> {
         } else {
             (line, None)
         };
-        let (name, weight) = head.split_once(" ")?;
+        let (name, weight) = head.split_once(' ')?;
         Some((
             name,
             weight.trim_matches(&['(', ')'][..]).parse().ok()?,
             next.map(|s| s.split(", ").collect())
-                .unwrap_or_else(|| vec![]),
+                .unwrap_or_else(Vec::new),
         ))
     })
 }

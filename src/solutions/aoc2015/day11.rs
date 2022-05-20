@@ -28,7 +28,7 @@ fn valid_password(s: &[u8]) -> bool {
     pairs.extend(s.windows(2).filter(|w| w[0] == w[1]).map(|w| w[0]));
 
     let has_ascending = s.windows(3).any(|w| w[0] + 1 == w[1] && w[1] + 1 == w[2]);
-    let no_bads = s.into_iter().all(|c| !b"iol".contains(c));
+    let no_bads = s.iter().all(|c| !b"iol".contains(c));
     let has_pairs = pairs.len() >= 2;
 
     has_ascending && no_bads && has_pairs

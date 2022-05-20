@@ -5,7 +5,7 @@ pub fn one(input: &str) -> Result<String, String> {
     let mut ranges = parse(input);
     find_next_allowed(&mut ranges)
         .map(|s| s.to_string())
-        .ok_or_else(|| format!("no result"))
+        .ok_or_else(|| "no result".to_owned())
 }
 
 /// Counts the number of allowed IP addresses.

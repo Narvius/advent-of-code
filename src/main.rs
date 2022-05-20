@@ -54,7 +54,7 @@ fn main() {
                     (Specific(year), Specific(day)) => eval([year], [day]),
                 }
             }
-            _ => Err(Error::WrongArgCount(args.len()))?,
+            _ => Err(Error::WrongArgCount(args.len())),
         }
     }
 
@@ -76,7 +76,7 @@ impl Input {
         if arg == "." {
             Ok(Input::All)
         } else if let Ok(day) = arg.parse() {
-            if 1 <= day && day <= 25 {
+            if (1..=25).contains(&day) {
                 Ok(Input::Specific(day))
             } else {
                 Err(Error::OutOfRange(day, 1, 25))
@@ -96,7 +96,7 @@ impl Input {
                 year += 2000;
             }
 
-            if 2015 <= year && year <= LAST_YEAR {
+            if (2015..=LAST_YEAR).contains(&year) {
                 Ok(Input::Specific(year))
             } else {
                 Err(Error::OutOfRange(year, 2015, LAST_YEAR))

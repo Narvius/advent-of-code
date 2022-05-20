@@ -41,5 +41,5 @@ pub fn two(input: &str) -> Result<String, String> {
 
 /// Parses the puzzle input into a target number.
 fn parse(input: &str) -> Result<i64, String> {
-    input.parse().map_err(|_| format!("failed to parse input"))
+    input.parse().map_err(|_| "failed to parse input".into())
 }

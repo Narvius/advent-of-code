@@ -29,5 +29,5 @@ fn reduce_to_checksum(mut disk: Vec<u8>) -> Result<String, String> {
         }
         disk.truncate(disk.len() / 2);
     }
-    String::from_utf8(disk).map_err(|_| format!("failed to construct checksum"))
+    String::from_utf8(disk).map_err(|_| "failed to construct checksum".to_owned())
 }

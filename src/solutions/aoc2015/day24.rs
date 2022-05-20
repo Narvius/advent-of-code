@@ -25,25 +25,25 @@ fn find_quantum_entanglement(weights: &[usize], groups: usize) -> Result<usize, 
         weights.len() - i
     };
 
-    groups_of_size(group_weight, best_size, &weights)
+    groups_of_size(group_weight, best_size, weights)
         .map(|g| g.iter().copied().reduce(|a, b| a * b).unwrap())
         .min()
-        .ok_or_else(|| format!("no quantum configuration found"))
+        .ok_or_else(|| "no quantum configuration found".into())
 }
 
 /// Returns all possible combinations from `weights` of the given `size` that sum up to `weight`.
-fn groups_of_size<'a>(
+fn groups_of_size(
     weight: usize,
     size: usize,
-    weights: &'a [usize],
-) -> impl Iterator<Item = Vec<usize>> + 'a {
+    weights: &[usize],
+) -> impl Iterator<Item = Vec<usize>> + '_ {
     (0..2u32.pow(weights.len() as u32))
         .filter(move |mask| mask.count_ones() == size as u32)
         .filter_map(move |mask| {
             let mut result = Vec::with_capacity(3);
-            for i in 0..weights.len() {
+            for (i, &weight) in weights.iter().enumerate() {
                 if mask & (1 << i) > 0 {
-                    result.push(weights[i]);
+                    result.push(weight);
                 }
             }
             (result.iter().copied().sum::<usize>() == weight).then(|| result)

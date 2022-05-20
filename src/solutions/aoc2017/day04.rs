@@ -12,7 +12,7 @@ pub fn two(input: &str) -> Result<String, String> {
         let mut s = s.to_string();
         // SAFETY: All strings are ASCII, so sorting bytes will result in a valid string.
         unsafe {
-            s.as_bytes_mut().sort();
+            s.as_bytes_mut().sort_unstable();
         }
         s
     })

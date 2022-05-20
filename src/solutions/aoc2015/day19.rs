@@ -28,22 +28,24 @@ pub fn two(input: &str) -> Result<String, String> {
     Ok((content_atoms - divider_atoms - 1).to_string())
 }
 
+type Rules<'a> = Vec<(&'a str, &'a str)>;
+
 /// Reads the expansion rules and target molecule from puzzle input.
-fn parse(input: &str) -> Result<(Vec<(&str, &str)>, &str), String> {
+fn parse(input: &str) -> Result<(Rules, &str), String> {
     let mut result = vec![];
 
     for line in input.lines() {
         if line.contains("=>") {
             result.push(
                 line.split_once(" => ")
-                    .ok_or_else(|| format!("invalid input format"))?,
+                    .ok_or_else(|| "invalid input format".to_owned())?,
             );
-        } else if line.len() > 0 {
+        } else if !line.is_empty() {
             return Ok((result, line));
         }
     }
 
-    Err(format!("did not find final line in input"))
+    Err("did not find final line in input".into())
 }
 
 /// Builds a "structural representation" of a molecule by replacing content atoms with a `.`,
@@ -119,7 +121,10 @@ fn parse(input: &str) -> Result<(Vec<(&str, &str)>, &str), String> {
 ///
 /// And this is the algorithm used in the solution.
 fn build_structural_view(s: &str) -> Result<String, String> {
-    let line = s.lines().last().ok_or_else(|| format!("no puzzle input"))?;
+    let line = s
+        .lines()
+        .last()
+        .ok_or_else(|| "no puzzle input".to_owned())?;
     let s = [("Rn", "("), ("Ar", ")"), ("Y", "|")]
         .into_iter()
         .fold(line.to_string(), |s, (from, to)| s.replace(from, to));

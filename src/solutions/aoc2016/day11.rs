@@ -50,7 +50,9 @@ fn least_steps_to_move(input: &str, include_extras: bool) -> Result<String, Stri
         let len = states.len();
         for i in 0..item_count {
             for j in i..item_count {
-                s.next(pairs, i, j, i != j).map(|s| states.push(s));
+                if let Some(s) = s.next(pairs, i, j, i != j) {
+                    states.push(s);
+                }
             }
         }
 
@@ -59,7 +61,9 @@ fn least_steps_to_move(input: &str, include_extras: bool) -> Result<String, Stri
             // one item up or two items down.
             for i in 0..item_count {
                 for j in i..item_count {
-                    s.next(pairs, i, j, i == j).map(|s| states.push(s));
+                    if let Some(s) = s.next(pairs, i, j, i == j) {
+                        states.push(s);
+                    }
                 }
             }
         }
@@ -68,7 +72,7 @@ fn least_steps_to_move(input: &str, include_extras: bool) -> Result<String, Stri
     if let Some(steps) = prev.get(&final_key) {
         Ok(steps.to_string())
     } else {
-        Err("no end state found".to_string())
+        Err("no end state found".into())
     }
 }
 
@@ -107,7 +111,7 @@ fn parse(input: &str, include_extras: bool) -> State {
         state.items[5] = (0, 0);
         state.items[6] = (0, 0);
     }
-    state.items.sort();
+    state.items.sort_unstable();
 
     state
 }
@@ -144,7 +148,7 @@ impl State {
         let lowest_floor = (0..10).map(|i| self.get(i)).min().unwrap();
 
         let mut state = State {
-            items: self.items.clone(),
+            items: self.items,
             floor: match up {
                 true if self.floor < FLOORS - 1 => self.floor + 1,
                 false if self.floor > lowest_floor => self.floor - 1,
@@ -155,27 +159,21 @@ impl State {
 
         *state.get_mut(item1) = state.floor;
         *state.get_mut(item2) = state.floor;
-        state.items[0..pairs].sort();
+        state.items[0..pairs].sort_unstable();
 
         // Every floor must have either zero generators, or zero unpaired chips.
         for floor in 0..FLOORS {
             // If there are no generators, the floor is safe.
-            let has_generators = (0..pairs)
-                .filter(|i| state.get(2 * i + 1) == floor)
-                .next()
-                .is_some();
+            let has_generators = (0..pairs).any(|i| state.get(2 * i + 1) == floor);
             if !has_generators {
                 continue;
             }
 
             // If there are unpaired chips on this floor, it's unsafe.
-            let has_unpaired_chips = (0..pairs)
-                .filter(|&i| {
-                    let (chip, generator) = state.items[i];
-                    chip == floor && chip != generator
-                })
-                .next()
-                .is_some();
+            let has_unpaired_chips = (0..pairs).any(|i| {
+                let (chip, generator) = state.items[i];
+                chip == floor && chip != generator
+            });
             if has_unpaired_chips {
                 return None;
             }

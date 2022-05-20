@@ -30,9 +30,9 @@ pub fn two(input: &str) -> Result<String, String> {
 /// where the `i`th bith says whether the `i`th container is included or not.
 fn resolve_mask(containers: &[i32], mask: usize) -> (i32, i32) {
     let (mut sum, mut count) = (0, 0);
-    for i in 0..containers.len() {
+    for (i, &val) in containers.iter().enumerate() {
         if mask & (1 << i) > 0 {
-            sum += containers[i];
+            sum += val;
             count += 1;
         }
     }

@@ -2,7 +2,7 @@
 pub fn one(input: &str) -> Result<String, String> {
     Ok(parse(input)
         .reduce(combine_modulo_constraints)
-        .ok_or_else(|| format!("no input"))?
+        .ok_or_else(|| "no input".to_owned())?
         .1 // The "m" from x % n = m. By definition the smallest possible positive x.
         .to_string())
 }
@@ -14,7 +14,7 @@ pub fn two(input: &str) -> Result<String, String> {
         input
     ))
     .reduce(combine_modulo_constraints)
-    .ok_or_else(|| format!("no input"))?
+    .ok_or_else(|| "no input".to_owned())?
     .1 // The "m" from x % n = m. By definition the smallest possible positive x.
     .to_string())
 }
@@ -52,7 +52,7 @@ fn extended_euclidian(a: i64, b: i64) -> (i64, i64, i64) {
 
 /// Parses the puzzle input into a series of modulo constraints. Note that this encapsulates a bit
 /// of important logic for the puzzle, accounting for the time difference between each disc.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = (i64, i64)> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = (i64, i64)> + '_ {
     input.lines().enumerate().filter_map(|(i, line)| {
         let tokens: Vec<_> = line[0..line.len() - 1].split(' ').collect();
         let n = tokens[3].parse::<i64>().ok()?;

@@ -2,19 +2,19 @@ use std::collections::HashMap;
 
 /// Find the best happiness rating achievable with a seating arrangement.
 pub fn one(input: &str) -> Result<String, String> {
-    let (people, matrix) = parse(input).ok_or(format!("failed to parse puzzle input"))?;
+    let (people, matrix) = parse(input).ok_or_else(|| "failed to parse puzzle input".to_owned())?;
     Ok(all_arrangement_values(people, matrix)
         .max()
-        .ok_or(format!("no people in input"))?
+        .ok_or_else(|| "no people in input".to_owned())?
         .to_string())
 }
 
 /// Find the best happiness rating achievable with a seating arrangement that includes you.
 pub fn two(input: &str) -> Result<String, String> {
-    let (people, matrix) = parse(input).ok_or(format!("failed to parse puzzle input"))?;
+    let (people, matrix) = parse(input).ok_or_else(|| "failed to parse puzzle input".to_owned())?;
     Ok(all_arrangement_values(people + 1, matrix)
         .max()
-        .ok_or(format!("no people in input"))?
+        .ok_or_else(|| "no people in input".to_owned())?
         .to_string())
 }
 

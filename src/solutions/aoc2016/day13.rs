@@ -2,18 +2,18 @@ use std::collections::{HashMap, VecDeque};
 
 /// Find how many steps it takes to reach (31, 39) from (1, 1).
 pub fn one(input: &str) -> Result<String, String> {
-    let mut map = Map::new(input.parse().map_err(|_| format!("failed to parse seed"))?);
+    let mut map = Map::new(input.parse().map_err(|_| "parse failed".to_owned())?);
     Ok(pathfind(&mut map, (1, 1), (31, 39)).to_string())
 }
 
 /// Find how many distinct tiles are reachable within 50 steps of the starting position.
 pub fn two(input: &str) -> Result<String, String> {
-    let mut map = Map::new(input.parse().map_err(|_| format!("failed to parse seed"))?);
+    let mut map = Map::new(input.parse().map_err(|_| "parse failed".to_owned())?);
     pathfind(&mut map, (1, 1), (31, 39));
     Ok(map
         .cache
         .values()
-        .filter(|&&v| 0 <= v && v <= 50)
+        .filter(|&&v| (0..=50).contains(&v))
         .count()
         .to_string())
 }

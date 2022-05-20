@@ -11,7 +11,7 @@ pub fn one(input: &str) -> Result<String, String> {
     Ok(parse(input)
         .map(|r| distance_after_time(r, 2503))
         .max()
-        .ok_or_else(|| format!("no reindeer in input"))?
+        .ok_or_else(|| "no reindeer in input".to_owned())?
         .to_string())
 }
 
@@ -47,7 +47,7 @@ pub fn two(input: &str) -> Result<String, String> {
 type Reindeer = (usize, usize, usize);
 
 /// Parses the puzzle input into an enumeration of reindeer.
-fn parse<'a>(input: &'a str) -> impl Iterator<Item = Reindeer> + 'a {
+fn parse(input: &str) -> impl Iterator<Item = Reindeer> + '_ {
     input.lines().filter_map(|line| {
         let line: Vec<_> = line.split(' ').collect();
         Some((

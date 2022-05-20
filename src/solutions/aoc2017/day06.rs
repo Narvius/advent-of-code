@@ -19,7 +19,7 @@ fn run_distribution_until_repeat(input: &str) -> Result<(i32, i32), String> {
         .split_whitespace()
         .map(|v| v.parse::<usize>())
         .collect::<Result<Vec<_>, _>>()
-        .map_err(|_| format!("failed to parse input"))?;
+        .map_err(|_| "failed to parse input".to_owned())?;
     let mut seen = HashMap::new();
     let mut i = 0;
     let len = cells.len();

@@ -36,7 +36,7 @@ pub fn two(input: &str) -> Result<String, String> {
             (shifted.contains("north") && shifted.contains("pole")).then(|| id)
         })
         .next()
-        .ok_or_else(|| format!("failed to find room"))?
+        .ok_or_else(|| "failed to find room".to_owned())?
         .to_string())
 }
 
@@ -44,7 +44,7 @@ pub fn two(input: &str) -> Result<String, String> {
 /// the checksum, and the parsed sector ID.
 fn parse(input: &str) -> impl Iterator<Item = (&str, &str, i32)> {
     input.lines().filter_map(|line| {
-        let (data, checksum) = line.split_once("[")?;
+        let (data, checksum) = line.split_once('[')?;
         let id_pos = data.find(|c: char| c.is_numeric())?;
 
         Some((

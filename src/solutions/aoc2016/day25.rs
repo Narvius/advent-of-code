@@ -12,12 +12,12 @@ pub fn one(input: &str) -> Result<String, String> {
         }
     }
 
-    Err(format!("unreachable"))
+    Err("unreachable".into())
 }
 
 /// Freebie!
 pub fn two(_input: &str) -> Result<String, String> {
-    Ok(format!("done!"))
+    Ok("done!".into())
 }
 
 /// An iterator that returns the [`Out`](Op::Out) results from running a program.

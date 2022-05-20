@@ -19,5 +19,5 @@ fn decode(input: &str, pick: fn(HashMap<char, i32>) -> Option<char>) -> Result<S
             *maps[i].entry(c).or_insert(0) += 1;
         }
     }
-    Ok(maps.into_iter().filter_map(|map| pick(map)).collect())
+    Ok(maps.into_iter().filter_map(pick).collect())
 }

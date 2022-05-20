@@ -21,14 +21,14 @@ pub fn two(input: &str) -> Result<String, String> {
             cs[i] = Some(format!("{:x}", c));
             found += 1;
             if found == 8 {
-                return Ok(cs
+                return cs
                     .into_iter()
                     .collect::<Option<String>>()
-                    .ok_or_else(|| format!("failed to construct output string"))?);
+                    .ok_or_else(|| "failed to construct output string".to_owned());
             }
         }
     }
-    Err(format!("ran out of hashes"))
+    Err("ran out of hashes".into())
 }
 
 /// An iterator that, for a given seed, calculates `md5(seed + i)`, where i as a number starting at

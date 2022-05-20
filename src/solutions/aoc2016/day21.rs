@@ -36,11 +36,11 @@ where
                 text.swap(x.parse().unwrap(), y.parse().unwrap());
             }
             ["swap", "letter", x, "with", "letter", y] => {
-                for i in 0..text.len() {
-                    if text[i] == x.as_bytes()[0] {
-                        text[i] = y.as_bytes()[0];
-                    } else if text[i] == y.as_bytes()[0] {
-                        text[i] = x.as_bytes()[0]
+                for b in text.iter_mut() {
+                    if *b == x.as_bytes()[0] {
+                        *b = y.as_bytes()[0];
+                    } else if *b == y.as_bytes()[0] {
+                        *b = x.as_bytes()[0]
                     }
                 }
             }

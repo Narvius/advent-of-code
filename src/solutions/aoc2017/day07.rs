@@ -58,15 +58,17 @@ fn get_unbalance<'a>(node: &str, tree: &'a Tree) -> Option<(usize, usize, &'a st
         sum
     }
 
-    let mut weights: Vec<_> = tree[node].1.iter().map(|&s| (s, weight(s, tree))).collect();
-    weights.sort_by_cached_key(|p| p.1);
-    weights.windows(2).next().and_then(|w| {
-        if w[0].1 == w[1].1 {
-            let (ls, l) = *weights.last()?;
-            (w[0].1 != l).then(|| (w[0].1, l, ls))
-        } else {
-            Some((w[1].1, w[0].1, w[0].0))
-        }
+    // Get the first, second and last element after sorting. This is enough to establish which
+    // weight is authoritative, and which element is the odd one out.
+    let ((sa, a), (_, b), (sl, l)) = {
+        let mut v: Vec<_> = tree[node].1.iter().map(|&s| (s, weight(s, tree))).collect();
+        v.sort_by_cached_key(|p| p.1);
+        (*v.get(0)?, *v.get(1)?, *v.last()?)
+    };
+
+    (a != l).then(|| match a == b {
+        true => (a, l, sl),
+        false => (b, a, sa),
     })
 }
 

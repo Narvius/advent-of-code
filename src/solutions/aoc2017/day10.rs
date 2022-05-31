@@ -12,9 +12,8 @@ pub fn one(input: &str) -> Result<String, String> {
 /// find the "dense hash", and write it as a hexadecimal string. Also uses an alternate
 /// interpretation of the puzzle input.
 pub fn two(input: &str) -> Result<String, String> {
-    let input = input.bytes().chain([17, 31, 73, 47, 23]);
     let mut s = String::with_capacity(32);
-    for byte in knot_hash(input) {
+    for byte in knot_hash(input.bytes()) {
         write!(s, "{:02x}", byte).expect("failed to write to preallocated string");
     }
     Ok(s)
@@ -22,7 +21,7 @@ pub fn two(input: &str) -> Result<String, String> {
 
 /// Calculates the knot hash for a given sequence of bytes.
 pub fn knot_hash(bytes: impl IntoIterator<Item = u8>) -> Vec<u8> {
-    let mut hasher = Hasher::new(bytes);
+    let mut hasher = Hasher::new(bytes.into_iter().chain([17, 31, 73, 47, 23]));
     for _ in 0..64 {
         hasher.run_once();
     }

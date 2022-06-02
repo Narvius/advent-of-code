@@ -29,7 +29,6 @@ pub fn two(input: &str) -> Result<String, String> {
             for i in 0..order.len() {
                 order[i] = prev[mapping[i] as usize];
             }
-            println!("{}: {}", 10i32.pow(e) * (n + 1), stringize(order.clone())?);
         }
 
         mapping = order;

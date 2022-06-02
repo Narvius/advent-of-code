@@ -20,11 +20,11 @@ pub fn one(input: &str) -> Result<String, String> {
 pub fn two(input: &str) -> Result<String, String> {
     let mut mapping = dance(input, true)?;
 
-    for e in 0..9 {
+    for _ in 0..9 {
         let mut order: Vec<u8> = (0..16).collect();
         let mut prev = vec![0; 16];
 
-        for n in 0..10 {
+        for _ in 0..10 {
             std::mem::swap(&mut order, &mut prev);
             for i in 0..order.len() {
                 order[i] = prev[mapping[i] as usize];

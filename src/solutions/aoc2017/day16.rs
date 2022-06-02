@@ -12,8 +12,7 @@ pub fn one(input: &str) -> Result<String, String> {
 /// - if we ignore (p), and call the result from calling [`dance`] once "`mapping`", then
 ///   `mapping[i]` is the position of the `i`th character after a second dance. Thus, we can
 ///   stack dances without actually running [`dance`] again.
-/// - if we use a "stacked" dance as `mapping`, then we can as many dances as were stacking at
-///   once.
+/// - if we use a "stacked" dance as `mapping`, then we can apply that many dances at once.
 /// From there, it's simply a matter of applying the dance 10 times to reach a power of 10,
 /// use that as a new `mapping` to apply 10 times more dances per iteration; and do that
 /// entire thing 9 times to reach 10 billion iterations.

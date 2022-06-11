@@ -12,7 +12,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the element after 0 in a huge spinlock list.
-/// 
+///
 /// Unlike [`one`], this does not require us to actually construct the list. We only need to
 /// keep track of which element was inserted at position 0 last, since with the way we
 /// calculate insert positions, 0 will always be at the end of the list (and since the list

@@ -1,9 +1,9 @@
 /// Run a cellular automaton for 100 steps, count the live cells.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(run(&mut parse(input), |_, b, n| (b && n == 2) || n == 3).to_string())
 }
 
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut grid = parse(input);
     let rules = |i, b, n| [0, 99, 9900, 9999].contains(&i) || (b && n == 2) || n == 3;
     for i in [0, 99, 9900, 9999] {

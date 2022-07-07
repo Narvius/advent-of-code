@@ -1,5 +1,5 @@
 /// Find the total score of all groups; the score of a group is its depth.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let (mut score, mut depth) = (0, 0);
     process(input, |p| match p {
         ('{', false) => {
@@ -13,7 +13,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Count the number of unescaped garbage characters.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut count = 0;
     process(input, |(_, garbage)| {
         if garbage {

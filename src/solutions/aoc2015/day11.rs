@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 /// Gets the next valid password.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut bytes: Vec<_> = input.bytes().collect();
     while !valid_password(&bytes) {
         increment(&mut bytes);
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Gets the NEXT next valid password.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut bytes: Vec<_> = input.bytes().collect();
     while !valid_password(&bytes) {
         increment(&mut bytes);

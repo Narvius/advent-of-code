@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 /// Find the number of distinct molecules that can be built with one step of expansion using any of
 /// the available expansion rules.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let (replaces, molecule) = parse(input)?;
     let mut set = HashSet::new();
     for replace in replaces {
@@ -21,7 +21,7 @@ pub fn one(input: &str) -> Result<String, String> {
 /// Find the number of steps required to build the target molecule starting from `e`. Though the
 /// implementation solves the equivalent problem of finding the number of steps required to
 /// collapse the target molecule down to `e` using the inverse rules.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let structure = build_structural_view(input)?;
     let content_atoms = structure.chars().filter(|&c| c == '.').count();
     let divider_atoms = structure.chars().filter(|&c| c == '|').count();
@@ -120,7 +120,7 @@ fn parse(input: &str) -> Result<(Rules, &str), String> {
 /// ```
 ///
 /// And this is the algorithm used in the solution.
-fn build_structural_view(s: &str) -> Result<String, String> {
+fn build_structural_view(s: &str) -> crate::Result<String> {
     let line = s
         .lines()
         .last()

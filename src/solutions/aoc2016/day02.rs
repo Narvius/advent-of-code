@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 /// Follow the instruction on the simple keypad, return the resulting code.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let map = build_map(&["123", "456", "789"]);
     Ok(walk(input, (1, 1), map))
 }
 
 /// Follow the instruction on the advanced keypad, return the resulting code.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let map = build_map(&["  1  ", " 234 ", "56789", " ABC ", "  D  "]);
     Ok(walk(input, (2, 2), map))
 }

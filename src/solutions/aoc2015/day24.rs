@@ -1,9 +1,9 @@
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let data: Vec<_> = input.lines().filter_map(|s| s.parse().ok()).collect();
     Ok(find_quantum_entanglement(&data, 3)?.to_string())
 }
 
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let data: Vec<_> = input.lines().filter_map(|s| s.parse().ok()).collect();
     Ok(find_quantum_entanglement(&data, 4)?.to_string())
 }

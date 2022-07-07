@@ -1,5 +1,5 @@
 /// Finds the distance the furthest reindeer has travelled after 2503 seconds.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     // For a given reindeer, returns how much distance they will have travelled after a given time.
     fn distance_after_time((speed, travel, rest): Reindeer, seconds: usize) -> usize {
         let cycles = seconds / (travel + rest);
@@ -16,7 +16,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Finds the best score achieved by a reindeer after 2503 seconds.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let reindeer: Vec<_> = parse(input).collect();
     let mut scores = vec![0; reindeer.len()];
     let mut distances = vec![0; reindeer.len()];

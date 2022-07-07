@@ -1,12 +1,12 @@
 /// Scramble a given password.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut s = b"abcdefgh".to_vec();
     scramble(s.as_mut(), input.lines(), false);
     Ok(String::from_utf8(s).unwrap())
 }
 
 /// Unscramble a given password.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut s = b"fbgdceah".to_vec();
     scramble(s.as_mut(), input.lines().rev(), true);
     Ok(String::from_utf8(s).unwrap())

@@ -1,10 +1,10 @@
 /// Count how many of the first 40 million pairs match.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(count_matches(input, 40000000, false).to_string())
 }
 
 /// Count how many of the first 5 million sieved pairs match.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(count_matches(input, 5000000, true).to_string())
 }
 

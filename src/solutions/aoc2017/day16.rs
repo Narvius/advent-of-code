@@ -1,5 +1,5 @@
 /// Find the order after the dance.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     stringize(dance(input, false)?)
 }
 
@@ -16,7 +16,7 @@ pub fn one(input: &str) -> Result<String, String> {
 /// From there, it's simply a matter of applying the dance 10 times to reach a power of 10,
 /// use that as a new `mapping` to apply 10 times more dances per iteration; and do that
 /// entire thing 9 times to reach 10 billion iterations.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut mapping = dance(input, true)?;
 
     for _ in 0..9 {
@@ -37,9 +37,9 @@ pub fn two(input: &str) -> Result<String, String> {
 }
 
 /// Converts an ordering into the format expected of the answer.
-fn stringize(order: Vec<u8>) -> Result<String, String> {
+fn stringize(order: Vec<u8>) -> crate::Result<String> {
     String::from_utf8(order.into_iter().map(|c| c + b'a').collect())
-        .map_err(|_| "produced invalid string".to_owned())
+        .map_err(|_| "produced invalid string".into())
 }
 
 /// Performs the dance from the input, returning the resulting scrambled ordering. See

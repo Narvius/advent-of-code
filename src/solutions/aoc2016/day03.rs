@@ -1,5 +1,5 @@
 /// Going horizontally, count the number of valid triangles.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let sides = input
         .lines()
         .flat_map(|line| line.split(' ').filter_map(|t| t.parse().ok()));
@@ -7,7 +7,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Going vertically, count the number of valid triangles.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let (mut v1, mut v2, mut v3) = (vec![], vec![], vec![]);
     for line in input.lines() {
         let mut sides = line.split(' ').filter_map(|t| t.parse().ok());

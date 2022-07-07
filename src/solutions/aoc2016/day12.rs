@@ -1,11 +1,11 @@
 /// Run the program, get the final value of `a`.
-pub fn one(input: &str) -> Result<String, String> {
-    run_program(input, 0).ok_or_else(|| "failed to run program".to_owned())
+pub fn one(input: &str) -> crate::Result<String> {
+    run_program(input, 0).ok_or_else(|| "failed to run program".into())
 }
 
 /// Run the program with `c` initialized to 1, get the final value of `a`.
-pub fn two(input: &str) -> Result<String, String> {
-    run_program(input, 1).ok_or_else(|| "failed to run program".to_owned())
+pub fn two(input: &str) -> crate::Result<String> {
+    run_program(input, 1).ok_or_else(|| "failed to run program".into())
 }
 
 /// Runs a program given by the puzzle input, with the `c` register initialized to the given value.

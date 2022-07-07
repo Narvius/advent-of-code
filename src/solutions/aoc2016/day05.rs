@@ -4,7 +4,7 @@
 
 /// Find eight hashes starting with five zeroes, and construct the password from their sixth
 /// bytes.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(Hashes::new(input)
         .take(8)
         .map(|(c, _)| format!("{:x}", c))
@@ -13,7 +13,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Construct the password in a more complicated fashion using hashes starting with five zeroes.
 /// See puzzle description for more details.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut cs = vec![None; 8];
     let mut found = 0;
     for (i, c) in Hashes::new(input) {
@@ -24,7 +24,7 @@ pub fn two(input: &str) -> Result<String, String> {
                 return cs
                     .into_iter()
                     .collect::<Option<String>>()
-                    .ok_or_else(|| "failed to construct output string".to_owned());
+                    .ok_or_else(|| "failed to construct output string".into());
             }
         }
     }

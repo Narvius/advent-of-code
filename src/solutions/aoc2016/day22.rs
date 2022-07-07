@@ -1,5 +1,5 @@
 /// Find the number of file server pairs where one could fit its data on the other.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let data = parse(input);
     let mut result = 0;
     for i in 0..data.len() {
@@ -13,7 +13,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the least number of steps required to move the goal data to (0, 0).
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     // This setup behaves like a sliding puzzle. There's only three types of servers: Big, small
     // and open.
     // Big ones can never have their data moved, and as such behave like walls.

@@ -1,18 +1,18 @@
 /// Count the number of jump instructions executed before pointing outside the list, using
 /// simple instruction change rules.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     run_jumps(input, |offset| *offset += 1)
 }
 
 /// Count the number of jump instructions executed before pointing outside the list, using
 /// slightly more complex instruction change rules.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     run_jumps(input, |offset| *offset += if *offset >= 3 { -1 } else { 1 })
 }
 
 /// Shared logic for both parts. `morph` mutates the pointed-at instruction after executing
 /// it.
-fn run_jumps(input: &str, morph: fn(&mut i32)) -> Result<String, String> {
+fn run_jumps(input: &str, morph: fn(&mut i32)) -> crate::Result<String> {
     let mut offsets = parse(input)?;
     let mut pointer = 0;
     let mut steps = 0;

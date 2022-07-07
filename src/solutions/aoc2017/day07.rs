@@ -4,7 +4,7 @@ use std::{
 };
 
 /// Find the root of the tree described by the puzzle input.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut queue = VecDeque::from_iter(parse(input));
     let mut top = HashSet::new();
 
@@ -29,7 +29,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Find the single incorrect value in the tree and find what it should be corrected to. A value
 /// is incorrect if it causes the tree to become unbalanced.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let tree = HashMap::from_iter(parse(input).map(|(name, weight, next)| (name, (weight, next))));
     let deepest_unbalanced = tree
         .keys()

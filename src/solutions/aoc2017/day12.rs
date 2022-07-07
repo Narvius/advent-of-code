@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 /// Find the number of nodes connected (directly or indirectly) to node 0.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut nodes = parse(input);
     Ok(consume_group(0, &mut nodes).to_string())
 }
 
 /// Count the number of disjoint subgraphs in the input graph.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut nodes = parse(input);
     let mut groups = 0;
 

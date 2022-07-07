@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 /// Find the shortest path to the vault.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut d = md5::Context::new();
     d.consume(input.as_bytes());
     let mut candidates = VecDeque::from([(0, 0, String::new())]);
@@ -40,7 +40,7 @@ pub fn one(input: &str) -> Result<String, String> {
         }
     }
 
-    shortest.ok_or_else(|| "no path found".to_owned())
+    shortest.ok_or_else(|| "no path found".into())
 }
 
 /// Find the length of the longest possible path to the vault.
@@ -48,7 +48,7 @@ pub fn one(input: &str) -> Result<String, String> {
 /// Same structure as [`one`] (a kind of floodfill), but differs in several important ways:
 /// * no candidates are discarded early based on path length
 /// * the exact paths are not kept track of, only the length and partial md5 hashes
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let d = {
         let mut d = md5::Context::new();
         d.consume(input);

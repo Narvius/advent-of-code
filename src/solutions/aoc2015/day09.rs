@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 /// Find the shortest possible route that visits all cities.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let (locations, distances) = parse(input)?;
     Ok(all_route_lengths(locations, distances)
         .min()
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the longest possible route that visits all cities.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let (locations, distances) = parse(input)?;
     Ok(all_route_lengths(locations, distances)
         .max()

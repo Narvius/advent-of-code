@@ -1,5 +1,5 @@
 /// Find the first time at which the ball can drop through all discs.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(parse(input)
         .reduce(combine_modulo_constraints)
         .ok_or_else(|| "no input".to_owned())?
@@ -8,7 +8,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the first time at which the ball can drop through all discs, including an extra one.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(parse(&format!(
         "{}Disc #7 has 11 positions; at time=0, it is at position 0.\n",
         input

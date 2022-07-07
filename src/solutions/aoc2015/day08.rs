@@ -1,6 +1,6 @@
 /// Find the difference between character counts in the representation and value of the input
 /// strings.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(input
         .lines()
         .map(extra_representation_chars)
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Find the difference between character counts in the representation of the representation, and
 /// the representation of the input strings.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(input
         .lines()
         .map(|s| format!("{:?}", s).len() - s.len())

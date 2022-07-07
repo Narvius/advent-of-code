@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 /// Counts how many strings are nice, according to some arbitrary rules.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     const BADS: [&[u8]; 4] = [b"ab", b"cd", b"pq", b"xy"];
 
     fn nice(line: &&str) -> bool {
@@ -16,7 +16,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Counts how many strings are nice, according to some other arbitrary rules.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     fn nice(line: &&str) -> bool {
         let mut found = HashMap::new();
         let mut last = None;

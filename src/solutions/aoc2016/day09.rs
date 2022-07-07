@@ -1,10 +1,10 @@
 /// Find the length of the string after decompressing it.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(decompressed_length(input.as_bytes(), false).to_string())
 }
 
 /// Find the length of the string after recursively decompressing it.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(decompressed_length(input.as_bytes(), true).to_string())
 }
 

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 /// Find the Manhattan distance from origin of the input number on the spiral.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let v: usize = input
         .parse()
         .map_err(|_| "failed to parse num".to_owned())?;
@@ -28,7 +28,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// On the "Fibonacci spiral", find the smallest number larger than the input.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let target: i32 = input
         .parse()
         .map_err(|_| "failed to parse num".to_owned())?;

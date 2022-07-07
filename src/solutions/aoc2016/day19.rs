@@ -1,5 +1,5 @@
 /// Find the winner of the White Elephant party using neighbour elimination.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     // Taken from https://www.exploringbinary.com/powers-of-two-in-the-josephus-problem/
     let elves: i64 = input.parse().map_err(|_| "invalid input".to_owned())?;
 
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the winner of the White Elephant party using opposite elimination.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     // Derived by hand by looking at the pattern in the first 100 results.
     let elves: i64 = input.parse().map_err(|_| "invalid input".to_owned())?;
 

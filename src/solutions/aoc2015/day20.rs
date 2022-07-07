@@ -1,6 +1,6 @@
 /// Find the earliest house that gets enough presents. This is equivalent to finding the lowest
 /// number that has a high enough sum of proper factors.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     // I tried to do this a clever way via prime factorization or something, but this is fast
     // enough for how trivial it is to implement.
 
@@ -22,7 +22,7 @@ pub fn one(input: &str) -> Result<String, String> {
 
 /// Find the earliest house that gets enough presents; but additional limitations no longer allow
 /// it to be abstracted to a nice mathematical solution.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut cache = vec![0; 1_000_000];
     let target = parse(input)?;
 

@@ -1,7 +1,7 @@
 use serde_json::Value;
 
 /// Finds the sum of all numbers in the JSON blob.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(regex::Regex::new(r"-?\d+")
         .unwrap()
         .find_iter(input)
@@ -11,7 +11,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the sum of all numbers in the JSON blob, excluding red objects.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let tree = serde_json::from_str(input).map_err(|_| "failed to parse input".to_owned())?;
     Ok(non_red_sum(tree).to_string())
 }

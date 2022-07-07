@@ -1,10 +1,10 @@
 /// Find an md5 hash with five leading zeroes.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(find_hash(input, |d| d[0] == 0 && d[1] == 0 && d[2] < 16).to_string())
 }
 
 /// Find an md5 hash with six leading zeroes.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(find_hash(input, |d| d[0] == 0 && d[1] == 0 && d[2] == 0).to_string())
 }
 

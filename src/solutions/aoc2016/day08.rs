@@ -1,5 +1,5 @@
 /// Count the number of lit lights on the grid.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(run_instructions(input)
         .into_iter()
         .flatten()
@@ -9,7 +9,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Display the contents of the grid after running all instructions.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let map = run_instructions(input);
     let mut s = String::with_capacity(51 * 6);
 

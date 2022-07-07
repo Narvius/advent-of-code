@@ -1,10 +1,10 @@
 /// Find the number of safe spots in a 40 row room.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(count_safe_tiles(input, 40).to_string())
 }
 
 /// Find the number of safe spots in a 400000 row room.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(count_safe_tiles(input, 400000).to_string())
 }
 

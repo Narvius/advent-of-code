@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
 /// Finds the 64th key index.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(find_hash(input, find_64th_key(false)).to_string())
 }
 
 /// Finds the 64th key index with hash stretching employed.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(find_hash(input, find_64th_key(true)).to_string())
 }
 

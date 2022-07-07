@@ -1,10 +1,10 @@
 /// Run the provided program with an input of 7.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     run_program_v2(input, [7, 0, 0, 0]).ok_or_else(|| "failed to run program".into())
 }
 
 /// Run the provided program with an input of 12.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     run_program_v2(input, [12, 0, 0, 0]).ok_or_else(|| "failed to run program".into())
 }
 

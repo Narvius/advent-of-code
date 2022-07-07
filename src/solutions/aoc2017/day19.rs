@@ -1,16 +1,16 @@
 /// Return the string seen after walking the routing diagram.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     walk(input).map(|(seen, _)| seen)
 }
 
 /// Return the number of steps needed to walk the routing diagram.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     walk(input).map(|(_, steps)| steps.to_string())
 }
 
 /// Walks the routing diagram and returns the seen string as well as the number of steps
 /// taken.
-fn walk(diagram: &str) -> Result<(String, usize), String> {
+fn walk(diagram: &str) -> crate::Result<(String, usize)> {
     let map = parse(diagram);
     let mut pos = {
         let starting_x = map[0]

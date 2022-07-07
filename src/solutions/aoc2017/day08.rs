@@ -1,17 +1,17 @@
 use std::collections::HashMap;
 
 /// Find the highest value contained in any register after executing all instructions.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut registers = HashMap::new();
     for line in parse(input) {
         line.apply(&mut registers);
     }
     let result = registers.into_values().max().map(|v| v.to_string());
-    result.ok_or_else(|| "no result".to_string())
+    result.ok_or_else(|| "no result".into())
 }
 
 /// Find the highest value ever reached by any register during execution.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut registers = HashMap::new();
     let mut highest = None;
     for line in parse(input) {
@@ -20,7 +20,7 @@ pub fn two(input: &str) -> Result<String, String> {
     }
     highest
         .map(|v| v.to_string())
-        .ok_or_else(|| "no result".to_string())
+        .ok_or_else(|| "no result".into())
 }
 
 /// A single instruction, comprised of an action and a precondition.

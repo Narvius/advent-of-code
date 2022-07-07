@@ -1,18 +1,18 @@
 use std::collections::HashMap;
 
 /// Find the least amount of steps required to move 5 pairs up to the fourth floor.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     least_steps_to_move(input, false)
 }
 
 /// Find the least amount of steps required to move 7 pairs up to the fourth floor.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     least_steps_to_move(input, true)
 }
 
 /// Finds the least amount of steps required to move all chips and generators up to the fourth
 /// floor, and returns it as a String.
-fn least_steps_to_move(input: &str, include_extras: bool) -> Result<String, String> {
+fn least_steps_to_move(input: &str, include_extras: bool) -> crate::Result<String> {
     let mut prev: HashMap<(usize, [(usize, usize); 7]), usize> = HashMap::new();
     let mut states = vec![parse(input, include_extras)];
     let mut best = 1000;

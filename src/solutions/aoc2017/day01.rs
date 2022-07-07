@@ -1,10 +1,10 @@
 /// Find the sum of digits that match the next digit (wrapping around).
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(matchsum(input.as_bytes(), 1).to_string())
 }
 
 /// Find the sum of digits that match the digit halfway around the list (wrapping around).
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(matchsum(input.as_bytes(), input.len() / 2).to_string())
 }
 

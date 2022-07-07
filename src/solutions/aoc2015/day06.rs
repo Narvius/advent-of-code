@@ -1,5 +1,5 @@
 /// Counts how many lights are on after all instructions are executed.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(run_lights(
         input,
         |b| if b { 1 } else { 0 },
@@ -14,7 +14,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Counts the total brightness after all instructions are executed.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(run_lights(
         input,
         |b| b,

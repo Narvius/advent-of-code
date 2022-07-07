@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 /// Find the sum of sector IDs of all real rooms.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(parse(input)
         .filter_map(|(name, checksum, id)| {
             let top_chars = {
@@ -21,7 +21,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the sector ID of the north pole object storage.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(parse(input)
         .filter_map(|(name, _, id)| {
             let shift = (id % 26) as u8;

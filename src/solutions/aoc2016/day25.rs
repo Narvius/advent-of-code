@@ -1,6 +1,6 @@
 /// Find the lowest value for register `a` that will result in an infinite stream of "1, 0"
 /// in the output.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let program = parse(input);
     for i in 0.. {
         let generator = SignalGenerator::new(&program, i);
@@ -16,7 +16,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Freebie!
-pub fn two(_input: &str) -> Result<String, String> {
+pub fn two(_input: &str) -> crate::Result<String> {
     Ok("done!".into())
 }
 

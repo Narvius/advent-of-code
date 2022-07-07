@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, collections::HashMap};
 
 /// Find the correct Sue using exact matches for all values.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let data = sue_data();
     for (n, ps) in parse(input) {
         if ps.into_iter().all(|(k, v)| data[k].0 == v) {
@@ -12,7 +12,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the correct Sue using ranges for the appropriate values.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let data = sue_data();
     for (n, ps) in parse(input) {
         if ps.into_iter().all(|(k, v)| v.cmp(&data[k].0) == data[k].1) {

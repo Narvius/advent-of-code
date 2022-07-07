@@ -1,7 +1,7 @@
 use std::fmt::Write;
 
 /// Find the product of the first two numbers after one iteration of the hashing algorithm.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let mut h = Hasher::new(input.split(',').filter_map(|n| n.parse::<u8>().ok()));
     h.run_once();
     let hash = h.sparse_hash();
@@ -11,7 +11,7 @@ pub fn one(input: &str) -> Result<String, String> {
 /// Find the actual knot hash, as per puzzle description. In short: run 64 rounds of hashing,
 /// find the "dense hash", and write it as a hexadecimal string. Also uses an alternate
 /// interpretation of the puzzle input.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let mut s = String::with_capacity(32);
     for byte in knot_hash(input.bytes()) {
         write!(s, "{:02x}", byte).expect("failed to write to preallocated string");

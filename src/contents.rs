@@ -4,7 +4,7 @@ use crate::solutions::{aoc2015, aoc2016, aoc2017};
 
 type TableOfContents = [Section; 7];
 type Section = [Option<(SolutionFn, SolutionFn, &'static str)>; 25];
-type SolutionFn = fn(&str) -> Result<String, String>;
+type SolutionFn = fn(&str) -> crate::Result<String>;
 
 /// The full space of Advent of Code solutions.
 pub static CONTENTS: TableOfContents = [

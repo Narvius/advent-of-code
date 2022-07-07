@@ -1,5 +1,5 @@
 /// Performs 40 steps of the look-and-say sequence and gets the final length.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let (mut v1, mut v2) = (input.bytes().map(|b| b - b'0').collect(), vec![]);
     for _ in 0..20 {
         look_and_say(&mut v1, &mut v2);
@@ -9,7 +9,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Performs 50 steps of the look-and-say sequence and gets the final length.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let (mut v1, mut v2) = (input.bytes().map(|b| b - b'0').collect(), vec![]);
     for _ in 0..25 {
         look_and_say(&mut v1, &mut v2);

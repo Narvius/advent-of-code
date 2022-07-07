@@ -1,13 +1,13 @@
 use std::collections::{HashMap, VecDeque};
 
 /// Run the circuit once, get the value of wire "a".
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(run_circuit(input, []).to_string())
 }
 
 /// Run the circuit twice; feeding the first wire "a" into the second wire "b", then get the value
 /// of the second wire "a".
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let a = run_circuit(input, []);
     Ok(run_circuit(input, [("b", a)]).to_string())
 }

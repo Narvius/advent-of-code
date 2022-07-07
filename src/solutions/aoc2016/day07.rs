@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 /// Count the number of IPv7s that support TLS.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     fn supports_tls(s: &&str) -> bool {
         let mut in_hypernet = false;
         let mut has_abba = false;
@@ -25,7 +25,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Count the number of IPv7s that support SSL.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     fn supports_ssl(s: &&str) -> bool {
         let mut in_hypernet = false;
         let mut aba = HashSet::new();

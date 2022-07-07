@@ -1,5 +1,5 @@
 /// Find the code to input from the infinite diagonal page.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let index = to_index(parse(input)?);
 
     let mut code = 20151125u64;
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Freebie!
-pub fn two(_input: &str) -> Result<String, String> {
+pub fn two(_input: &str) -> crate::Result<String> {
     Ok("done!".into())
 }
 

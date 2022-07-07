@@ -1,10 +1,10 @@
 /// Run the program until completion, get `b`.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(simulate(input, 0, 0).to_string())
 }
 
 /// With `a` set to 1 initially, run the program until completion, get `b`.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(simulate(input, 1, 0).to_string())
 }
 

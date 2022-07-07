@@ -1,7 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 
 /// Find the ID of the bot responsible for sorting 17 and 61 chips.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let (held, _) = run_program(input);
 
     let pair = held
@@ -16,7 +16,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the product of the first three outputs.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let (_, output) = run_program(input);
 
     if let (Some(a), Some(b), Some(c)) = (output.get(&0), output.get(&1), output.get(&2)) {

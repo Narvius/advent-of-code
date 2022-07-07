@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 /// Running the redistribution logic, find the number of cycles at which the first repeated
 /// configuration appears.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     Ok(run_distribution_until_repeat(input)?.0.to_string())
 }
 
 /// Running the redistribution logic, find the number of cycles after which the configurations
 /// loop.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     Ok(run_distribution_until_repeat(input)?.1.to_string())
 }
 

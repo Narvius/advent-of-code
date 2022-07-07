@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 /// Find the best happiness rating achievable with a seating arrangement.
-pub fn one(input: &str) -> Result<String, String> {
+pub fn one(input: &str) -> crate::Result<String> {
     let (people, matrix) = parse(input).ok_or_else(|| "failed to parse puzzle input".to_owned())?;
     Ok(all_arrangement_values(people, matrix)
         .max()
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> Result<String, String> {
 }
 
 /// Find the best happiness rating achievable with a seating arrangement that includes you.
-pub fn two(input: &str) -> Result<String, String> {
+pub fn two(input: &str) -> crate::Result<String> {
     let (people, matrix) = parse(input).ok_or_else(|| "failed to parse puzzle input".to_owned())?;
     Ok(all_arrangement_values(people + 1, matrix)
         .max()

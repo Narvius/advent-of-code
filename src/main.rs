@@ -32,7 +32,7 @@ fn main() {
                         return eval([ASSUMED_YEAR], [day]);
                     }
                 }
-                Err(Error::NoSolutions)
+                Err(Error::NoSolutions.into())
             }
             1 => {
                 // A number to run a specific day, or . to run all days.
@@ -54,7 +54,7 @@ fn main() {
                     (Specific(year), Specific(day)) => eval([year], [day]),
                 }
             }
-            _ => Err(Error::WrongArgCount(args.len())),
+            _ => Err(Error::WrongArgCount(args.len()).into()),
         }
     }
 
@@ -79,10 +79,10 @@ impl Input {
             if (1..=25).contains(&day) {
                 Ok(Input::Specific(day))
             } else {
-                Err(Error::OutOfRange(day, 1, 25))
+                Err(Error::OutOfRange(day, 1, 25).into())
             }
         } else {
-            Err(Error::InvalidArg(arg.to_string()))
+            Err(Error::InvalidArg(arg.to_string()).into())
         }
     }
 
@@ -99,10 +99,10 @@ impl Input {
             if (2015..=LAST_YEAR).contains(&year) {
                 Ok(Input::Specific(year))
             } else {
-                Err(Error::OutOfRange(year, 2015, LAST_YEAR))
+                Err(Error::OutOfRange(year, 2015, LAST_YEAR).into())
             }
         } else {
-            Err(Error::InvalidArg(arg.to_string()))
+            Err(Error::InvalidArg(arg.to_string()).into())
         }
     }
 }
@@ -141,7 +141,7 @@ impl std::fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
-type Result<T> = std::result::Result<T, Error>;
+type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 /// Runs a range of puzzle solutions. Returns `Ok` if at least one solution was ran.
 fn eval<Y, D>(years: Y, days: D) -> Result<()>
@@ -165,7 +165,7 @@ where
         println!("\nTotal runtime: {}", format_duration(runtime));
         Ok(())
     } else {
-        Err(Error::NoSolutions)
+        Err(Error::NoSolutions.into())
     }
 }
 

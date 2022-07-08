@@ -38,7 +38,9 @@ pub fn two(input: &str) -> crate::Result<String> {
 
 /// Converts an ordering into the format expected of the answer.
 fn stringize(order: Vec<u8>) -> crate::Result<String> {
-    Ok(String::from_utf8(order.into_iter().map(|c| c + b'a').collect())?)
+    Ok(String::from_utf8(
+        order.into_iter().map(|c| c + b'a').collect(),
+    )?)
 }
 
 /// Performs the dance from the input, returning the resulting scrambled ordering. See

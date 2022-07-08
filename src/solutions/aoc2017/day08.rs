@@ -6,7 +6,10 @@ pub fn one(input: &str) -> crate::Result<i32> {
     for line in parse(input) {
         line.apply(&mut registers);
     }
-    registers.into_values().max().ok_or_else(|| "no result".into())
+    registers
+        .into_values()
+        .max()
+        .ok_or_else(|| "no result".into())
 }
 
 /// Find the highest value ever reached by any register during execution.

@@ -1,21 +1,20 @@
 /// Calculate how badly you're hitting the firewall if travelling with no delay.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     Ok(parse(input)
         .filter(|&layer| is_hit(0, layer))
         .map(|(i, s)| i * s)
-        .sum::<usize>()
-        .to_string())
+        .sum())
 }
 
 /// Find the lowest delay that allows travelling through the firewall without hits.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let items: Vec<_> = parse(input).collect();
     let mut delay = 0;
     loop {
         delay += 1;
 
         if !items.iter().any(|&layer| is_hit(delay, layer)) {
-            return Ok(delay.to_string());
+            return Ok(delay);
         }
     }
 }

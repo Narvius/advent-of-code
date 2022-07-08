@@ -1,21 +1,21 @@
 /// Performs 40 steps of the look-and-say sequence and gets the final length.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let (mut v1, mut v2) = (input.bytes().map(|b| b - b'0').collect(), vec![]);
     for _ in 0..20 {
         look_and_say(&mut v1, &mut v2);
         look_and_say(&mut v2, &mut v1);
     }
-    Ok(v1.len().to_string())
+    Ok(v1.len())
 }
 
 /// Performs 50 steps of the look-and-say sequence and gets the final length.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let (mut v1, mut v2) = (input.bytes().map(|b| b - b'0').collect(), vec![]);
     for _ in 0..25 {
         look_and_say(&mut v1, &mut v2);
         look_and_say(&mut v2, &mut v1);
     }
-    Ok(v1.len().to_string())
+    Ok(v1.len())
 }
 
 /// Performs one step of the look-and-say sequence, removing elements from `source`, and writing

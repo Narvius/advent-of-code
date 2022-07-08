@@ -1,11 +1,11 @@
 /// Find the cost of the cheapest possible loadout to win with.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(all_outcomes(parse(input)?).0.to_string())
+pub fn one(input: &str) -> crate::Result<i32> {
+    Ok(all_outcomes(parse(input)?).0)
 }
 
 /// Find the cost of the most expensive possible loadout to lose with.
-pub fn two(input: &str) -> crate::Result<String> {
-    Ok(all_outcomes(parse(input)?).1.to_string())
+pub fn two(input: &str) -> crate::Result<i32> {
+    Ok(all_outcomes(parse(input)?).1)
 }
 
 type Stat = (i32, i32, i32);

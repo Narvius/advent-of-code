@@ -22,8 +22,8 @@ pub static CONTENTS: TableOfContents = [
 macro_rules! day {
     ($y:ident::$d:ident) => {
         Some((
-            $y::$d::one,
-            $y::$d::two,
+            |input| $y::$d::one(input).map(|v| v.to_string()),
+            |input| $y::$d::two(input).map(|v| v.to_string()),
             include_str!(concat!(
                 "data/",
                 stringify!($y),

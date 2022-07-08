@@ -1,16 +1,16 @@
 use std::collections::HashSet;
 
 /// Find the final position you end up at; find the taxicab distance from origin.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let ((x, y), _) = parse(input).fold(((0, 0), (0, -1)), |((x, y), v), (r, d)| {
         let (vx, vy) = rotated(v, r);
         ((x + vx * d, y + vy * d), (vx, vy))
     });
-    Ok((x.abs() + y.abs()).to_string())
+    Ok(x.abs() + y.abs())
 }
 
 /// Find the first coordinate you enter twice; find the taxicab distance from origin.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let positions = parse(input)
         .scan(((0, 0), (0, -1)), |((x, y), v), (r, d)| {
             *v = rotated(*v, r);
@@ -27,7 +27,7 @@ pub fn two(input: &str) -> crate::Result<String> {
     let mut visited = HashSet::new();
     for p in positions {
         if !visited.insert(p) {
-            return Ok((p.0.abs() + p.1.abs()).to_string());
+            return Ok(p.0.abs() + p.1.abs());
         }
     }
 

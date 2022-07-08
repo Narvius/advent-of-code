@@ -1,15 +1,15 @@
 /// Run a cellular automaton for 100 steps, count the live cells.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(run(&mut parse(input), |_, b, n| (b && n == 2) || n == 3).to_string())
+pub fn one(input: &str) -> crate::Result<usize> {
+    Ok(run(&mut parse(input), |_, b, n| (b && n == 2) || n == 3))
 }
 
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let mut grid = parse(input);
     let rules = |i, b, n| [0, 99, 9900, 9999].contains(&i) || (b && n == 2) || n == 3;
     for i in [0, 99, 9900, 9999] {
         grid[i] = true;
     }
-    Ok(run(&mut grid, rules).to_string())
+    Ok(run(&mut grid, rules))
 }
 
 /// Run a cellular automaton for 100 steps, count the live cells. The corners of the field are

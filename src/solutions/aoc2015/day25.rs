@@ -1,17 +1,17 @@
 /// Find the code to input from the infinite diagonal page.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<u64> {
     let index = to_index(parse(input)?);
 
     let mut code = 20151125u64;
     for _ in 1..index {
         code = (code * 252533) % 33554393;
     }
-    Ok(code.to_string())
+    Ok(code)
 }
 
 /// Freebie!
-pub fn two(_input: &str) -> crate::Result<String> {
-    Ok("done!".into())
+pub fn two(_input: &str) -> crate::Result<&'static str> {
+    Ok("done!")
 }
 
 /// Converts the row and column from the puzzle input into a straight index.

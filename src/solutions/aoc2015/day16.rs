@@ -1,22 +1,22 @@
 use std::{cmp::Ordering, collections::HashMap};
 
 /// Find the correct Sue using exact matches for all values.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let data = sue_data();
     for (n, ps) in parse(input) {
         if ps.into_iter().all(|(k, v)| data[k].0 == v) {
-            return Ok(n.to_string());
+            return Ok(n);
         }
     }
     Err("failed to find a matching Sue".into())
 }
 
 /// Find the correct Sue using ranges for the appropriate values.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let data = sue_data();
     for (n, ps) in parse(input) {
         if ps.into_iter().all(|(k, v)| v.cmp(&data[k].0) == data[k].1) {
-            return Ok(n.to_string());
+            return Ok(n);
         }
     }
     Err("failed to find a matching Sue".into())

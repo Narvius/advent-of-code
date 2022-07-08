@@ -1,5 +1,5 @@
 /// Find the number of file server pairs where one could fit its data on the other.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let data = parse(input);
     let mut result = 0;
     for i in 0..data.len() {
@@ -9,11 +9,11 @@ pub fn one(input: &str) -> crate::Result<String> {
             }
         }
     }
-    Ok(result.to_string())
+    Ok(result)
 }
 
 /// Find the least number of steps required to move the goal data to (0, 0).
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     // This setup behaves like a sliding puzzle. There's only three types of servers: Big, small
     // and open.
     // Big ones can never have their data moved, and as such behave like walls.
@@ -51,7 +51,7 @@ pub fn two(input: &str) -> crate::Result<String> {
     // From here we can just loop the 5 step sequence to move it one left until it reaches (0, 0).
     steps += 5 * goal_x;
 
-    Ok(steps.to_string())
+    Ok(steps)
 }
 
 /// A single file server, as per the puzzle description.

@@ -1,21 +1,19 @@
 use std::collections::VecDeque;
 
 /// Find the first allowed IP address.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<u32> {
     let mut ranges = parse(input);
-    find_next_allowed(&mut ranges)
-        .map(|s| s.to_string())
-        .ok_or_else(|| "no result".into())
+    find_next_allowed(&mut ranges).ok_or_else(|| "no result".into())
 }
 
 /// Counts the number of allowed IP addresses.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<u32> {
     let (mut ranges, mut result) = (parse(input), 0);
     while let Some(allowed_lo) = find_next_allowed(&mut ranges) {
         let allowed_hi = ranges.front().map(|i| i.0 - 1).unwrap_or(u32::MAX);
         result += allowed_hi.saturating_sub(allowed_lo);
     }
-    Ok(result.to_string())
+    Ok(result)
 }
 
 /// Given a a sorted queue of intervals, consumes all that form one combined interval, and returns

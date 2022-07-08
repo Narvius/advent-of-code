@@ -1,11 +1,11 @@
 /// Find the sum of digits that match the next digit (wrapping around).
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(matchsum(input.as_bytes(), 1).to_string())
+pub fn one(input: &str) -> crate::Result<i32> {
+    Ok(matchsum(input.as_bytes(), 1))
 }
 
 /// Find the sum of digits that match the digit halfway around the list (wrapping around).
-pub fn two(input: &str) -> crate::Result<String> {
-    Ok(matchsum(input.as_bytes(), input.len() / 2).to_string())
+pub fn two(input: &str) -> crate::Result<i32> {
+    Ok(matchsum(input.as_bytes(), input.len() / 2))
 }
 
 /// Shared logic for both parts. Finds the sum of digits that match the digit `offset`

@@ -1,21 +1,16 @@
 /// Find the difference between character counts in the representation and value of the input
 /// strings.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(input
-        .lines()
-        .map(extra_representation_chars)
-        .sum::<usize>()
-        .to_string())
+pub fn one(input: &str) -> crate::Result<usize> {
+    Ok(input.lines().map(extra_representation_chars).sum())
 }
 
 /// Find the difference between character counts in the representation of the representation, and
 /// the representation of the input strings.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     Ok(input
         .lines()
         .map(|s| format!("{:?}", s).len() - s.len())
-        .sum::<usize>()
-        .to_string())
+        .sum())
 }
 
 /// Counts how many extra characters there are in the representation than in memory.

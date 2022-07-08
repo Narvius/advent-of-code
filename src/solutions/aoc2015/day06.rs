@@ -1,5 +1,5 @@
 /// Counts how many lights are on after all instructions are executed.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     Ok(run_lights(
         input,
         |b| if b { 1 } else { 0 },
@@ -9,12 +9,11 @@ pub fn one(input: &str) -> crate::Result<String> {
             "off" => false,
             _ => unreachable!(),
         },
-    )
-    .to_string())
+    ))
 }
 
 /// Counts the total brightness after all instructions are executed.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     Ok(run_lights(
         input,
         |b| b,
@@ -24,8 +23,7 @@ pub fn two(input: &str) -> crate::Result<String> {
             "off" => b.saturating_sub(1),
             _ => unreachable!(),
         },
-    )
-    .to_string())
+    ))
 }
 
 /// Executes the shared puzzle logic. For each line of inputs, runs `step` on all relevant

@@ -1,6 +1,6 @@
 /// Find the earliest house that gets enough presents. This is equivalent to finding the lowest
 /// number that has a high enough sum of proper factors.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     // I tried to do this a clever way via prime factorization or something, but this is fast
     // enough for how trivial it is to implement.
 
@@ -17,12 +17,12 @@ pub fn one(input: &str) -> crate::Result<String> {
         }
     }
 
-    Ok((1..).find(|&i| cache[i] >= target).unwrap_or(0).to_string())
+    Ok((1..).find(|&i| cache[i] >= target).unwrap_or(0))
 }
 
 /// Find the earliest house that gets enough presents; but additional limitations no longer allow
 /// it to be abstracted to a nice mathematical solution.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let mut cache = vec![0; 1_000_000];
     let target = parse(input)?;
 
@@ -36,7 +36,7 @@ pub fn two(input: &str) -> crate::Result<String> {
         }
     }
 
-    Ok((1..).find(|&i| cache[i] >= target).unwrap_or(0).to_string())
+    Ok((1..).find(|&i| cache[i] >= target).unwrap_or(0))
 }
 
 /// Parses the puzzle input into a target number.

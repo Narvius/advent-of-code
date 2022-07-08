@@ -1,5 +1,5 @@
 /// For each line, find the difference between the highest and lowest number, then sum it all.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let mut result = 0;
     for line in input.lines() {
         let mut min = i32::MAX;
@@ -11,11 +11,11 @@ pub fn one(input: &str) -> crate::Result<String> {
         }
         result += max - min;
     }
-    Ok(result.to_string())
+    Ok(result)
 }
 
 /// For each line, find the pair of numbers that is evenly divisble, then sum the quotients.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let mut result = 0;
     for line in input.lines() {
         let xs = line
@@ -31,5 +31,5 @@ pub fn two(input: &str) -> crate::Result<String> {
             }
         }
     }
-    Ok(result.to_string())
+    Ok(result)
 }

@@ -1,11 +1,10 @@
 /// Count the number of lit lights on the grid.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     Ok(run_instructions(input)
         .into_iter()
         .flatten()
         .filter(|&b| b)
-        .count()
-        .to_string())
+        .count())
 }
 
 /// Display the contents of the grid after running all instructions.

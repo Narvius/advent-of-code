@@ -1,11 +1,11 @@
 use std::fmt::Write;
 
 /// Find the product of the first two numbers after one iteration of the hashing algorithm.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let mut h = Hasher::new(input.split(',').filter_map(|n| n.parse::<u8>().ok()));
     h.run_once();
     let hash = h.sparse_hash();
-    Ok((hash[0] as usize * hash[1] as usize).to_string())
+    Ok(hash[0] as usize * hash[1] as usize)
 }
 
 /// Find the actual knot hash, as per puzzle description. In short: run 64 rounds of hashing,

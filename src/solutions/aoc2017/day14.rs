@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 /// Count the number of squares that are used, which corresponds to the number of 1 bits across
 /// 128 consecutive knot hashes.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<u32> {
     let mut sum = 0;
     for i in 0..128 {
         sum += super::day10::knot_hash(format!("{}-{}", input, i).bytes())
@@ -10,7 +10,7 @@ pub fn one(input: &str) -> crate::Result<String> {
             .map(|b| b.count_ones())
             .sum::<u32>();
     }
-    Ok(sum.to_string())
+    Ok(sum)
 }
 
 /// Count the number of groups in the map derived from knot hashes.

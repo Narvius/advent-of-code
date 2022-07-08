@@ -1,15 +1,15 @@
 /// Finds the distance from origin after walking all the way.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     match distances(input).last() {
-        Some(d) => Ok(d.to_string()),
+        Some(d) => Ok(d),
         None => Err("no steps taken".into()),
     }
 }
 
 /// Finds the furthest away from origin at any point during the trip.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     match distances(input).max() {
-        Some(d) => Ok(d.to_string()),
+        Some(d) => Ok(d),
         None => Err("no steps taken".into()),
     }
 }

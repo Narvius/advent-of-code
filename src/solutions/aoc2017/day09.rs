@@ -1,5 +1,5 @@
 /// Find the total score of all groups; the score of a group is its depth.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let (mut score, mut depth) = (0, 0);
     process(input, |p| match p {
         ('{', false) => {
@@ -9,18 +9,18 @@ pub fn one(input: &str) -> crate::Result<String> {
         ('}', false) => depth -= 1,
         _ => {}
     });
-    Ok(score.to_string())
+    Ok(score)
 }
 
 /// Count the number of unescaped garbage characters.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let mut count = 0;
     process(input, |(_, garbage)| {
         if garbage {
             count += 1;
         }
     });
-    Ok(count.to_string())
+    Ok(count)
 }
 
 /// Processes the input stream according to puzzle rules. Calls the provided closure with every

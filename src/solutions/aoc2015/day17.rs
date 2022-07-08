@@ -1,19 +1,18 @@
 use std::collections::HashMap;
 
 /// Find how many ways there are to make 150 using the given containers.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let containers: Vec<i32> = input.lines().filter_map(|s| s.parse().ok()).collect();
 
     Ok((0..2usize.pow(containers.len() as u32))
         .map(|mask| resolve_mask(&containers, mask).0)
         .filter(|&n| n == 150)
-        .count()
-        .to_string())
+        .count())
 }
 
 /// Find how many ways there are to make 150 litres with the (tied) least amount of given
 /// containers.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let containers: Vec<i32> = input.lines().filter_map(|s| s.parse().ok()).collect();
 
     let mut buckets = HashMap::new();
@@ -23,7 +22,7 @@ pub fn two(input: &str) -> crate::Result<String> {
         }
     }
     let least = buckets.keys().min().unwrap_or(&0);
-    Ok(buckets.get(least).unwrap_or(&0).to_string())
+    Ok(buckets.get(least).copied().unwrap_or(0))
 }
 
 /// Resolves a container combination to a total volume and count of containers. `mask` is a bit mask

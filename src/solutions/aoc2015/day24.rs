@@ -1,16 +1,16 @@
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let data: Vec<_> = input.lines().filter_map(|s| s.parse().ok()).collect();
-    Ok(find_quantum_entanglement(&data, 3)?.to_string())
+    find_quantum_entanglement(&data, 3)
 }
 
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let data: Vec<_> = input.lines().filter_map(|s| s.parse().ok()).collect();
-    Ok(find_quantum_entanglement(&data, 4)?.to_string())
+    find_quantum_entanglement(&data, 4)
 }
 
 /// Calculates the smallest possible quantum entanglement value (see puzzle description) for the
 /// given set of `weights` if they were split up into `groups` groups of equal total weights.
-fn find_quantum_entanglement(weights: &[usize], groups: usize) -> Result<usize, String> {
+fn find_quantum_entanglement(weights: &[usize], groups: usize) -> crate::Result<usize> {
     let group_weight = weights.iter().copied().sum::<usize>() / groups;
 
     // smallest theoretically possible size is the number of largest elements we need to take

@@ -1,20 +1,20 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 /// Find the shortest trip possible when visiting all goal positions.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     best_trip_distance(input, false)
 }
 
 /// Find the shortest trip possible when visiting all goal positions and then returning to the
 /// starting position.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     best_trip_distance(input, true)
 }
 
 /// Finds the shortest possible route for the cleaning robot, as per the puzzle input. If
 /// `include_return` is set, this route will include a return trip to the original starting
 /// position.
-fn best_trip_distance(input: &str, include_return: bool) -> crate::Result<String> {
+fn best_trip_distance(input: &str, include_return: bool) -> crate::Result<usize> {
     let maze = parse(input);
     let mut best = usize::MAX;
 
@@ -42,7 +42,7 @@ fn best_trip_distance(input: &str, include_return: bool) -> crate::Result<String
         best = best.min(result);
     }
 
-    Ok(best.to_string())
+    Ok(best)
 }
 
 /// Build a "dijkstra map" for the entire `maze` from a given `start`; that is, a mapping from

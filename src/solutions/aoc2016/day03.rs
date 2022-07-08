@@ -1,13 +1,13 @@
 /// Going horizontally, count the number of valid triangles.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let sides = input
         .lines()
         .flat_map(|line| line.split(' ').filter_map(|t| t.parse().ok()));
-    Ok(count_triangles(sides).to_string())
+    Ok(count_triangles(sides))
 }
 
 /// Going vertically, count the number of valid triangles.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let (mut v1, mut v2, mut v3) = (vec![], vec![], vec![]);
     for line in input.lines() {
         let mut sides = line.split(' ').filter_map(|t| t.parse().ok());
@@ -17,7 +17,7 @@ pub fn two(input: &str) -> crate::Result<String> {
             v3.push(c);
         }
     }
-    Ok(count_triangles([v1, v2, v3].into_iter().flatten()).to_string())
+    Ok(count_triangles([v1, v2, v3].into_iter().flatten()))
 }
 
 /// Given a stream of numbers, counts how many valid triangles it forms.

@@ -1,6 +1,6 @@
 /// Find the lowest value for register `a` that will result in an infinite stream of "1, 0"
 /// in the output.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let program = parse(input);
     for i in 0.. {
         let generator = SignalGenerator::new(&program, i);
@@ -8,7 +8,7 @@ pub fn one(input: &str) -> crate::Result<String> {
             .take(10)
             .eq([0, 1, 0, 1, 0, 1, 0, 1, 0, 1].into_iter())
         {
-            return Ok(i.to_string());
+            return Ok(i);
         }
     }
 
@@ -16,8 +16,8 @@ pub fn one(input: &str) -> crate::Result<String> {
 }
 
 /// Freebie!
-pub fn two(_input: &str) -> crate::Result<String> {
-    Ok("done!".into())
+pub fn two(_input: &str) -> crate::Result<&'static str> {
+    Ok("done!")
 }
 
 /// An iterator that returns the [`Out`](Op::Out) results from running a program.

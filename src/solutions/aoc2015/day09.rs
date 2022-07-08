@@ -1,21 +1,19 @@
 use std::collections::HashMap;
 
 /// Find the shortest possible route that visits all cities.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let (locations, distances) = parse(input)?;
-    Ok(all_route_lengths(locations, distances)
+    all_route_lengths(locations, distances)
         .min()
-        .ok_or_else(|| "no input locations".to_owned())?
-        .to_string())
+        .ok_or_else(|| "no input locations".into())
 }
 
 /// Find the longest possible route that visits all cities.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let (locations, distances) = parse(input)?;
-    Ok(all_route_lengths(locations, distances)
+    all_route_lengths(locations, distances)
         .max()
-        .ok_or_else(|| "no input locations".to_owned())?
-        .to_string())
+        .ok_or_else(|| "no input locations".into())
 }
 
 type Distances = HashMap<(usize, usize), usize>;

@@ -1,28 +1,26 @@
 use std::collections::{HashMap, VecDeque};
 
 /// Find the ID of the bot responsible for sorting 17 and 61 chips.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let (held, _) = run_program(input);
 
     let pair = held
         .into_iter()
         .find(|(_, (a, b))| matches!([*a, *b], [Some(61), Some(17)] | [Some(17), Some(61)]));
 
-    if let Some((id, _)) = pair {
-        Ok(id.to_string())
-    } else {
-        Err("no matching bot found".into())
+    match pair {
+        Some((id, _)) => Ok(id),
+        None => Err("no matching bot found".into()),
     }
 }
 
 /// Find the product of the first three outputs.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let (_, output) = run_program(input);
 
-    if let (Some(a), Some(b), Some(c)) = (output.get(&0), output.get(&1), output.get(&2)) {
-        Ok((a * b * c).to_string())
-    } else {
-        Err("no values on required outputs".into())
+    match (output.get(&0), output.get(&1), output.get(&2)) {
+        (Some(a), Some(b), Some(c)) => Ok(a * b * c),
+        _ => Err("no values on required outputs".into()),
     }
 }
 

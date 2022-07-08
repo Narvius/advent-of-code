@@ -1,16 +1,16 @@
 /// Run the program until it blocks, and get the last one.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i64> {
     let mut p = Program::from_input(input, 0);
     let output = p.run_until_blocked(&[]);
     match output.last() {
-        Some(v) => Ok(v.to_string()),
+        Some(&v) => Ok(v),
         None => Err("no result".into()),
     }
 }
 
 /// Run two communicating programs until both halt, and find how many times the second
 /// program has sent a value.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let mut p0 = Program::from_input(input, 0);
     let mut p1 = Program::from_input(input, 1);
     let mut pass = vec![];
@@ -23,7 +23,7 @@ pub fn two(input: &str) -> crate::Result<String> {
         }
     }
 
-    Ok(p1.sends.to_string())
+    Ok(p1.sends)
 }
 
 /// A runnable program, as per the puzzle description.

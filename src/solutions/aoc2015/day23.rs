@@ -1,11 +1,11 @@
 /// Run the program until completion, get `b`.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(simulate(input, 0, 0).to_string())
+pub fn one(input: &str) -> crate::Result<usize> {
+    Ok(simulate(input, 0, 0))
 }
 
 /// With `a` set to 1 initially, run the program until completion, get `b`.
-pub fn two(input: &str) -> crate::Result<String> {
-    Ok(simulate(input, 1, 0).to_string())
+pub fn two(input: &str) -> crate::Result<usize> {
+    Ok(simulate(input, 1, 0))
 }
 
 /// Runs the `program` with initial `a` and `b`, and returns the value of `b` after completion.

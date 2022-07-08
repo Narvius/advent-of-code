@@ -1,18 +1,18 @@
 /// Count the number of jump instructions executed before pointing outside the list, using
 /// simple instruction change rules.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     run_jumps(input, |offset| *offset += 1)
 }
 
 /// Count the number of jump instructions executed before pointing outside the list, using
 /// slightly more complex instruction change rules.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     run_jumps(input, |offset| *offset += if *offset >= 3 { -1 } else { 1 })
 }
 
 /// Shared logic for both parts. `morph` mutates the pointed-at instruction after executing
 /// it.
-fn run_jumps(input: &str, morph: fn(&mut i32)) -> crate::Result<String> {
+fn run_jumps(input: &str, morph: fn(&mut i32)) -> crate::Result<i32> {
     let mut offsets = parse(input)?;
     let mut pointer = 0;
     let mut steps = 0;
@@ -27,7 +27,7 @@ fn run_jumps(input: &str, morph: fn(&mut i32)) -> crate::Result<String> {
         morph(offset);
     }
 
-    Ok(steps.to_string())
+    Ok(steps)
 }
 
 /// Parses the puzzle input into a list of numbers.

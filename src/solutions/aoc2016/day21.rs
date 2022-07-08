@@ -2,14 +2,14 @@
 pub fn one(input: &str) -> crate::Result<String> {
     let mut s = b"abcdefgh".to_vec();
     scramble(s.as_mut(), input.lines(), false);
-    Ok(String::from_utf8(s).unwrap())
+    Ok(String::from_utf8(s)?)
 }
 
 /// Unscramble a given password.
 pub fn two(input: &str) -> crate::Result<String> {
     let mut s = b"fbgdceah".to_vec();
     scramble(s.as_mut(), input.lines().rev(), true);
-    Ok(String::from_utf8(s).unwrap())
+    Ok(String::from_utf8(s)?)
 }
 
 /// The amount of right shifts required to scramble a password, given by the formula

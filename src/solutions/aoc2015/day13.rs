@@ -1,21 +1,19 @@
 use std::collections::HashMap;
 
 /// Find the best happiness rating achievable with a seating arrangement.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     let (people, matrix) = parse(input).ok_or_else(|| "failed to parse puzzle input".to_owned())?;
-    Ok(all_arrangement_values(people, matrix)
+    all_arrangement_values(people, matrix)
         .max()
-        .ok_or_else(|| "no people in input".to_owned())?
-        .to_string())
+        .ok_or_else(|| "no people in input".into())
 }
 
 /// Find the best happiness rating achievable with a seating arrangement that includes you.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let (people, matrix) = parse(input).ok_or_else(|| "failed to parse puzzle input".to_owned())?;
-    Ok(all_arrangement_values(people + 1, matrix)
+    all_arrangement_values(people + 1, matrix)
         .max()
-        .ok_or_else(|| "no people in input".to_owned())?
-        .to_string())
+        .ok_or_else(|| "no people in input".into())
 }
 
 type HappinessMatrix = HashMap<(usize, usize), i32>;

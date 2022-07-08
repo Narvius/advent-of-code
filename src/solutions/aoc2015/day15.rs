@@ -1,5 +1,5 @@
 // Finds the best possible cookie with exactly 100 units of ingredients.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     // Uses a greedy algorithm that at every step takes 1 unit of the ingredient that would lead to
     // the biggest improvement in score. Because the score would be zero without any ingredients,
     // making it impossible to make these greedy choices, we assume 1 of each ingredient.
@@ -20,11 +20,11 @@ pub fn one(input: &str) -> crate::Result<String> {
         choices[index] += 1;
     }
 
-    Ok(best.to_string())
+    Ok(best)
 }
 
 // Finds the best possible cookie with exactly 100 units of ingredients and 500 calories.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     // Search through all possible recipes with brute force. The 500 calorie restriction is
     // extremely limiting, as such checking every possibility is viable.
     fn find_best_recipe_score(
@@ -76,7 +76,7 @@ pub fn two(input: &str) -> crate::Result<String> {
         100,
         500,
     );
-    Ok(best.to_string())
+    Ok(best)
 }
 
 /// Determines the score for a cookie recipe.

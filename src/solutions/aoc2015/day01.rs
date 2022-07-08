@@ -1,15 +1,15 @@
 /// Find the final floor the elevator stops at.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(parse(input).sum::<i32>().to_string())
+pub fn one(input: &str) -> crate::Result<i32> {
+    Ok(parse(input).sum())
 }
 
 /// Find the number of steps after which the elevator first goes into the basement.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let (mut floor, mut count) = (0, 0);
     for c in parse(input) {
         (floor, count) = (floor + c, count + 1);
         if floor < 0 {
-            return Ok(count.to_string());
+            return Ok(count);
         }
     }
     Err("never reached the basement".into())

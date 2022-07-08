@@ -1,11 +1,11 @@
 /// Find the number of safe spots in a 40 row room.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(count_safe_tiles(input, 40).to_string())
+pub fn one(input: &str) -> crate::Result<i32> {
+    Ok(count_safe_tiles(input, 40))
 }
 
 /// Find the number of safe spots in a 400000 row room.
-pub fn two(input: &str) -> crate::Result<String> {
-    Ok(count_safe_tiles(input, 400000).to_string())
+pub fn two(input: &str) -> crate::Result<i32> {
+    Ok(count_safe_tiles(input, 400000))
 }
 
 /// Counts the number of safe tiles in `rows` rows, starting with the given row.

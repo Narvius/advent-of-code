@@ -1,11 +1,11 @@
 /// Find the cheapest possible win.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(least_mana_win(parse(input)?, false).to_string())
+pub fn one(input: &str) -> crate::Result<i32> {
+    Ok(least_mana_win(parse(input)?, false))
 }
 
 /// Find the cheapest possible win in hard mode.
-pub fn two(input: &str) -> crate::Result<String> {
-    Ok(least_mana_win(parse(input)?, true).to_string())
+pub fn two(input: &str) -> crate::Result<i32> {
+    Ok(least_mana_win(parse(input)?, true))
 }
 
 /// Runs through all possible outcomes, and finds the cheapest win.

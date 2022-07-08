@@ -1,11 +1,11 @@
 /// Return the string seen after walking the routing diagram.
 pub fn one(input: &str) -> crate::Result<String> {
-    walk(input).map(|(seen, _)| seen)
+    Ok(walk(input)?.0)
 }
 
 /// Return the number of steps needed to walk the routing diagram.
-pub fn two(input: &str) -> crate::Result<String> {
-    walk(input).map(|(_, steps)| steps.to_string())
+pub fn two(input: &str) -> crate::Result<usize> {
+    Ok(walk(input)?.1)
 }
 
 /// Walks the routing diagram and returns the seen string as well as the number of steps
@@ -42,7 +42,7 @@ fn next_step(map: &Map, p: (i32, i32), (x, y): (i32, i32)) -> Option<((i32, i32)
 }
 
 /// The type for a map used in this puzzle.
-/// 
+///
 /// From outermost to innermost type:
 /// - vector of rows
 /// - vector of cells

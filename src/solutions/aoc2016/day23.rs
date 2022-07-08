@@ -1,10 +1,10 @@
 /// Run the provided program with an input of 7.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<i32> {
     run_program_v2(input, [7, 0, 0, 0]).ok_or_else(|| "failed to run program".into())
 }
 
 /// Run the provided program with an input of 12.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     run_program_v2(input, [12, 0, 0, 0]).ok_or_else(|| "failed to run program".into())
 }
 
@@ -14,7 +14,7 @@ pub fn two(input: &str) -> crate::Result<String> {
 /// - the [`Tgl`](Op::Tgl) (toggle) operation (see [`toggled`] for more information);
 /// - an optimization that replaces increment/decrement loops that perform multiplications with
 ///   a single actual multiplication (see [`optimize_loop`] for more information).
-fn run_program_v2(program: &str, mut reg: [i32; 4]) -> Option<String> {
+fn run_program_v2(program: &str, mut reg: [i32; 4]) -> Option<i32> {
     let mut program = parse(program);
     let mut pointer = 0;
 
@@ -56,7 +56,7 @@ fn run_program_v2(program: &str, mut reg: [i32; 4]) -> Option<String> {
         pointer += 1;
     }
 
-    Some(reg[0].to_string())
+    Some(reg[0])
 }
 
 /// Resolves an [`Arg`] into a numeric value.

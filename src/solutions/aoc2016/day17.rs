@@ -48,7 +48,7 @@ pub fn one(input: &str) -> crate::Result<String> {
 /// Same structure as [`one`] (a kind of floodfill), but differs in several important ways:
 /// * no candidates are discarded early based on path length
 /// * the exact paths are not kept track of, only the length and partial md5 hashes
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let d = {
         let mut d = md5::Context::new();
         d.consume(input);
@@ -67,7 +67,7 @@ pub fn two(input: &str) -> crate::Result<String> {
 
         for ((dx, dy, c), o) in DELTAS.into_iter().zip(hash.bytes()) {
             let (x, y) = (x + dx, y + dy);
-            if (0..=4).contains(&x) && (0..=4).contains(&y) {
+            if (0..4).contains(&x) && (0..4).contains(&y) {
                 match o {
                     (b'b'..=b'f') => {
                         let mut d = d.clone();
@@ -80,7 +80,7 @@ pub fn two(input: &str) -> crate::Result<String> {
         }
     }
 
-    Ok(longest.to_string())
+    Ok(longest)
 }
 
 /// Directions alongside the characters they add to the hash.

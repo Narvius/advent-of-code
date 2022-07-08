@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 /// Finds the 64th key index.
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(find_hash(input, find_64th_key(false)).to_string())
+pub fn one(input: &str) -> crate::Result<usize> {
+    Ok(find_hash(input, find_64th_key(false)))
 }
 
 /// Finds the 64th key index with hash stretching employed.
-pub fn two(input: &str) -> crate::Result<String> {
-    Ok(find_hash(input, find_64th_key(true)).to_string())
+pub fn two(input: &str) -> crate::Result<usize> {
+    Ok(find_hash(input, find_64th_key(true)))
 }
 
 /// Returns a predicate for [`find_hash`] which finds the index of the 64th key according to the

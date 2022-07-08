@@ -1,14 +1,14 @@
 use std::collections::HashSet;
 
 /// Find the number of houses visited by Santa.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     let mut map: HashSet<_> = HashSet::from([(0, 0)]);
     walk(&mut map, input.chars());
-    Ok(map.len().to_string())
+    Ok(map.len())
 }
 
 /// Find the number of houses visited by Santa and Robo-Santa.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let mut map: HashSet<_> = HashSet::from([(0, 0)]);
     let mut i = 0;
     let (a, b): (Vec<_>, Vec<_>) = input.chars().partition(|_| {
@@ -17,7 +17,7 @@ pub fn two(input: &str) -> crate::Result<String> {
     });
     walk(&mut map, a);
     walk(&mut map, b);
-    Ok(map.len().to_string())
+    Ok(map.len())
 }
 
 /// Executes a Santa walk.

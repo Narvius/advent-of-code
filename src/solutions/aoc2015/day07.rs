@@ -1,15 +1,15 @@
 use std::collections::{HashMap, VecDeque};
 
 /// Run the circuit once, get the value of wire "a".
-pub fn one(input: &str) -> crate::Result<String> {
-    Ok(run_circuit(input, []).to_string())
+pub fn one(input: &str) -> crate::Result<usize> {
+    Ok(run_circuit(input, []))
 }
 
 /// Run the circuit twice; feeding the first wire "a" into the second wire "b", then get the value
 /// of the second wire "a".
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     let a = run_circuit(input, []);
-    Ok(run_circuit(input, [("b", a)]).to_string())
+    Ok(run_circuit(input, [("b", a)]))
 }
 
 /// Runs the circuit describes by the puzzle input, and returns the value of wire "a".

@@ -22,8 +22,8 @@ pub static CONTENTS: TableOfContents = [
 macro_rules! day {
     ($y:ident::$d:ident) => {
         Some((
-            |input| $y::$d::one(input).map(|v| v.to_string()),
-            |input| $y::$d::two(input).map(|v| v.to_string()),
+            |input| $y::$d::one(input).map(|v| format!("{v}")),
+            |input| $y::$d::two(input).map(|v| format!("{v}")),
             include_str!(concat!(
                 "data/",
                 stringify!($y),
@@ -111,7 +111,7 @@ static AOC2017: Section = [
     day!(aoc2017::day17),
     day!(aoc2017::day18),
     day!(aoc2017::day19),
-    None,
+    day!(aoc2017::day20),
     None,
     None,
     None,

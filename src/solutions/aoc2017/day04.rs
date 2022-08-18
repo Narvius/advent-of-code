@@ -1,13 +1,13 @@
 use std::collections::HashSet;
 
 /// Count the number of lines in the input that do not have a repeating word.
-pub fn one(input: &str) -> crate::Result<String> {
+pub fn one(input: &str) -> crate::Result<usize> {
     count_non_repeats(input, |s| s.to_string())
 }
 
 /// Count the number of lines in the input that do not have any two words that are
 /// anagrams of each other.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<usize> {
     count_non_repeats(input, |s| {
         let mut s = s.to_string();
         // SAFETY: All strings are ASCII, so sorting bytes will result in a valid string.
@@ -19,7 +19,7 @@ pub fn two(input: &str) -> crate::Result<String> {
 }
 
 /// Counts the number of lines in the input that do not have a repeating `f(word)`.
-fn count_non_repeats(input: &str, f: fn(&str) -> String) -> crate::Result<String> {
+fn count_non_repeats(input: &str, f: fn(&str) -> String) -> crate::Result<usize> {
     let mut result = 0;
 
     'line: for line in input.lines() {
@@ -32,5 +32,5 @@ fn count_non_repeats(input: &str, f: fn(&str) -> String) -> crate::Result<String
         result += 1;
     }
 
-    Ok(result.to_string())
+    Ok(result)
 }

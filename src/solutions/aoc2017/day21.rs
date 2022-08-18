@@ -4,8 +4,13 @@ use std::collections::HashMap;
 /// tiles at the end.
 pub fn one(input: &str) -> crate::Result<usize> {
     let rules = build_rules(input)?;
-    
-    Ok(Tile::initial().step3(&rules)?.into_iter().flat_map(|t| t.step2(&rules)).map(|t| t.count()).sum())
+
+    Ok(Tile::initial()
+        .step3(&rules)?
+        .into_iter()
+        .flat_map(|t| t.step2(&rules))
+        .map(|t| t.count())
+        .sum())
 }
 
 /// Expand the initial tile 18 times using the recipes from input; count the number of lit
@@ -42,7 +47,10 @@ impl Tile {
     /// Given a 3x3 tile, steps it twice, producing four 3x3 tiles. These need to be
     /// reinterpreted into 2x2 tiles if used in further iterations.
     fn step2(self, rules: &Rules) -> Vec<Self> {
-        rules[&self].iter().flat_map(|t| rules[t].iter().copied()).collect()
+        rules[&self]
+            .iter()
+            .flat_map(|t| rules[t].iter().copied())
+            .collect()
     }
 
     /// Given a 3x3 tile, steps it three times, producing nine 3x3 tiles. Performs a correct
@@ -62,7 +70,10 @@ impl Tile {
                     Self::T2([c[5], d[3], c[8], d[6]]),
                     Self::T2([d[4], d[5], d[7], d[8]]),
                 ];
-                Ok(tiles.iter().flat_map(|t| rules[t].iter().copied()).collect())
+                Ok(tiles
+                    .iter()
+                    .flat_map(|t| rules[t].iter().copied())
+                    .collect())
             }
             _ => Err("didn't start with a 3x3 tile".into()),
         }
@@ -155,7 +166,9 @@ fn build_rules(input: &str) -> crate::Result<Rules> {
 /// Parses the puzzle input into a series of rules.
 fn parse(input: &str) -> impl Iterator<Item = Option<(Tile, Vec<Tile>)>> + '_ {
     fn v(s: &str) -> Vec<bool> {
-        s.chars().filter_map(|c| (c != '/').then(|| c == '#')).collect()
+        s.chars()
+            .filter_map(|c| (c != '/').then(|| c == '#'))
+            .collect()
     }
     fn p2(s: &str) -> Option<Tile> {
         Some(Tile::T2(v(s).try_into().ok()?))
@@ -165,12 +178,14 @@ fn parse(input: &str) -> impl Iterator<Item = Option<(Tile, Vec<Tile>)>> + '_ {
     }
     fn p4(s: &str) -> Option<Vec<Tile>> {
         let v: Vec<_> = v(s);
-        (v.len() == 16).then(|| vec![
-            Tile::T2([v[0], v[1], v[4], v[5]]),
-            Tile::T2([v[2], v[3], v[6], v[7]]),
-            Tile::T2([v[8], v[9], v[12], v[13]]),
-            Tile::T2([v[10], v[11], v[14], v[15]]),
-        ])
+        (v.len() == 16).then(|| {
+            vec![
+                Tile::T2([v[0], v[1], v[4], v[5]]),
+                Tile::T2([v[2], v[3], v[6], v[7]]),
+                Tile::T2([v[8], v[9], v[12], v[13]]),
+                Tile::T2([v[10], v[11], v[14], v[15]]),
+            ]
+        })
     }
 
     input.lines().map(|line| {

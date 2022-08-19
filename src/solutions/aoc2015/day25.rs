@@ -51,7 +51,7 @@ fn parse(input: &str) -> Result<(usize, usize), String> {
 
     let numbers: Vec<_> = input
         .split(&[' ', '.', ','][..])
-        .filter(|s| !s.is_empty() && s.chars().all(|c| c.is_digit(10)))
+        .filter(|s| !s.is_empty() && s.chars().all(|c| c.is_ascii_digit()))
         .collect();
 
     if let (Some(a), Some(b)) = (get(&numbers, 0), get(&numbers, 1)) {

@@ -88,7 +88,10 @@ impl Iterator for Carrier {
         };
         let cell = (self.infect)(cell);
         self.cells.insert(self.position, cell);
-        self.position = (self.position.0 + self.delta.0, self.position.1 + self.delta.1);
+        self.position = (
+            self.position.0 + self.delta.0,
+            self.position.1 + self.delta.1,
+        );
         Some(cell)
     }
 }

@@ -74,7 +74,10 @@ fn parse(s: &str) -> Option<Machine> {
         let write1 = lines.next()?.split(' ').last()? == "1.";
         let dir1 = lines.next()?.split(' ').last()? == "right.";
         let next1 = lines.next()?.split(' ').last()?.as_bytes()[0];
-        states.push(((write0, dir0, (next0 - b'A') as usize), (write1, dir1, (next1 - b'A') as usize)));
+        states.push((
+            (write0, dir0, (next0 - b'A') as usize),
+            (write1, dir1, (next1 - b'A') as usize),
+        ));
     }
 
     Some(Machine {

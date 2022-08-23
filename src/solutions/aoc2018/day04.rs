@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+/// Find the guard that is asleep the most, and calculate a checksum from that.
 pub fn one(input: &str) -> crate::Result<usize> {
     parse(input)
         .into_iter()
@@ -8,6 +9,8 @@ pub fn one(input: &str) -> crate::Result<usize> {
         .ok_or_else(|| "failed to find sleepiest guard".into())
 }
 
+/// Find the guard that is asleep most often on the same minute, and calculate a checksum
+/// from that.
 pub fn two(input: &str) -> crate::Result<usize> {
     let (id, sleeps) = parse(input)
         .into_iter()
@@ -25,7 +28,7 @@ fn sleep_stack(sleeps: &[(usize, usize)]) -> (usize, usize) {
             *slot += 1;
         }
     }
-    
+
     minutes
         .into_iter()
         .enumerate()
@@ -35,6 +38,7 @@ fn sleep_stack(sleeps: &[(usize, usize)]) -> (usize, usize) {
 
 type Timetables = HashMap<usize, Vec<(usize, usize)>>;
 
+/// Parses the puzzle input into a useable format.
 fn parse(input: &str) -> Timetables {
     let mut lines: Vec<_> = input.lines().collect();
     lines.sort_unstable_by_key(|line| &line[0..18]);

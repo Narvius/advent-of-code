@@ -16,7 +16,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
         .into_iter()
         .max_by_key(|(_, sleeps)| sleep_stack(sleeps).1)
         .ok_or("failed to find most consistently sleep guard")?;
-    
+
     Ok(id * sleep_stack(&sleeps).0)
 }
 

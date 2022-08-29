@@ -107,7 +107,7 @@ fn parse(input: &str) -> Vec<Op> {
         .lines()
         .filter_map(|line| {
             let tokens: Vec<_> = line.split(' ').collect();
-            Some(match (tokens.len(), *tokens.get(0)?) {
+            Some(match (tokens.len(), *tokens.first()?) {
                 (2, "inc") => Op::Inc((tokens[1].as_bytes()[0] - b'a') as usize),
                 (2, "dec") => Op::Dec((tokens[1].as_bytes()[0] - b'a') as usize),
                 (3, "cpy") => Op::Cpy(arg(tokens[1])?, (tokens[2].as_bytes()[0] - b'a') as usize),

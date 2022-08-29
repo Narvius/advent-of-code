@@ -61,7 +61,7 @@ fn get_unbalance<'a>(node: &str, tree: &'a Tree) -> Option<(usize, usize, &'a st
     let ((sa, a), (_, b), (sl, l)) = {
         let mut v: Vec<_> = tree[node].1.iter().map(|&s| (s, weight(s, tree))).collect();
         v.sort_by_cached_key(|p| p.1);
-        (*v.get(0)?, *v.get(1)?, *v.last()?)
+        (*v.first()?, *v.get(1)?, *v.last()?)
     };
 
     (a != l).then(|| match a == b {

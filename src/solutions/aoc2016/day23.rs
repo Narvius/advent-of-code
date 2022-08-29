@@ -130,7 +130,7 @@ fn parse(input: &str) -> Vec<Op> {
         .lines()
         .filter_map(|line| {
             let tokens: Vec<_> = line.split(' ').collect();
-            Some(match (tokens.len(), *tokens.get(0)?) {
+            Some(match (tokens.len(), *tokens.first()?) {
                 (2, "inc") => Op::Inc(arg(tokens[1])?),
                 (2, "dec") => Op::Dec(arg(tokens[1])?),
                 (2, "tgl") => Op::Tgl(arg(tokens[1])?),

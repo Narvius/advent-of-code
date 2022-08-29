@@ -19,16 +19,13 @@ fn highest_score(players: usize, marbles: usize) -> crate::Result<usize> {
     let mut scores = vec![0; players];
 
     for marble in 1..=marbles {
-        match marble % 23 {
-            0 => {
-                circle.rotate_right(7);
-                scores[marble % players] += marble + circle.pop_back().unwrap_or(0);
-                circle.rotate_left(1);
-            }
-            _ => {
-                circle.rotate_left(1);
-                circle.push_back(marble);
-            }
+        if marble % 23 == 0 {
+            circle.rotate_right(7);
+            scores[marble % players] += marble + circle.pop_back().unwrap_or(0);
+            circle.rotate_left(1);
+        } else {
+            circle.rotate_left(1);
+            circle.push_back(marble);
         }
     }
 

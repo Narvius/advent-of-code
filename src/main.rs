@@ -22,7 +22,7 @@ type Solution = (SolutionFn, SolutionFn, &'static str);
 
 /// A single solution function. Note that despite what the signature implies, the actual
 /// implementations can return any type that implements [`Display`](std::fmt::Display), due
-/// to it being ran through [`format`] (inside the  [`events`] macro).
+/// to it being ran through [`format`] (inside the [`events`] macro).
 type SolutionFn = fn(&str) -> Result<String>;
 
 events! {

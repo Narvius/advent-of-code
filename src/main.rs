@@ -9,14 +9,14 @@ mod runner;
 /// for convenience's sake.
 const ASSUMED_YEAR: usize = 2018;
 
-/// The highest year for which there can be solutions. Changes every December.
-const LAST_YEAR: usize = 2021;
-
 events! {
     aoc2015::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
     aoc2016::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
     aoc2017::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
     aoc2018::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11};
+    aoc2019::{};
+    aoc2020::{};
+    aoc2021::{};
 }
 
 /// The result type used throughout this app.

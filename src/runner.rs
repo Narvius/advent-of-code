@@ -5,7 +5,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::{Result, Solution, ASSUMED_YEAR, CONTENTS, LAST_YEAR};
+use crate::{Result, Solution, ASSUMED_YEAR, CONTENTS};
 
 /// Parses command line arguments and runs the corresponding solutions, printing the results
 /// back to standard output. If an error occurs, returns it.
@@ -37,9 +37,9 @@ pub fn run_from_cmd_args() -> Result<()> {
             let day = Input::from_day(args[1].as_ref())?;
 
             match (year, day) {
-                (All, All) => eval(2015..=LAST_YEAR, 1..=25),
+                (All, All) => eval(2015..=last_year(), 1..=25),
                 (Specific(year), All) => eval([year], 1..=25),
-                (All, Specific(day)) => eval(2015..=LAST_YEAR, [day]),
+                (All, Specific(day)) => eval(2015..=last_year(), [day]),
                 (Specific(year), Specific(day)) => eval([year], [day]),
             }
         }
@@ -80,10 +80,10 @@ impl Input {
                 year += 2000;
             }
 
-            if (2015..=LAST_YEAR).contains(&year) {
+            if (2015..=last_year()).contains(&year) {
                 Ok(Input::Specific(year))
             } else {
-                Err(Error::OutOfRange(year, 2015, LAST_YEAR).into())
+                Err(Error::OutOfRange(year, 2015, last_year()).into())
             }
         } else {
             Err(Error::InvalidArg(arg.to_string()).into())
@@ -201,9 +201,14 @@ fn get_solution(year: usize, day: usize) -> Option<&'static Solution> {
     }
 }
 
+/// Returns the highest year for which there are solutions.
+fn last_year() -> usize {
+    2015 - 1 + CONTENTS.len()
+}
+
 /// Checks whether all input numbers are within their respective valid ranges.
 fn valid_input(year: usize, day: usize) -> bool {
-    (2015..=LAST_YEAR).contains(&year) && (1..=25).contains(&day)
+    (2015..=last_year()).contains(&year) && (1..=25).contains(&day)
 }
 
 /// Expands into a static variable named CONTENTS that holds all solutions, as well as the `mod`

@@ -29,7 +29,9 @@ fn pick_optimal_square(seed: i32, fixed_size: Option<usize>) -> (usize, usize, u
     for size in sizes {
         for cy in size..=SIZE {
             for cx in size..=SIZE {
-                let sum = sums[cy][cx] + sums[cy - size][cx - size] - sums[cy - size][cx] - sums[cy][cx - size];
+                let sum = sums[cy][cx] + sums[cy - size][cx - size]
+                    - sums[cy - size][cx]
+                    - sums[cy][cx - size];
                 if sum > best {
                     (best, x, y, s) = (sum, cx - size + 1, cy - size + 1, size);
                 }
@@ -50,7 +52,7 @@ fn make_summed_area_table(seed: i32, size: usize) -> Vec<i32> {
     for y in 1..=size {
         for x in 1..=size {
             let rack_id = x as i32 + 10;
-            let v =(((rack_id * y as i32 + seed) * rack_id) / 100) % 10 - 5;
+            let v = (((rack_id * y as i32 + seed) * rack_id) / 100) % 10 - 5;
             view[y][x] = v + view[y - 1][x] + view[y][x - 1] - view[y - 1][x - 1];
         }
     }

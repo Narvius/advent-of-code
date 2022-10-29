@@ -17,6 +17,14 @@ const ASSUMED_YEAR: usize = 2018;
 /// The highest year for which there can be solutions. Changes every December.
 const LAST_YEAR: usize = 2021;
 
+/// A single full solution consisting of two solution functions and the text input for them.
+type Solution = (SolutionFn, SolutionFn, &'static str);
+
+/// A single solution function. Note that despite what the signature implies, the actual
+/// implementations can return any type that implements [`Display`](std::fmt::Display), due
+/// to it being ran through [`format`] (inside the  [`events`] macro).
+type SolutionFn = fn(&str) -> Result<String>;
+
 events! {
     aoc2015::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
     aoc2016::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};

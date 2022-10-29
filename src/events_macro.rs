@@ -7,8 +7,8 @@
 ///
 /// Follows the conventions that:
 /// - solutions are in src/solutions/(module)/dayXX.rs
-/// - each dayXX.rs file contains two public functions called "one" and "two"
-/// - each one of those takes a &str argument and returns a Result<T>
+/// - each dayXX.rs file contains two public functions called `one` and `two`
+/// - each one of those takes a `&str` argument and returns a [`Result<T>`](crate::Result).
 macro_rules! events {
     ($($module:ident::{$($day:ident),*};)*) => {
         mod solutions {$(

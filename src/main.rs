@@ -7,10 +7,8 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::contents::CONTENTS;
-
-mod contents;
-mod solutions;
+#[macro_use]
+mod events_macro;
 
 /// During 0 or 1 argument invocations, this year is assumed. Changes based on what I work on,
 /// for convenience's sake.
@@ -18,6 +16,13 @@ const ASSUMED_YEAR: usize = 2018;
 
 /// The highest year for which there can be solutions. Changes every December.
 const LAST_YEAR: usize = 2021;
+
+events! {
+    aoc2015::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
+    aoc2016::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
+    aoc2017::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
+    aoc2018::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11};
+}
 
 fn main() {
     fn run() -> Result<()> {
@@ -28,7 +33,7 @@ fn main() {
             0 => {
                 // The highest day with a solution.
                 for day in (1..=25).rev() {
-                    if contents::CONTENTS[ASSUMED_YEAR - 2015][day - 1].is_some() {
+                    if get_solution(ASSUMED_YEAR, day).is_some() {
                         return eval([ASSUMED_YEAR], [day]);
                     }
                 }
@@ -177,7 +182,7 @@ fn eval_single(year: usize, day: usize) -> Option<Duration> {
     }
 
     let mut runtime = Duration::new(0, 0);
-    if let Some((a, b, s)) = CONTENTS[year - 2015][day - 1] {
+    if let Some(&(a, b, s)) = get_solution(year, day) {
         for (part, f) in [('a', a), ('b', b)] {
             let start = Instant::now();
             let result = f(s);
@@ -204,6 +209,16 @@ fn format_duration(d: Duration) -> Cow<'static, str> {
         Cow::Borrowed("< 0.001s")
     } else {
         Cow::Owned(format!("{:>7.3}s", d))
+    }
+}
+
+/// Gets the solution (a tuple of two functions and the text input) for a given `year` and `day`;
+/// or `None` if it doesn't exist.
+fn get_solution(year: usize, day: usize) -> Option<&'static Solution> {
+    if valid_input(year, day) {
+        CONTENTS.get(ASSUMED_YEAR - 2015).and_then(|o| o.get(day - 1))
+    } else {
+        None
     }
 }
 

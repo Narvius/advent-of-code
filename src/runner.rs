@@ -228,7 +228,7 @@ macro_rules! events {
         )*}
 
         /// The full space of Advent of Code solutions.
-        pub static CONTENTS: &'static [&'static [Solution]] = &[$(
+        static CONTENTS: &'static [&'static [Solution]] = &[$(
             &[$((
                 |input| $crate::solutions::$module::$day::one(input).map(|v| format!("{v}")),
                 |input| $crate::solutions::$module::$day::two(input).map(|v| format!("{v}")),

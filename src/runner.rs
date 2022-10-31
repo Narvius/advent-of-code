@@ -49,8 +49,9 @@ pub fn run_from_cmd_args() -> Result<()> {
 
 /// Possible command line inputs.
 enum Input {
-    /// Corresponds to the user supplying a number. Not guara
+    /// Corresponds to the user supplying a number.
     Specific(usize),
+    /// Corresponds to the user supplying `.` as an argument.
     All,
 }
 
@@ -151,7 +152,7 @@ where
     }
 }
 
-/// Runs the solution for a given day. Returns the runtime, if anything was executed.
+/// Runs the solution for a given day. Returns the run time, if anything was executed.
 fn eval_single(year: usize, day: usize) -> Option<Duration> {
     if !valid_input(year, day) {
         eprintln!("out of range input to eval_single ({}, {})", year, day);

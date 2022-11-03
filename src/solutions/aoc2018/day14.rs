@@ -15,7 +15,12 @@ pub fn one(input: &str) -> crate::Result<String> {
         elf2 = (elf2 + recipes[elf2] as usize + 1) % recipes.len();
     }
 
-    Ok(String::from_utf8(recipes[target..target + 10].iter().map(|&b| b + b'0').collect())?)
+    Ok(String::from_utf8(
+        recipes[target..target + 10]
+            .iter()
+            .map(|&b| b + b'0')
+            .collect(),
+    )?)
 }
 
 /// Find the number of entries before the input shows up on the scoreboard.

@@ -42,8 +42,12 @@ pub fn two(input: &str) -> crate::Result<String> {
 
 /// Steps the cart with the given index once.
 fn step(grid: &[&[u8]], carts: &mut [Cart], cart: usize) -> Option<(i32, i32)> {
-    let Cart { pos: (x, y), dir, turns } = carts[cart];
-    
+    let Cart {
+        pos: (x, y),
+        dir,
+        turns,
+    } = carts[cart];
+
     carts[cart].dir = match grid[y as usize][x as usize] {
         b'/' => SLASH[dir],
         b'\\' => BSLSH[dir],
@@ -51,7 +55,7 @@ fn step(grid: &[&[u8]], carts: &mut [Cart], cart: usize) -> Option<(i32, i32)> {
             carts[cart].turns += 1;
             (4 + dir + turns % 3 - 1) % 4
         }
-        _ => dir
+        _ => dir,
     };
 
     let (dx, dy) = DELTA[carts[cart].dir];

@@ -25,7 +25,7 @@ pub fn two(input: &str) -> crate::Result<i64> {
         iterations += 1;
         (l, h) = (l - 2, h + 2);
         curr = (l..h).filter(|&i| lives_in_next(&curr, rules, i)).collect();
-    
+
         let next_sum = curr.iter().copied().sum();
         let next_diff = next_sum - sum;
         sum = next_sum;
@@ -41,11 +41,11 @@ pub fn two(input: &str) -> crate::Result<i64> {
 }
 
 /// Parses the mask (ruleset), initial bounds and initial state from puzzle input.
-/// 
+///
 /// Note that there are exactly 32 rules making up the ruleset. That means we can store them
 /// as one `u32`, where each digit refers to the outcome for a specific rule. Then we simply
 /// read the five cells as binary digits to find the index into the ruleset number.
-/// 
+///
 /// Bounds are are the lowest and highest number that *could* be contained in the state. This
 /// expands by two cells either way each iteration, because that's the "range" of the ruleset.
 fn parse(input: &str) -> Option<(u32, (i64, i64), HashSet<i64>)> {
@@ -63,7 +63,11 @@ fn parse(input: &str) -> Option<(u32, (i64, i64), HashSet<i64>)> {
     }
 
     let bounds = (0, initial.len() as i64);
-    let initial = initial.char_indices().filter(|(_, b)| *b == '#').map(|(i, _)| i as i64).collect();
+    let initial = initial
+        .char_indices()
+        .filter(|(_, b)| *b == '#')
+        .map(|(i, _)| i as i64)
+        .collect();
 
     Some((mask, bounds, initial))
 }
@@ -76,5 +80,8 @@ fn lives_in_next(prev: &HashSet<i64>, rules: u32, cell: i64) -> bool {
 
 /// Converts a series of bools into the corresponding binary number.
 fn as_index(bs: impl IntoIterator<Item = bool>) -> u32 {
-    bs.into_iter().enumerate().filter(|(_, b)| *b).fold(0, |acc, (i, _)| acc | (1 << i))
+    bs.into_iter()
+        .enumerate()
+        .filter(|(_, b)| *b)
+        .fold(0, |acc, (i, _)| acc | (1 << i))
 }

@@ -38,7 +38,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
 
     // Part 2: Manually finish off the couple last steps--could theoretically look up the
     // true final state from "past", but that's not worth the effort, we only need a couple more.
-    for g in g..target {
+    for _ in g..target {
         map.step();
     }
     Ok(map.resource_value())

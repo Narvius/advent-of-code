@@ -1,13 +1,25 @@
+[x] == register #x
+
+[0] => result
+[1] => outer loop variable
+[2] => temporary register for calculations
+[3] => inner loop variable
+[4] => instruction pointer (used for jumps)
+[5] => target number
+
+==========================================
+==========================================
+
 #ip 4
 addi 4 16 4     GOTO setup
 
     reset_outer:
 
-seti 1 1 1      
+seti 1 1 1      initialize [1] to 1
 
     reset_inner:
 
-seti 1 7 3      initialize [1] and [3] to 1
+seti 1 7 3      initialize [3] to 1
 
     main_loop:
 

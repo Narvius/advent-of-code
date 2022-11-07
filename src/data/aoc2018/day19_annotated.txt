@@ -69,8 +69,8 @@ seti 0 2 4      GOTO reset_outer
 
 IN SHORT:
 
-for outer in 1..target {
-    for inner in 1..target {
+for outer in 1..=target {
+    for inner in 1..=target {
         if outer * inner == target {
             sum += outer;
         }

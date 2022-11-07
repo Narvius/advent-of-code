@@ -2,13 +2,13 @@ use std::collections::{HashMap, VecDeque};
 
 /// Find the number of highly-ambiguous samples (matching 3 or more operations).
 pub fn one(input: &str) -> crate::Result<usize> {
-    // Checks how many operations behave like a given sample.
-    fn match_count(sample: Sample) -> usize {
-        OPS.iter().filter(|&&op| matches(op, sample)).count()
+    // Checks whether a sample is highly ambiguous (3 or more operations match).
+    fn ambiguous(sample: &Sample) -> bool {
+        OPS.iter().filter(|&&op| matches(op, *sample)).count() >= 3
     }
 
     let (runs, _) = parse(input).ok_or("failed parse")?;
-    Ok(runs.into_iter().filter(|&r| match_count(r) >= 3).count())
+    Ok(runs.into_iter().filter(ambiguous).count())
 }
 
 /// Identify all opcodes, run the test program, and get the output.

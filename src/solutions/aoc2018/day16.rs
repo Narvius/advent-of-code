@@ -74,7 +74,7 @@ fn matches(op: Op, (mut before, args, after): Sample) -> bool {
     before == after
 }
 
-/// Executes an operation with the given arguments and
+/// Executes an operation with the given arguments.
 fn eval(op: Op, args: &[i32], reg: &mut [i32]) {
     let ra = reg.get(args[1] as usize).copied().unwrap_or(i32::MAX);
     let rb = reg.get(args[2] as usize).copied().unwrap_or(i32::MAX);

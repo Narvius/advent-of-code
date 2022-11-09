@@ -2,24 +2,19 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 /// Find the distance to furthest-away room.
 pub fn one(input: &str) -> crate::Result<i32> {
-    parse(input.trim_matches(&['^', '$'][..]).as_bytes())
-        .ok_or("parse failed")?
-        .compile()
-        .into_distances()
-        .into_values()
-        .max()
-        .ok_or_else(|| "no result".into())
+    distances(input).and_then(|vs| vs.max().ok_or_else(|| "no result".into()))
 }
 
 /// Find the amount of rooms at least a distance of 1000 away.
 pub fn two(input: &str) -> crate::Result<usize> {
-    Ok(parse(input.trim_matches(&['^', '$'][..]).as_bytes())
-        .ok_or("parse failed")?
-        .compile()
-        .into_distances()
-        .into_values()
-        .filter(|&v| v >= 1000)
-        .count())
+    distances(input).map(|vs| vs.filter(|&v| v >= 1000).count())
+}
+
+/// Returns an enumeration of the distances of each room from origin.
+fn distances(input: &str) -> crate::Result<impl Iterator<Item = i32>> {
+    parse(input.trim_matches(&['^', '$'][..]).as_bytes())
+        .map(|ast| ast.compile().into_distances().into_values())
+        .ok_or_else(|| "parse failed".into())
 }
 
 type Doors = HashSet<((i32, i32), (i32, i32))>;

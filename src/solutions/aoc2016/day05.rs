@@ -17,7 +17,7 @@ pub fn two(input: &str) -> crate::Result<String> {
     let mut cs = vec![None; 8];
     let mut found = 0;
     for (i, c) in Hashes::new(input) {
-        if i < 8 && cs[i] == None {
+        if i < 8 && cs[i].is_none() {
             cs[i] = Some(format!("{:x}", c));
             found += 1;
             if found == 8 {

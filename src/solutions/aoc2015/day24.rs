@@ -46,6 +46,6 @@ fn groups_of_size(
                     result.push(weight);
                 }
             }
-            (result.iter().copied().sum::<usize>() == weight).then(|| result)
+            (result.iter().copied().sum::<usize>() == weight).then_some(result)
         })
 }

@@ -177,7 +177,7 @@ fn eval_single(year: usize, day: usize) -> Option<Duration> {
         }
     }
 
-    (runtime.as_secs_f64() > 0.0).then(|| runtime)
+    (runtime.as_secs_f64() > 0.0).then_some(runtime)
 }
 
 /// Formats a [`Duration`](std::time::Duration) for output.

@@ -47,12 +47,12 @@ impl Generator {
 
     /// Creates a generator with the parameters for generator A.
     fn a(seed: usize, sieving: bool) -> Self {
-        Self::new(seed, 16807, sieving.then(|| 4))
+        Self::new(seed, 16807, sieving.then_some(4))
     }
 
     /// Creates a generator with the parameters for generator B.
     fn b(seed: usize, sieving: bool) -> Self {
-        Self::new(seed, 48271, sieving.then(|| 8))
+        Self::new(seed, 48271, sieving.then_some(8))
     }
 }
 

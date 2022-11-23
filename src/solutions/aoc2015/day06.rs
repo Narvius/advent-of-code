@@ -2,7 +2,7 @@
 pub fn one(input: &str) -> crate::Result<usize> {
     Ok(run_lights(
         input,
-        |b| if b { 1 } else { 0 },
+        |b: bool| b.into(),
         |b, c| match c {
             "toggle" => !b,
             "on" => true,

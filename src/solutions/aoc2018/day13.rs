@@ -62,7 +62,7 @@ fn step(grid: &[&[u8]], carts: &mut [Cart], cart: usize) -> Option<(i32, i32)> {
     let pos = (x + dx, y + dy);
 
     carts[cart].pos = pos;
-    (carts.iter().filter(|c| c.pos == pos).count() >= 2).then(|| pos)
+    (carts.iter().filter(|c| c.pos == pos).count() >= 2).then_some(pos)
 }
 
 /// Parses the puzzle input into a grid of bytes (the map) and a list of carts.

@@ -64,7 +64,7 @@ fn get_unbalance<'a>(node: &str, tree: &'a Tree) -> Option<(usize, usize, &'a st
         (*v.first()?, *v.get(1)?, *v.last()?)
     };
 
-    (a != l).then(|| match a == b {
+    (a != l).then_some(match a == b {
         true => (a, l, sl),
         false => (b, a, sa),
     })

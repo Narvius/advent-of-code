@@ -14,7 +14,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
                 v.into_iter().map(|(c, _)| c).take(5)
             };
 
-            top_chars.eq(checksum.chars()).then(|| id)
+            top_chars.eq(checksum.chars()).then_some(id)
         })
         .sum())
 }
@@ -22,7 +22,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// Find the sector ID of the north pole object storage.
 pub fn two(input: &str) -> crate::Result<i32> {
     parse(input)
-        .filter_map(|(name, _, id)| {
+        .find_map(|(name, _, id)| {
             let shift = (id % 26) as u8;
             let shifted = String::from_utf8(
                 name.bytes()
@@ -32,9 +32,8 @@ pub fn two(input: &str) -> crate::Result<i32> {
             )
             .ok()?;
 
-            (shifted.contains("north") && shifted.contains("pole")).then(|| id)
+            (shifted.contains("north") && shifted.contains("pole")).then_some(id)
         })
-        .next()
         .ok_or_else(|| "failed to find room".into())
 }
 

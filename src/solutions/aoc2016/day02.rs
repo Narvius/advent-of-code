@@ -38,6 +38,6 @@ fn build_map(cs: &[&str]) -> HashMap<(i32, i32), char> {
     HashMap::from_iter((0..cs.len()).flat_map(|y| {
         cs[y]
             .char_indices()
-            .filter_map(move |(x, c)| (c != ' ').then(|| ((x as i32, y as i32), c)))
+            .filter_map(move |(x, c)| (c != ' ').then_some(((x as i32, y as i32), c)))
     }))
 }

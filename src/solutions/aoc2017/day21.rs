@@ -167,7 +167,7 @@ fn build_rules(input: &str) -> crate::Result<Rules> {
 fn parse(input: &str) -> impl Iterator<Item = Option<(Tile, Vec<Tile>)>> + '_ {
     fn v(s: &str) -> Vec<bool> {
         s.chars()
-            .filter_map(|c| (c != '/').then(|| c == '#'))
+            .filter_map(|c| (c != '/').then_some(c == '#'))
             .collect()
     }
     fn p2(s: &str) -> Option<Tile> {

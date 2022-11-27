@@ -10,7 +10,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
 
 /// Find the highest magnitude obtainable from adding any two different snailfish numbers from the
 /// input.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let expressions: Vec<_> = input.lines().map(Expr::from_input).collect();
 
     let mut best = 0;
@@ -22,7 +22,7 @@ pub fn two(input: &str) -> crate::Result<String> {
             best = best.max(Expr::add(&expressions[i], &expressions[j]).magnitude());
         }
     }
-    Ok(best.to_string())
+    Ok(best)
 }
 
 /// A node of an `Expr` binary tree.

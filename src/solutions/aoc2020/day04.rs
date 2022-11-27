@@ -29,11 +29,11 @@ fn parse_passports(input: &str) -> Vec<Passport> {
                     "iyr" => p.issue_year = val.parse().ok()?,
                     "eyr" => p.expiration_year = val.parse().ok()?,
                     "hgt" => {
-                        let num_pos = val
-                            .chars()
-                            .position(|c| c.is_alphabetic())
-                            .unwrap_or(val.len());
-                        let (num, unit) = val.split_at(num_pos);
+                        let (num, unit) = val.split_at(
+                            val.chars()
+                                .position(|c| c.is_alphabetic())
+                                .unwrap_or(val.len()),
+                        );
                         p.height = (num.parse().ok()?, unit);
                     }
                     "hcl" => p.hair_colour = val,

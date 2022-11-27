@@ -20,7 +20,7 @@ type Map<'a> = Vec<&'a str>;
 /// `(mx, my)` is the bounds of the map. When `my` is reached, the slope terminates; when
 /// `mx` is reached, it wraps back around to 0.
 fn slope((dx, dy): (i32, i32), (mx, my): (i32, i32)) -> impl Iterator<Item = (i32, i32)> {
-    (0..=(dy / my)).map(move |n| ((dx * n) % mx, dy * n))
+    (0..(my / dy)).map(move |n| ((dx * n) % mx, dy * n))
 }
 
 /// Counts the number of trees on a slope.

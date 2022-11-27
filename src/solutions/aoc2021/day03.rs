@@ -22,8 +22,8 @@ pub fn one(input: &str) -> crate::Result<u32> {
 /// Find the two ratings according to some convoluted bit-based filtering mechanism, and multiply
 /// them together.
 pub fn two(input: &str) -> crate::Result<u32> {
-    let oxygen = find_rating(input, Ordering::Greater, b'1');
-    let scrubber = find_rating(input, Ordering::Less, b'0');
+    let oxygen = find_rating(input, Ordering::Greater, b'1')?;
+    let scrubber = find_rating(input, Ordering::Less, b'0')?;
 
     Ok(oxygen * scrubber)
 }
@@ -31,7 +31,7 @@ pub fn two(input: &str) -> crate::Result<u32> {
 /// Filters the input data until only one value remains, then returns that value. `partition`
 /// determines which bit to keep (most or least common), and `tiebreaker` is the bit that gets used
 /// when both bits are equally common.
-fn find_rating(data: &str, partition: Ordering, tiebreaker: u8) -> u32 {
+fn find_rating(data: &str, partition: Ordering, tiebreaker: u8) -> crate::Result<u32> {
     let mut data: Vec<_> = data.lines().collect();
 
     for i in 0..data[0].len() {
@@ -62,5 +62,5 @@ fn find_rating(data: &str, partition: Ordering, tiebreaker: u8) -> u32 {
         }
     }
 
-    u32::from_str_radix(data[0], 2).unwrap()
+    Ok(u32::from_str_radix(data[0], 2)?)
 }

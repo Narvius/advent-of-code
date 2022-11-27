@@ -7,13 +7,12 @@ pub fn one(input: &str) -> crate::Result<usize> {
 }
 
 /// Find the manhattan distance bewteen the two furthest-away scanners.
-pub fn two(input: &str) -> crate::Result<String> {
+pub fn two(input: &str) -> crate::Result<i32> {
     let (_, scanners) = combine_into_one_map(parse(input).ok_or("parse failed")?);
-    Ok(product(scanners.iter(), scanners.iter())
+    product(scanners.iter(), scanners.iter())
         .map(|((ax, ay, az), (bx, by, bz))| (ax - bx).abs() + (ay - by).abs() + (az - bz).abs())
         .max()
-        .unwrap()
-        .to_string())
+        .ok_or_else(|| "no result".into())
 }
 
 /// Given the parsed puzzle input, returns the full combined map, as well as the positions of all

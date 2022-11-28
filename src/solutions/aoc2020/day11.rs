@@ -100,7 +100,7 @@ impl Map {
 /// Converts a coordinate pair into a 1D index, given the dimensions.
 fn to_index((x, y): Point, (w, h): Point) -> Option<usize> {
     let valid = (0..w).contains(&x) && (0..h).contains(&y);
-    valid.then(|| (y * w + x) as usize)
+    valid.then_some((y * w + x) as usize)
 }
 
 /// Finds the first point starting at `(x, y)`, going in the direction `(dx, dy)` that is

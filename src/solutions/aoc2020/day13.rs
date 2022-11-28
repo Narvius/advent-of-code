@@ -15,8 +15,8 @@ pub fn two(input: &str) -> crate::Result<i64> {
     let (_, buses) = parse(input).ok_or("parse failed")?;
 
     // This is basically a big modulo constraint puzzle. We have to count up until, for each
-    // bus, [(time + position in list) % busnumber] has to be zero. Fortunately, this can be
-    // made faster; by combining all of these constraints that are true modulo constraints into
+    // bus, [(time + position in list) % busnumber] is zero. Fortunately, this can be made faster;
+    // by combining all of these constraints that are true modulo constraints into
     // one, we can create a list of candidate numbers that is much smaller than the entire
     // number line.
 
@@ -48,8 +48,8 @@ pub fn two(input: &str) -> crate::Result<i64> {
 /// filters out numbers `x` that don't match `(x + offset) % divisor == 0`.
 ///
 /// If the offset is less than the divisor, this is a "true modulo constraint"--it can be
-/// rearranged into `x % divisor == offset`. Two constraints like that can be combined into
-/// one. For details, see [`combine_constraints`].
+/// rearranged into `x % divisor == divisor - offset`. Two constraints like that can be combined
+/// into one. For details, see [`combine_constraints`].
 type Constraint = (i64, i64);
 
 /// Parses the input into an initial timestamp, and a list of constraints.

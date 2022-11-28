@@ -29,7 +29,7 @@ impl Graph<'_> {
         let mut stack = self.contained_in[self.get_node(bag)?].clone();
         while let Some(bag) = stack.pop() {
             possible_containers.insert(bag);
-            stack.extend(self.contained_in[bag].iter())
+            stack.extend(&self.contained_in[bag])
         }
         Some(possible_containers.len())
     }

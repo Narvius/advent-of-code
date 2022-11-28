@@ -33,9 +33,9 @@ pub fn one(input: &str) -> crate::Result<usize> {
 /// ```
 ///
 /// Which elements are included in that sum above is decided by the puzzle constraints; `SC(5)`
-/// includes only `SC(3)` and `SC(4)` because the third element (joltage 3) and fourth element
-/// (joltage 4) are within 3 units of the fifth element (joltage 6); whereas the second element
-/// (joltage 2) is 4 units away.
+/// includes only `SC(3)` and `SC(4)` but not `SC(2)`, because the third element (joltage 3) and
+/// fourth element (joltage 4) are within 3 units of the fifth element (joltage 6); whereas the
+/// second element (joltage 2) is 4 units away.
 ///
 /// `SC(# of joltages)` then is the number of arrangements for the entire chain.
 pub fn two(input: &str) -> crate::Result<i64> {

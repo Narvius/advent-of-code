@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-/// Read all the assignment operations, treating masks as modifying the value being written.
+/// Run all the assignment operations, treating masks as modifying the value being written.
 /// We can decompose the masks as written into two actual numbers, one used to AND with, the
 /// other to OR with, allowing us to succinctly modify all the bits specified without
 /// touching any of the other ones.
@@ -22,6 +22,8 @@ pub fn one(input: &str) -> crate::Result<u64> {
     Ok(values.into_values().sum())
 }
 
+/// Run all the assignment operations, treating masks as modifying the address being written to;
+/// where 'X's mean both options.
 pub fn two(input: &str) -> crate::Result<u64> {
     let mut values: HashMap<u64, u64> = HashMap::new();
     let mut or_mask = u64::MIN;

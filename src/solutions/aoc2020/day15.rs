@@ -12,8 +12,8 @@ pub fn two(input: &str) -> crate::Result<usize> {
 fn run_memory_game(input: &str, target: usize) -> crate::Result<usize> {
     let mut vals = input.split(',').filter_map(|v| v.parse::<usize>().ok());
 
-    // `occurences[n]` correspond to the turn that `n` last showed up on. The size is
-    // probably too large, but finding a more accurate  size is too much effort to be worth it.
+    // `occurences[n]` correspond to the turn that `n` last showed up on. The vec is probably
+    // way larger than it needs to be, but not worth trying to do it more accurately.
     let mut occurences = vec![None; target];
     // `item` is the last number that was called.
     // `occurence` is the turn that `item` last showed up on.

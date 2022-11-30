@@ -9,7 +9,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 }
 
 /// Freebie!
-pub fn two(_input: &str) -> crate::Result<&'static str> {
+pub fn two(_input: &str) -> crate::Result<&str> {
     Ok("done!")
 }
 

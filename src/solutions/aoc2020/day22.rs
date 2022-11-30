@@ -32,7 +32,7 @@ pub fn two(input: &str) -> crate::Result<i32> {
 fn recursive(p1: &mut VecDeque<i32>, p2: &mut VecDeque<i32>) -> bool {
     let mut history = HashSet::new();
     while !p1.is_empty() && !p2.is_empty() {
-        let hash = hashed(&p1, &p2);
+        let hash = hashed(p1, p2);
         if !history.insert(hash) {
             return true;
         }

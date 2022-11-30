@@ -133,51 +133,71 @@ where
     D: Clone + IntoIterator<Item = usize>,
 {
     let mut runtime = Duration::new(0, 0);
+    let (mut success, mut fail) = (0, 0);
     for year in years {
         for day in days.clone() {
-            if !valid_input(year, day) {
-                eprintln!("out of range value in eval: ({}, {})", year, day);
-                continue;
-            }
+            for part in 0..=1 {
+                if !valid_input(year, day) {
+                    eprintln!("out of range value in eval: ({year}, {day}, {part})");
+                    continue;
+                }
 
-            runtime += eval_single(year, day).unwrap_or_else(|| Duration::new(0, 0));
+                match eval_single(year, day, part) {
+                    Ok(time) => {
+                        runtime += time;
+                        success += 1;
+                    }
+                    Err(failed) => {
+                        if failed {
+                            fail += 1
+                        }
+                    }
+                }
+            }
         }
     }
 
     if runtime.as_secs_f64() > 0.0 {
-        println!("\nTotal runtime: {}", format_duration(runtime));
+        println!(
+            "\nTotal runtime: {} (success: {success}; failed: {fail})",
+            format_duration(runtime)
+        );
         Ok(())
     } else {
         Err(Error::NoSolutions.into())
     }
 }
 
-/// Runs the solution for a given day. Returns the run time, if anything was executed.
-fn eval_single(year: usize, day: usize) -> Option<Duration> {
+/// Runs the solution for a given day. Returns the run time if successful, and whether to count
+/// the lack of a result as a failure otherwise.
+fn eval_single(year: usize, day: usize, part: usize) -> std::result::Result<Duration, bool> {
     if !valid_input(year, day) {
-        eprintln!("out of range input to eval_single ({}, {})", year, day);
-        return None;
+        eprintln!("out of range input to eval_single ({year}, {day}, {part})");
+        return Err(false);
     }
 
-    let mut runtime = Duration::new(0, 0);
-    if let Some(&(a, b, s)) = get_solution(year, day) {
-        for (part, f) in [('a', a), ('b', b)] {
-            let start = Instant::now();
-            let result = f(s);
-            let end = Instant::now();
+    let &(a, b, s) = get_solution(year, day).ok_or(false)?;
+    let (f, part) = match part {
+        0 => (a, 'a'),
+        1 => (b, 'b'),
+        _ => return Err(false),
+    };
 
-            match result {
-                Ok(val) => {
-                    runtime += end - start;
-                    let d = format_duration(end - start);
-                    println!("Day {:04}-{:02}{}  [{}]  = {}", year, day, part, d, val);
-                }
-                Err(why) => println!("Day {:04}-{:02}{}  [ FAILED ]  = {}", year, day, part, why),
-            }
+    let start = Instant::now();
+    let result = f(s);
+    let end = Instant::now();
+
+    match result {
+        Ok(val) => {
+            let d = format_duration(end - start);
+            println!("Day {year:04}-{day:02}{part}  [{d}]  = {val}");
+            Ok(end - start)
+        }
+        Err(why) => {
+            println!("Day {year:04}-{day:02}{part}  [ FAILED ]  = {why}");
+            Err(true)
         }
     }
-
-    (runtime.as_secs_f64() > 0.0).then_some(runtime)
 }
 
 /// Formats a [`Duration`](std::time::Duration) for output.
@@ -194,9 +214,7 @@ fn format_duration(d: Duration) -> Cow<'static, str> {
 /// or `None` if it doesn't exist.
 fn get_solution(year: usize, day: usize) -> Option<&'static Solution> {
     if valid_input(year, day) {
-        CONTENTS
-            .get(ASSUMED_YEAR - 2015)
-            .and_then(|o| o.get(day - 1))
+        CONTENTS.get(year - 2015).and_then(|o| o.get(day - 1))
     } else {
         None
     }

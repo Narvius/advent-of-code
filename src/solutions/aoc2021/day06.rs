@@ -15,7 +15,7 @@ pub fn two(input: &str) -> crate::Result<u64> {
 /// entire generations at once, instead of having to do each fish individually.
 fn count_lanternfish_after_days(input: &str, days: usize) -> u64 {
     let mut fish = [0; 9];
-    for c in input.split(',') {
+    for c in input.trim().split(',') {
         fish[c.parse::<usize>().unwrap()] += 1;
     }
 

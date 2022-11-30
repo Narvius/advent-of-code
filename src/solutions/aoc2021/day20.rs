@@ -56,8 +56,8 @@ impl Image {
         std::mem::swap(&mut self.data, &mut self.backbuffer);
     }
 
-    /// Expands the borders of the [`Image::active_rec`] by one, taking into account whether the
-    /// tiles that are now in range need to be lit up or not.
+    /// Expands the borders of the [`Image`] by one, taking into account whether the tiles that are
+    /// now in range need to be lit up or not.
     fn widen_active_rect(&mut self) {
         self.active_rect.0 .0 -= 1;
         self.active_rect.0 .1 -= 1;

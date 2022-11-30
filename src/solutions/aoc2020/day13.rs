@@ -66,20 +66,22 @@ fn parse(input: &str) -> Option<(i64, Vec<Constraint>)> {
     Some((timestamp, constraints))
 }
 
-/// Combines two modulo constraints using the Chinese Remainder Theorem.
-/// See: https://en.wikipedia.org/wiki/Chinese_remainder_theorem#Using_the_existence_construction
+/// Combines two modulo constraints using the [Chinese Remainder Theorem][1].
+///
+/// [1]: https://en.wikipedia.org/wiki/Chinese_remainder_theorem#Using_the_existence_construction
 fn combine_constraints((an, ao): Constraint, (bn, bo): Constraint) -> (i64, i64) {
     let (_, x, y) = extended_euclidean(an, bn);
     let q = an * bn;
     (q, i64::rem_euclid(an * x * bo + bn * y * ao, q))
 }
 
-/// Extended Euclidean algorithm that returns two Bezout coefficients alongside the
+/// Extended Euclidean algorithm] that returns two Bezout coefficients alongside the
 /// greatest common divisor of two numbers. The Bezout coefficients are used in the
 /// Chinese Remainder Theorem to combine two true modulo constraints into one.
 ///
-/// Straightforward translation of the pseudocode from
-/// Wikipedia (https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm)
+/// Straightforward translation of the pseudocode from [Wikipedia][1].
+///
+/// [1]: https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
 fn extended_euclidean(a: i64, b: i64) -> (i64, i64, i64) {
     let (mut old_r, mut r) = (a, b);
     let (mut old_s, mut s) = (1, 0);

@@ -11,8 +11,9 @@ pub fn two(input: &str) -> crate::Result<i64> {
 /// Calculates the value of an expression. If `addition_precedence` is true, addition has
 /// higher precedence than multiplication, otherwise they have the same precedence.
 ///
-/// Uses the shunting-yard algorithm (https://en.wikipedia.org/wiki/Shunting-yard_algorithm)
-/// to convert the expression to RPN before evaluating it.
+/// Uses the [shunting-yard algorithm][1] to convert the expression to RPN before evaluating it.
+///
+/// [1]: https://en.wikipedia.org/wiki/Shunting-yard_algorithm
 fn eval(expr: &str, addition_precedence: bool) -> Option<i64> {
     // Returns whether `a` has less precedence than `b`.
     fn prec(a: &str, b: &str, add: bool) -> bool {

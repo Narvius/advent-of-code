@@ -1,27 +1,31 @@
 /// Find the total caolories carried by the top elf.
 pub fn one(input: &str) -> crate::Result<i32> {
-    parse(input)?
-        .into_iter()
-        .max()
-        .ok_or_else(|| "no result".into())
+    Elves(input.lines()).max().ok_or_else(|| "no result".into())
 }
 
 /// Find the total calories carried by the top three elves.
 pub fn two(input: &str) -> crate::Result<i32> {
-    let mut elves = parse(input)?;
+    let mut elves: Vec<_> = Elves(input.lines()).collect();
     elves.sort_unstable_by_key(|e| i32::MAX - e);
     Ok(elves[0..3].iter().copied().sum())
 }
 
-/// Parses the input into the number of calories carried by each elf.
-fn parse(input: &str) -> crate::Result<Vec<i32>> {
-    let mut result = vec![0];
-    for line in input.lines() {
-        if line.is_empty() {
-            result.push(0);
-        } else if let Some(v) = result.last_mut() {
-            *v += line.parse::<i32>()?;
+/// An iterator over all elves in the input.
+struct Elves<'a>(std::str::Lines<'a>);
+
+impl Iterator for Elves<'_> {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut sum = 0;
+        for line in self.0.by_ref() {
+            if line.is_empty() {
+                return Some(sum);
+            } else {
+                sum += line.parse::<i32>().ok()?;
+            }
         }
+
+        None
     }
-    Ok(result)
 }

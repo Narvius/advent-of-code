@@ -7,7 +7,7 @@ mod runner;
 
 /// During 0 or 1 argument invocations, this year is assumed. Changes based on what I work on,
 /// for convenience's sake.
-const ASSUMED_YEAR: usize = 2020;
+const ASSUMED_YEAR: usize = 2022;
 
 events! {
     aoc2015::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
@@ -17,6 +17,7 @@ events! {
     aoc2019::{};
     aoc2020::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21, day22, day23, day24, day25};
     aoc2021::{day01, day02, day03, day04, day05, day06, day07, day08, day09, day10, day11, day12, day13, day14, day15, day16, day17, day18, day19, day20, day21};
+    aoc2022::{day01};
 }
 
 /// The result type used throughout this app.

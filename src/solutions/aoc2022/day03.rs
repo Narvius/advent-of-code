@@ -29,7 +29,7 @@ pub fn two(input: &str) -> crate::Result<i32> {
         .sum())
 }
 
-/// Make a hashmap out of the bytes of a string.
+/// Make a set out of the bytes of a string.
 fn letters(s: &str) -> HashSet<u8> {
     s.bytes().collect()
 }

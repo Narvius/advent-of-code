@@ -4,11 +4,11 @@ pub fn one(input: &str) -> crate::Result<i32> {
         .lines()
         .map(|line| {
             (line.as_bytes()[2] - b'X' + 1) as i32
-                + match (line.as_bytes()[0], line.as_bytes()[2]) {
+                + match line {
                     // We win.
-                    (b'A', b'Y') | (b'B', b'Z') | (b'C', b'X') => 6,
+                    "A Y" | "B Z" | "C X" => 6,
                     // Draw.
-                    (b'A', b'X') | (b'B', b'Y') | (b'C', b'Z') => 3,
+                    "A X" | "B Y" | "C Z" => 3,
                     // Loss.
                     _ => 0,
                 }

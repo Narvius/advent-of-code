@@ -56,7 +56,9 @@ impl Machine {
     }
 
     /// Runs the machine until a comparison with register #0 is made; and then returns the
-    /// value is gets compared to.
+    /// value is gets compared to. Based on the observation that register 0 is only ever
+    /// used in that specific comparison at the end, and is used for terminating the
+    /// entire program.
     fn get_comparison_value(&mut self) -> i64 {
         // Run until a "gtrr" instruction is reached; but step at least once, in case we're
         // already paused on one.

@@ -7,7 +7,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
         .lines()
         .filter_map(|s| {
             let (a, b) = s.split_at(s.len() / 2);
-            Some(priority(*letters(a).intersection(&letters(b)).next()?))
+            shared_item_priority(&[a, b])
         })
         .sum())
 }
@@ -16,28 +16,24 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// priorities of all such letters.
 pub fn two(input: &str) -> crate::Result<i32> {
     let lines: Vec<_> = input.lines().collect();
-    Ok(lines
-        .chunks(3)
-        .filter_map(|chunk| {
-            let combined = chunk.iter().map(|line| letters(line)).reduce(|mut a, b| {
-                a.retain(|v| b.contains(v));
-                a
-            })?;
-
-            Some(priority(combined.into_iter().next()?))
-        })
-        .sum())
+    Ok(lines.chunks(3).filter_map(shared_item_priority).sum())
 }
 
-/// Make a set out of the bytes of a string.
-fn letters(s: &str) -> HashSet<u8> {
-    s.bytes().collect()
-}
+/// Given a slice of strings, finds the character shared between all of them; then returns
+/// its priority score (defined by the puzzle).
+fn shared_item_priority(groups: &[&str]) -> Option<i32> {
+    let combined = groups
+        .iter()
+        .map(|s| s.bytes().collect::<HashSet<_>>())
+        .reduce(|mut a, b| {
+            a.retain(|v| b.contains(v));
+            a
+        })?;
 
-/// Converts an item (represented by an ASCII character) to a priority score.
-fn priority(v: u8) -> i32 {
+    let v = combined.into_iter().next()?;
     match v {
-        b'a'..=b'z' => (1 + v - b'a') as i32,
-        _ => (27 + v - b'A') as i32,
+        b'a'..=b'z' => Some((1 + v - b'a') as i32),
+        b'A'..=b'Z' => Some((27 + v - b'A') as i32),
+        _ => None,
     }
 }

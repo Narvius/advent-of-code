@@ -22,7 +22,7 @@ fn overlap(((alo, ahi), (blo, bhi)): ((i32, i32), (i32, i32))) -> Option<(i32, i
     (lo <= hi).then_some((lo, hi))
 }
 
-/// Parses the puzzle input into a pairs of ranges.
+/// Parses the puzzle input into pairs of ranges.
 fn parse(input: &str) -> impl Iterator<Item = ((i32, i32), (i32, i32))> + '_ {
     input.lines().filter_map(|line| {
         let mut v = line

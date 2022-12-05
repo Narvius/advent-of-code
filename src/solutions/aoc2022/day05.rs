@@ -44,7 +44,7 @@ fn run_crates(input: &str, move_fn: MoveFn) -> crate::Result<String> {
 
 /// Parses the puzzle input into a list of stacks, and a series of commands.
 fn parse(input: &str) -> Option<(Vec<Vec<char>>, impl Iterator<Item = Command> + '_)> {
-    let mut stacks = vec![vec![]; 9];
+    let mut stacks = vec![vec![]; (1 + input.lines().next()?.len()) / 4];
     let mut lines = input.lines();
 
     for line in lines.by_ref() {
@@ -52,7 +52,7 @@ fn parse(input: &str) -> Option<(Vec<Vec<char>>, impl Iterator<Item = Command> +
             break;
         }
 
-        for i in 0..9 {
+        for i in 0..stacks.len() {
             let c = line[(1 + 4 * i)..(2 + 4 * i)].chars().next()?;
             if c != ' ' {
                 stacks[i].push(c);
@@ -64,16 +64,12 @@ fn parse(input: &str) -> Option<(Vec<Vec<char>>, impl Iterator<Item = Command> +
         stack.reverse();
     }
 
-    lines.next();
-    let commands = lines.filter_map(|line| {
+    let commands = lines.skip(1).filter_map(|line| {
         let mut items = line
             .split_ascii_whitespace()
             .filter_map(|v| v.parse::<i32>().ok());
-        Some((
-            items.next()?,
-            (items.next()? - 1) as usize,
-            (items.next()? - 1) as usize,
-        ))
+        let (n, from, to) = (items.next()?, items.next()?, items.next()?);
+        Some((n, (from - 1) as usize, (to - 1) as usize))
     });
 
     Some((stacks, commands))

@@ -4,7 +4,7 @@ use std::cmp::Ordering;
 pub fn one(input: &str) -> crate::Result<String> {
     run_crates(input, |from, to, n| {
         for _ in 0..n {
-            to.push(from.pop().unwrap());
+            to.push(from.pop().unwrap_or('?'));
         }
     })
 }

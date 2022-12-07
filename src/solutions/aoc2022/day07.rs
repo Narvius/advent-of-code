@@ -59,7 +59,9 @@ fn get_size<'a>(dir: &'a str, dirs: &'a Dirs, cache: &mut Cache<'a>) -> usize {
     })
 }
 
-/// Parses the puzzle input into a tree of directories.
+/// Parses the puzzle input into a tree of directories. Note that the returned [`HashMap`] uses
+/// the *full path* of each directory as a key, because different directories can have
+/// subdirectories with the same name.
 fn parse(input: &str) -> Option<Dirs> {
     // Adds an extra segment to a path, without leaving a leading or trailing slash.
     fn concat_path(path: &[&str], segment: &str) -> String {

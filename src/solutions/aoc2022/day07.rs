@@ -63,8 +63,9 @@ fn get_size<'a>(dir: &'a str, dirs: &'a Dirs, cache: &mut Cache<'a>) -> usize {
 /// the *full path* of each directory as a key, because different directories can have
 /// subdirectories with the same name.
 fn parse(input: &str) -> Option<Dirs> {
-    // Adds an extra segment to a path, without leaving a leading or trailing slash.
-    fn concat_path(path: &[&str], segment: &str) -> String {
+    // Given the path segments making up a directory, and the name of a subdirectory, builds
+    // the full path to that subdirectory as a String.
+    fn subdir_path(path: &[&str], segment: &str) -> String {
         if path.is_empty() {
             segment.to_string()
         } else {
@@ -89,7 +90,7 @@ fn parse(input: &str) -> Option<Dirs> {
             // ls command. Lists children, which we need to store.
             for line in block.lines().skip(1) {
                 let child = match line.split_once(' ')? {
-                    ("dir", name) => Child::Dir(concat_path(&path, name)),
+                    ("dir", name) => Child::Dir(subdir_path(&path, name)),
                     (size, _) => Child::File(size.parse().ok()?),
                 };
 

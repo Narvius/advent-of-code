@@ -21,10 +21,11 @@ pub fn two(input: &str) -> crate::Result<usize> {
     let mut cache = HashMap::new();
     let to_free = REQUIRED - (TOTAL_SIZE - get_size("", &dirs, &mut cache));
 
-    let mut candidates: Vec<_> = cache.into_values().filter(|&v| v >= to_free).collect();
-    candidates.sort_unstable();
-
-    Ok(candidates[0])
+    Ok(cache
+        .into_values()
+        .filter(|&v| v >= to_free)
+        .min()
+        .unwrap_or(0))
 }
 
 /// Contains a mapping of full directory paths to children of the respective directories. Note

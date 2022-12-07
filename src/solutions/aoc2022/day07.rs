@@ -44,11 +44,8 @@ enum Child {
 /// Gets the size of a directory, simultaneously storing the size of itself and all child
 /// directories in `cache`.
 fn get_size<'a>(dir: &'a str, dirs: &'a Dirs, cache: &mut Cache<'a>) -> usize {
-    if let Some(&size) = cache.get(dir) {
-        return size;
-    }
-
-    if let Some(children) = dirs.get(dir) {
+    cache.get(dir).copied().unwrap_or_else(|| {
+        let children = dirs.get(dir).map(|v| v.as_slice()).unwrap_or(&[]);
         let size = children
             .iter()
             .map(|c| match c {
@@ -59,19 +56,17 @@ fn get_size<'a>(dir: &'a str, dirs: &'a Dirs, cache: &mut Cache<'a>) -> usize {
 
         cache.entry(dir).or_insert(size);
         size
-    } else {
-        0
-    }
+    })
 }
 
 /// Parses the puzzle input into a tree of directories.
 fn parse(input: &str) -> Option<Dirs> {
-    // Concatenates two file paths, whilst leaving no leading or trailing slashes.
-    fn concat_path(path: &[&str], name: &str) -> String {
+    // Adds an extra segment to a path, without leaving a leading or trailing slash.
+    fn concat_path(path: &[&str], segment: &str) -> String {
         if path.is_empty() {
-            name.to_string()
+            segment.to_string()
         } else {
-            format!("{}/{}", path.join("/"), name)
+            format!("{}/{}", path.join("/"), segment)
         }
     }
 

@@ -77,7 +77,7 @@ fn parse(input: &str) -> Option<Dirs> {
     let mut dirs: Dirs = HashMap::new();
     let mut path = vec![];
 
-    for block in input.trim_start_matches(['$', ' ']).split("$ ") {
+    for block in input.split("$ ").skip(1) {
         if let Some(dir) = block.strip_prefix("cd ") {
             // cd command. Just changes the path we're on.
             match dir.trim() {

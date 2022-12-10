@@ -1,40 +1,42 @@
-/// Find the sum of six specific signal strenghts.
+/// Find the sum of six specific signal strengths.
 pub fn one(input: &str) -> crate::Result<i32> {
-    Ok(Program::from_input(input)
-        .skip(19)
-        .step_by(40)
-        .zip((20..).step_by(40))
-        .take(6)
-        .fold(0, |acc, (a, b)| acc + a * b))
+    let values = RegisterValues::from_input(input);
+    let chosen_six = values.zip(1..).skip(19).step_by(40).take(6);
+    Ok(chosen_six.map(|(register, cycle)| register * cycle).sum())
 }
 
-/// Use the program to draw a string containing 8 capital letters.
+/// Draw a 40x6 image containing a text string, using the register values to decide which
+/// pixels are lit.
 pub fn two(input: &str) -> crate::Result<String> {
     let mut crt = String::with_capacity(41 * 6);
-    let mut program = Program::from_input(input);
+    let mut values = RegisterValues::from_input(input);
     for _ in 0..6 {
         crt.push('\n');
         for x in 0..40 {
-            let val = program.next().unwrap_or(0);
+            let val = values.next().unwrap_or(0);
             crt.push(if (x - val).abs() <= 1 { '#' } else { '.' });
         }
     }
     Ok(crt)
 }
 
-/// A program from puzzle input. An iterator that returns the values after the `n`th cycle,
-/// starting at n = 1 on the element.
-struct Program {
+/// An iterator over the register values produced during execution of a program like the one
+/// provided in the input.
+struct RegisterValues {
+    /// List of (register change, time until completion) pairs.
     ops: Vec<(i32, usize)>,
+    /// The current register value.
     reg: i32,
+    /// CUrrent amount of steps to wait before the next op begins.
     wait: usize,
 }
 
-impl Program {
-    /// Parses the puzzle input into a [`Program`].
+impl RegisterValues {
+    /// Parses the puzzle input into a [`RegisterValues`] iterator.
     fn from_input(input: &str) -> Self {
-        let mut code: Vec<(i32, usize)> = input
+        let code: Vec<(i32, usize)> = input
             .lines()
+            .rev()
             .filter_map(|line| {
                 Some(match line.split_once(' ') {
                     Some((_, val)) => (val.parse().ok()?, 2),
@@ -42,7 +44,6 @@ impl Program {
                 })
             })
             .collect();
-        code.reverse();
         let wait = code[0].1;
         Self {
             ops: code,
@@ -52,15 +53,14 @@ impl Program {
     }
 }
 
-impl Iterator for Program {
+impl Iterator for RegisterValues {
     type Item = i32;
 
     fn next(&mut self) -> Option<Self::Item> {
         let (reg_change, new_wait) = match self.wait - 1 {
             0 => {
                 let (change, _) = self.ops.pop()?;
-                let wait = self.ops.last()?.1;
-                (change, wait)
+                (change, self.ops.last()?.1)
             }
             wait => (0, wait),
         };

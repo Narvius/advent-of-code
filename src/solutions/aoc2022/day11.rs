@@ -32,11 +32,9 @@ fn monkey_business(input: &str, turns: usize, relief_factor: bool) -> crate::Res
         for i in 0..monkeys.len() {
             while let Some(mut item) = monkeys[i].items.pop_front() {
                 monkeys[i].inspect_count += 1;
-                item = match monkeys[i].operation {
-                    BinOp(a, true, b) => a.unwrap_or(item) * b.unwrap_or(item),
-                    BinOp(a, false, b) => a.unwrap_or(item) + b.unwrap_or(item),
-                };
-                item = (item / relief) % cap;
+
+                let BinOp(a, op, b) = monkeys[i].operation;
+                item = (op(a.unwrap_or(item), b.unwrap_or(item)) / relief) % cap;
 
                 let index = monkeys[i].targets[usize::from(item % monkeys[i].test == 0)];
                 monkeys[index].items.push_back(item);
@@ -58,8 +56,8 @@ struct Monkey {
 }
 
 /// A binary expression involving two numbers. If a number is not given, the old item value is
-/// used. The bool indicates either addition (`false`) or multiplication (`true`).
-struct BinOp(Option<i64>, bool, Option<i64>);
+/// used instead.
+struct BinOp(Option<i64>, fn(i64, i64) -> i64, Option<i64>);
 
 /// Parses the puzzle input into a list of monkeys.
 fn parse(input: &str) -> Vec<Monkey> {
@@ -79,7 +77,11 @@ fn parse(input: &str) -> Vec<Monkey> {
                 items: items.split(", ").filter_map(|v| v.parse().ok()).collect(),
                 operation: BinOp(
                     op.next()?.parse().ok(),
-                    op.next()? == "*",
+                    if op.next()? == "*" {
+                        <i64 as std::ops::Mul>::mul
+                    } else {
+                        <i64 as std::ops::Add>::add
+                    },
                     op.next()?.parse().ok(),
                 ),
                 test: test.parse().ok()?,

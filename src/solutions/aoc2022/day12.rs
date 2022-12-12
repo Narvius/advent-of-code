@@ -3,7 +3,7 @@ use std::collections::{HashSet, VecDeque};
 /// Find the length of the shortest path between the start and end tiles.
 pub fn one(input: &str) -> crate::Result<usize> {
     let (start, end, data) = parse(input);
-    Ok(bfs(data, start, Box::new(move |p, _| p == end)))
+    shortest_path(data, start, Some(end))
 }
 
 /// Find the length of the shortest path between the end tile and *any* lowest-elevation tile.
@@ -20,43 +20,40 @@ pub fn two(input: &str) -> crate::Result<usize> {
     for tile in data.iter_mut().flat_map(|v| v.iter_mut()) {
         *tile = b'z' - *tile;
     }
-    Ok(bfs(data, start, Box::new(|_, height| height == b'z')))
+    shortest_path(data, start, None)
 }
 
-/// A breadth-first search that returns the length of the path that was found.
-fn bfs(data: Data, start: Point, end: EndCheck) -> usize {
+/// A breadth-first search that returns the length of the path that was found. If no `end` is
+/// given, the search will finish once a height of 'z' is reached.
+fn shortest_path(data: Data, start: Point, end: Option<(i32, i32)>) -> crate::Result<usize> {
+    // Gets the height at a given point.
+    fn height(data: &Data, (x, y): Point) -> Option<u8> {
+        data.get(y as usize)?.get(x as usize).copied()
+    }
+
     let mut queue = VecDeque::from([(start, 0)]);
     let mut visited = HashSet::from([start]);
-    let mut result = usize::MAX;
 
     while let Some(((x, y), s)) = queue.pop_front() {
-        let Some(source_height) = get_height(&data, (x, y)) else { continue; };
+        let Some(source_height) = height(&data, (x, y)) else { continue; };
 
-        if end((x, y), source_height) {
-            result = result.min(s);
-            continue;
+        if end.map(|p| p == (x, y)).unwrap_or(source_height == b'z') {
+            return Ok(s);
         }
 
         for p in [(-1, 0), (0, -1), (1, 0), (0, 1)].map(|(dx, dy)| (x + dx, y + dy)) {
-            let Some(target_height) = get_height(&data, p) else { continue; };
+            let Some(target_height) = height(&data, p) else { continue; };
             if target_height <= (source_height + 1) && visited.insert(p) {
                 queue.push_back((p, s + 1));
             }
         }
     }
 
-    result
-}
-
-/// Gets the height value for a given point.
-fn get_height(data: &Data, (x, y): Point) -> Option<u8> {
-    data.get(y as usize)?.get(x as usize).copied()
+    Err("no path found".into())
 }
 
 /// Heightmap data.
 type Data = Vec<Vec<u8>>;
-/// A function that checks if a point is the end.
-type EndCheck = Box<dyn Fn(Point, u8) -> bool>;
 /// A 2D point in space.
 type Point = (i32, i32);
 

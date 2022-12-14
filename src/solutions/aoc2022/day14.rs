@@ -1,11 +1,17 @@
+/// Find the amount of tiles of sand that settle before starting to fall off the edge.
 pub fn one(input: &str) -> crate::Result<usize> {
     find_settled_count(input, |p, end_line| p.1 + 1 == end_line)
 }
 
+/// Find the amount of tiles of sand that settle before the source becomes blocked. Assume a floor
+/// two tiles under the lowest point in the input.
 pub fn two(input: &str) -> crate::Result<usize> {
     Ok(1 + find_settled_count(input, |p, _| p == (500, 0))?)
 }
 
+/// Counts the number of tiles of sand that settle before the `condition` is fulfilled. The two
+/// arguments are the position of the sand that settled, alongside the end line (see [`parse`]
+/// for details).
 fn find_settled_count(input: &str, condition: fn(Point, i32) -> bool) -> crate::Result<usize> {
     let (mut map, end_line) = parse(input)?;
     (0..)
@@ -14,6 +20,8 @@ fn find_settled_count(input: &str, condition: fn(Point, i32) -> bool) -> crate::
         .ok_or_else(|| "no result".into())
 }
 
+/// Drops a single bit of sand until it settles, marks it on the map, and returns the
+/// coordinates it settled at.
 fn drop_sand(map: &mut Map, end_line: i32) -> (i32, i32) {
     let mut pos = (500, 0);
 
@@ -36,6 +44,8 @@ fn drop_sand(map: &mut Map, end_line: i32) -> (i32, i32) {
 type Map = Vec<Vec<bool>>;
 type Point = (i32, i32);
 
+/// Parses the puzzle input into a map and the Y position of the floor (which is located two
+/// tiles under the lowest point in the input). This Y position is the "end line".
 fn parse(input: &str) -> crate::Result<(Map, i32)> {
     fn range(a: i32, b: i32) -> std::ops::RangeInclusive<i32> {
         if a > b {

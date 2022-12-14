@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 pub fn one(input: &str) -> crate::Result<usize> {
     find_settled_count(input, |p, end_line| p.1 + 1 == end_line)
 }
@@ -23,19 +21,19 @@ fn drop_sand(map: &mut Map, end_line: i32) -> (i32, i32) {
         let candidate = [(0, 1), (-1, 1), (1, 1)]
             .map(|(dx, dy)| (pos.0 + dx, pos.1 + dy))
             .into_iter()
-            .find(|c| c.1 < end_line && !map.contains(c));
+            .find(|&(cx, cy)| cy < end_line && !map[cx as usize][cy as usize]);
 
         match candidate {
             Some(new_pos) => pos = new_pos,
             None => {
-                map.insert(pos);
+                map[pos.0 as usize][pos.1 as usize] = true;
                 return pos;
             }
         }
     }
 }
 
-type Map = HashSet<Point>;
+type Map = Vec<Vec<bool>>;
 type Point = (i32, i32);
 
 fn parse(input: &str) -> crate::Result<(Map, i32)> {
@@ -59,26 +57,22 @@ fn parse(input: &str) -> crate::Result<(Map, i32)> {
         })
         .collect();
 
-    let mut map = HashSet::new();
-    for line in input.lines() {
-        let points: Vec<Point> = line
-            .split(" -> ")
-            .filter_map(|s| {
-                let (x, y) = s.split_once(',')?;
-                Some((x.parse().ok()?, y.parse().ok()?))
-            })
-            .collect();
+    let max_y = 2 + lines
+        .iter()
+        .flat_map(|v| v.iter())
+        .fold(0, |acc, p| acc.max(p.1));
 
-        for segment in points.windows(2) {
+    let mut map = vec![vec![false; max_y as usize]; 1000];
+    for line in lines {
+        for segment in line.windows(2) {
             for x in range(segment[0].0, segment[1].0) {
-                map.insert((x, segment[0].1));
+                map[x as usize][segment[0].1 as usize] = true;
             }
             for y in range(segment[0].1, segment[1].1) {
-                map.insert((segment[0].0, y));
+                map[segment[0].0 as usize][y as usize] = true;
             }
         }
     }
 
-    let end_line = map.iter().map(|p| p.1).max().ok_or("no points")?;
-    Ok((map, end_line + 2))
+    Ok((map, max_y))
 }

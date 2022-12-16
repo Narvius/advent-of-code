@@ -34,27 +34,27 @@ pub fn two(input: &str) -> crate::Result<i64> {
     }
 
     let sensors = parse(input);
+    let (x, y) = sensors
+        .iter()
+        .flat_map(|&sensor| points_just_outside_range(sensor))
+        .find(|&p| is_hidden_beacon(&sensors, p))
+        .ok_or("no result")?;
 
-    for &((x, y), _, range) in &sensors {
-        let distance = range + 1;
-        for dx in -distance..=distance {
-            let dy = distance.abs() - dx.abs();
-            if is_hidden_beacon(&sensors, (x + dx, y + dy)) {
-                return Ok((x + dx) as i64 * LIMIT as i64 + (y + dy) as i64);
-            }
-            if is_hidden_beacon(&sensors, (x + dx, y - dy)) {
-                return Ok((x + dx) as i64 * LIMIT as i64 + (y - dy) as i64);
-            }
-        }
-    }
-
-    Err("no result".into())
+    Ok(x as i64 * LIMIT as i64 + y as i64)
 }
 
 /// Data about one sensor; contains its own position, the position of the nearest beacon, and
 /// the manhattan distance between the two.
 type Sensor = (Point, Point, i32);
 type Point = (i32, i32);
+
+/// Returns all points one step beyond the range of a sensor.
+fn points_just_outside_range(((x, y), _, range): Sensor) -> impl Iterator<Item = (i32, i32)> {
+    (-(range + 1)..=(range + 1)).flat_map(move |dx| {
+        let dy = (range + 1).abs() - dx.abs();
+        [(x + dx, y + dy), (x + dx, y - dy)]
+    })
+}
 
 /// Counts the number of squares with the given Y position that are *guaranteed* to not
 /// contain an unknown beacon.

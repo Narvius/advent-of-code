@@ -28,13 +28,20 @@ pub fn two(input: &str) -> crate::Result<i32> {
     ))
 }
 
+/// A HashMap where the value associated with `(source valve id, target valve id)` is the
+/// number of minutes required to traverse from one to the other.
 type Distances = HashMap<(usize, usize), usize>;
+/// A list of valves, where one entry is made of the flow rate of the valve when opened, and
+/// a list of indices of valves it has tunnels to.
 type Valves = Vec<(i32, Vec<usize>)>;
 
 /// Given a set of valves and distances between them, finds the maximum amount of pressure
 /// that can be released given some `initial` conditions. The four values in that tuple, in
 /// order, describe the current position, remaining time, list of open valves, already-released
 /// pressure.
+///
+/// Since there's fewer than 64 valves, a `u64` is used as a bitset indicating which valves
+/// are open or closed. If the `n`th least significant bit is set, the `n`th valve is opened.
 fn find_optimal_pressure_release(
     valves: &Valves,
     distances: &Distances,

@@ -11,7 +11,7 @@ pub fn two(input: &str) -> crate::Result<i64> {
     for _ in 0..10 {
         mix_list(&mut items, &mut order)?;
     }
-    grove_coordinates(&mut items)
+    grove_coordinates(&items)
 }
 
 /// Mixes the list as per the puzzle input. `items` and `order` are mixed in the exact same way,
@@ -29,11 +29,11 @@ fn mix_list(items: &mut Vec<i64>, order: &mut Vec<usize>) -> crate::Result<()> {
 }
 
 /// Calculates the grove coordinates from a list of items.
-fn grove_coordinates(items: &mut [i64]) -> crate::Result<i64> {
-    let Some(zero_pos) = items.iter().position(|&n| n == 0) else { Err("failed")? };
-    items.rotate_left(zero_pos);
+fn grove_coordinates(items: &[i64]) -> crate::Result<i64> {
+    let Some(zero) = items.iter().position(|&n| n == 0) else { Err("no zero")? };
+    let len = items.len();
 
-    Ok(items[1000 % items.len()] + items[2000 % items.len()] + items[3000 % items.len()])
+    Ok(items[(zero + 1000) % len] + items[(zero + 2000) % len] + items[(zero + 3000) % len])
 }
 
 /// Parses the puzzle input into a list of numbers (with an optional multiplier applied), and

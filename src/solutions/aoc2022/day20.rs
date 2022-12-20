@@ -2,7 +2,7 @@
 pub fn one(input: &str) -> crate::Result<i64> {
     let (mut items, mut order) = parse(input, 1);
     mix_list(&mut items, &mut order)?;
-    grove_coordinates(&mut items)
+    grove_coordinates(&items)
 }
 
 /// Pre-multiply numbers in the list, mix them 10 times, and calculate the same checksum.

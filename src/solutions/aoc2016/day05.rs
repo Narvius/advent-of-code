@@ -65,7 +65,7 @@ impl Iterator for Hashes {
             let d = context.compute();
 
             if d[0] == 0 && d[1] == 0 && d[2] < 16 {
-                return Some((d[2] as usize, (d[3] >> 4) as u8));
+                return Some((d[2] as usize, d[3] >> 4));
             }
         }
     }

@@ -18,10 +18,8 @@ fn construct_wrapping_links(chunks: &[Chunk]) -> Vec<Link> {
     let find = |(x, y), (dx, dy)| {
         (1..)
             .map(|i| {
-                positions.get(&(
-                    ((x + dx * i) as i32).rem_euclid(6),
-                    ((y + dy * i) as i32).rem_euclid(6),
-                ))
+                let (x, y): Point = (x + dx * i, y + dy * i);
+                positions.get(&(x.rem_euclid(6), y.rem_euclid(6)))
             })
             .find(|p| p.is_some())
     };
@@ -30,21 +28,23 @@ fn construct_wrapping_links(chunks: &[Chunk]) -> Vec<Link> {
         .iter()
         .map(|chunk| {
             let p = chunk.pos;
-            Link([0, 1, 2, 3].map(|dir| (*find(p, DELTAS[dir]).unwrap().unwrap(), 0)))
+            Link([0, 1, 2, 3].map(|dir| (*find(p, DELTAS[dir]).unwrap().unwrap(), (dir + 2) % 4)))
         })
         .collect()
 }
 
 /// Constructs the [`Link`]s for cube-based wrapping.
 fn construct_cube_links(_chunks: &[Chunk]) -> Vec<Link> {
-    // I'll just.. hardcode the cube fold. Not happy with it.
+    // I'll just.. hardcode the cube fold. Not happy with it, but I will
+    // not finish tonight if I don't do this.
+    // FIXME actually fold the cube!
     vec![
-        Link([(1, 0), (2, 0), (3, 2), (5, 1)]),
-        Link([(4, 2), (2, 1), (0, 0), (5, 0)]),
-        Link([(1, 3), (4, 0), (3, 3), (0, 0)]),
-        Link([(4, 0), (5, 0), (0, 2), (2, 1)]),
-        Link([(1, 2), (5, 1), (3, 3), (2, 0)]),
-        Link([(4, 3), (1, 0), (0, 3), (3, 0)]),
+        Link([(1, 2), (2, 3), (3, 2), (5, 2)]),
+        Link([(4, 0), (2, 0), (0, 0), (5, 1)]),
+        Link([(1, 1), (4, 3), (3, 3), (0, 1)]),
+        Link([(4, 2), (5, 3), (0, 2), (2, 2)]),
+        Link([(1, 0), (5, 0), (3, 0), (2, 1)]),
+        Link([(4, 1), (1, 3), (0, 3), (3, 1)]),
     ]
 }
 
@@ -60,14 +60,14 @@ fn execute_walk(chunks: &[Chunk], instructions: &[Op], link_fn: LinkFn) -> Optio
         match op {
             Op::Forward(n) => {
                 for _ in 0..*n {
-                    // Take a step.
+                    // See where taking a step would end up.
                     let ((x, y), (dx, dy)) = (pos, DELTAS[facing]);
                     let (tx, ty) = (x + dx, y + dy);
 
                     // Check if we're leaving through an edge.
                     let edge = match (tx, ty) {
-                        (50, _) => Some(0),
-                        (_, 50) => Some(1),
+                        (x, _) if x == SIZE as i32 => Some(0),
+                        (_, y) if y == SIZE as i32 => Some(1),
                         (-1, _) => Some(2),
                         (_, -1) => Some(3),
                         _ => None,
@@ -75,27 +75,19 @@ fn execute_walk(chunks: &[Chunk], instructions: &[Op], link_fn: LinkFn) -> Optio
 
                     // Find the target chunk and position we're entering.
                     let (tchunk, tpos, tfacing) = if let Some(edge) = edge {
-                        // I have to correlate edges of chunks here, taking into account
-                        // rotation. As a specific example, top edge of chunk 0 connects
-                        // to the LEFT edge of chunk 5, which is a link of (5, 1).
-                        // The 3 here means that usually we'd expect to connect to the BOTTOM,
-                        // but we rotate that expectation right (clockwise) once.
-                        let (new_chunk, rotations) = links[chunk].0[edge];
-                        let target_edge = (edge + 2 + rotations) % 4;
-                        (
-                            new_chunk,
-                            project_onto_edge(pos, edge, target_edge),
-                            (facing + rotations) % 4,
-                        )
+                        let (new_chunk, target_edge) = links[chunk].0[edge];
+                        let new_pos = move_to_edge(pos, edge, target_edge);
+                        (new_chunk, new_pos, (target_edge + 2) % 4)
                     } else {
                         (chunk, (tx, ty), facing)
                     };
 
                     // Abort if we bonked into a wall.
-                    if !chunks[tchunk].data[(tpos.1 * 50 + tpos.0) as usize] {
+                    if !chunks[tchunk].data[(tpos.1 * SIZE as i32 + tpos.0) as usize] {
                         break;
                     }
 
+                    // Actually update the current state.
                     (chunk, pos, facing) = (tchunk, tpos, tfacing);
                 }
             }
@@ -105,45 +97,50 @@ fn execute_walk(chunks: &[Chunk], instructions: &[Op], link_fn: LinkFn) -> Optio
     }
 
     let ((cx, cy), (x, y)) = (chunks[chunk].pos, pos);
-    Some(1000 * (cy * 50 + y + 1) + 4 * (cx * 50 + x + 1) + facing as i32)
+    Some(1000 * (cy * SIZE as i32 + y + 1) + 4 * (cx * SIZE as i32 + x + 1) + facing as i32)
 }
 
 /// Gets the position of `p` on `target_edge`, assuming it starts on `source_edge`.
-fn project_onto_edge(p: Point, source_edge: usize, target_edge: usize) -> Point {
-    // This code is a symptom of me giving up.
-    match (source_edge, target_edge) {
-        (0, 0) => (49, 49 - p.1),
-        (0, 1) => (p.1, 49),
+fn move_to_edge(p: Point, source_edge: usize, target_edge: usize) -> Point {
+    // This code is a symptom of me giving up, but it is NOT special-cased!
+    // It simply lists all possibilities, when there's likely a cleaner
+    // way of expressing it all.
+    match (source_edge % 4, target_edge % 4) {
+        (0, 0) => (MAX, MAX - p.1),
+        (0, 1) => (p.1, MAX),
         (0, 2) => (0, p.1),
-        (0, 3) => (49 - p.1, 0),
-        (1, 0) => (49, p.0),
-        (1, 1) => (49 - p.0, 49),
-        (1, 2) => (0, 49 - p.0),
+        (0, 3) => (MAX - p.1, 0),
+        (1, 0) => (MAX, p.0),
+        (1, 1) => (MAX - p.0, MAX),
+        (1, 2) => (0, MAX - p.0),
         (1, 3) => (p.0, 0),
-        (2, 0) => (49, p.1),
-        (2, 1) => (49 - p.1, 49),
-        (2, 2) => (0, 49 - p.1),
+        (2, 0) => (MAX, p.1),
+        (2, 1) => (MAX - p.1, MAX),
+        (2, 2) => (0, MAX - p.1),
         (2, 3) => (p.1, 0),
-        (3, 0) => (49, 49 - p.0),
-        (3, 1) => (p.0, 49),
+        (3, 0) => (MAX, MAX - p.0),
+        (3, 1) => (p.0, MAX),
         (3, 2) => (0, p.0),
-        (3, 3) => (49 - p.0, 0),
+        (3, 3) => (MAX - p.0, 0),
         _ => unreachable!(),
     }
 }
 
+/// A point in 2D space.
 type Point = (i32, i32);
+
+/// A function that computes links between chunks.
 type LinkFn = fn(&[Chunk]) -> Vec<Link>;
 
 /// Represents one sixth of the map, a single 50x50 chunk.
 struct Chunk {
     pos: (i32, i32),
-    data: [bool; 2500],
+    data: [bool; SIZE * SIZE],
 }
 
 /// Represents the four connections--to the right, down, to the left, and up. The first number
-/// in each pair indicates the chunk we will arrive at, and the second number how many
-/// times it is rotated clockwise in relation to the current chunk.
+/// in each pair indicates the chunk we will arrive at, and the second number the edge we
+/// will arrive through (again, 0 = right edge, 1 = bottom edge, 2 = left edge, 3 = top edge).
 struct Link([(usize, usize); 4]);
 
 /// A walking instruction.
@@ -157,6 +154,12 @@ enum Op {
 /// Four orthogonal deltas, in the order specified by the puzzle (right, down, left, up).
 const DELTAS: [Point; 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 
+/// Side length of each chunk.
+const SIZE: usize = 50;
+
+/// Convenience define for calculations where I need 1 less than the side length.
+const MAX: i32 = (SIZE - 1) as i32;
+
 /// Parses the puzzle input into a list of chunks and a list of instructions.
 fn parse(input: &str) -> Option<(Vec<Chunk>, Vec<Op>)> {
     let (map, instructions) = input.split_once("\n\n")?;
@@ -166,15 +169,15 @@ fn parse(input: &str) -> Option<(Vec<Chunk>, Vec<Op>)> {
     for cy in 0..6 {
         for cx in 0..6 {
             let value = lines
-                .get(cy * 50)
-                .and_then(|v| v.as_bytes().get(cx * 50))
+                .get(cy * SIZE)
+                .and_then(|v| v.as_bytes().get(cx * SIZE))
                 .copied();
 
             if matches!(value, Some(b'.' | b'#')) {
-                let mut data = [false; 2500];
-                for y in 0..50 {
-                    for x in 0..50 {
-                        data[50 * y + x] = lines[cy * 50 + y].as_bytes()[cx * 50 + x] == b'.';
+                let mut data = [false; SIZE * SIZE];
+                for y in 0..SIZE {
+                    for x in 0..SIZE {
+                        data[SIZE * y + x] = lines[cy * SIZE + y].as_bytes()[cx * SIZE + x] == b'.';
                     }
                 }
                 chunks.push(Chunk {

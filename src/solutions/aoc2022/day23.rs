@@ -2,8 +2,8 @@ use std::collections::{HashMap, HashSet};
 
 /// Run 10 rounds of elf movements and find a checksum from their position.
 pub fn one(input: &str) -> crate::Result<i32> {
-    let mut elves = parse(input);
-    let mut checks = CHECKS;
+    let (mut elves, mut checks) = (parse(input), CHECKS);
+
     for _ in 0..10 {
         step_elves(&mut elves, &mut checks);
     }
@@ -19,8 +19,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
 
 /// Find the number of the first round on which no elves moved.
 pub fn two(input: &str) -> crate::Result<usize> {
-    let mut elves = parse(input);
-    let mut checks = CHECKS;
+    let (mut elves, mut checks) = (parse(input), CHECKS);
 
     Ok(1 + (0..)
         .take_while(|_| step_elves(&mut elves, &mut checks))
@@ -31,7 +30,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
 fn step_elves(elves: &mut HashSet<Point>, checks: &mut [Check; 4]) -> bool {
     let mut proposed: HashMap<Point, Vec<Point>> = HashMap::new();
 
-    // Calculated proposed moves.
+    // Calculate proposed moves.
     for &(x, y) in elves.iter() {
         let any_neighbour = (-1..=1)
             .flat_map(|dx| (-1..=1).map(move |dy| (dx, dy)))

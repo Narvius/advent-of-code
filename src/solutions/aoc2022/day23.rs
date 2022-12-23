@@ -21,12 +21,10 @@ pub fn one(input: &str) -> crate::Result<i32> {
 pub fn two(input: &str) -> crate::Result<usize> {
     let mut elves = parse(input);
     let mut checks = CHECKS;
-    for n in 1.. {
-        if !step_elves(&mut elves, &mut checks) {
-            return Ok(n);
-        }
-    }
-    unreachable!()
+
+    Ok(1 + (0..)
+        .take_while(|_| step_elves(&mut elves, &mut checks))
+        .count())
 }
 
 /// Executes one round of elf movement; returns whether any elf moved.
@@ -37,7 +35,7 @@ fn step_elves(elves: &mut HashSet<Point>, checks: &mut [Check; 4]) -> bool {
     for &(x, y) in elves.iter() {
         let any_neighbour = (-1..=1)
             .flat_map(|dx| (-1..=1).map(move |dy| (dx, dy)))
-            .any(|(dx, dy)| (dx, dy) == (0, 0) || elves.contains(&(x + dx, y + dy)));
+            .any(|(dx, dy)| (dx, dy) != (0, 0) && elves.contains(&(x + dx, y + dy)));
 
         if !any_neighbour {
             continue;

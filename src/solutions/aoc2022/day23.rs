@@ -36,8 +36,8 @@ fn step_elves(elves: &mut HashSet<Point>, checks: &mut [Check; 4]) -> bool {
     // Calculated proposed moves.
     for &(x, y) in elves.iter() {
         let any_neighbour = (-1..=1)
-            .flat_map(|dx| (-1..=1).map(move |dy| (dx, dy)).filter(|&p| p != (0, 0)))
-            .any(|(dx, dy)| elves.contains(&(x + dx, y + dy)));
+            .flat_map(|dx| (-1..=1).map(move |dy| (dx, dy)))
+            .any(|(dx, dy)| (dx, dy) == (0, 0) || elves.contains(&(x + dx, y + dy)));
 
         if !any_neighbour {
             continue;

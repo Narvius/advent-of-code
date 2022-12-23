@@ -18,7 +18,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
     let mut fill_queue = BinaryHeap::from([QueuedPoint((0, 0), map.target, 1, 0)]);
     // One HashMap per tool that keeps track of which tiles were visited with that tool;
     // the value for an entry is how many steps it took to get there optimally.
-    let mut visited: [HashMap<(usize, usize), usize>; 3] = std::array::from_fn(|_| HashMap::new());
+    let mut visited: [_; 3] = std::array::from_fn(|_| HashMap::new());
 
     // The length of the shortest path found so far; used to prune searches that aren't going anywhere.
     let mut best = usize::MAX;
@@ -71,10 +71,8 @@ fn neighbours((x, y): Point, (max_x, max_y): Point) -> impl Iterator<Item = Poin
     [(-1, 0), (0, -1), (1, 0), (0, 1)]
         .into_iter()
         .filter(move |&(dx, dy)| {
-            (x, dx) != (0, -1)
-                && (x, dx) != (max_x, 1)
-                && (y, dy) != (0, -1)
-                && (y, dy) != (max_y, 1)
+            (0..=max_x as i32).contains(&(x as i32 + dx))
+                && (0..=max_y as i32).contains(&(y as i32 + dy))
         })
         .map(move |(dx, dy)| ((x as i32 + dx) as usize, (y as i32 + dy) as usize))
 }

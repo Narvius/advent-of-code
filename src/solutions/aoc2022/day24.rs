@@ -12,6 +12,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
     Ok(map.shortest_path(3))
 }
 
+/// A point in 2D space.
 type Point = (i32, i32);
 
 /// A map of the valley.  
@@ -51,7 +52,7 @@ impl Map {
                 continue;
             }
 
-            if (x, y) == self.end && completions == target_completions {
+            if (x, y) == target && completions == target_completions {
                 return steps;
             }
 
@@ -81,10 +82,10 @@ fn parse(input: &str) -> Option<Map> {
         .filter(|line| !line.contains("###"))
         .map(|line| line.trim_matches('#'))
         .collect();
-    let cycle = map.len() * map[0].len();
+    let cycles = map.len() * map[0].len();
 
-    let mut data = vec![HashSet::new(); cycle];
-    for i in 0..cycle as i32 {
+    let mut data = vec![HashSet::new(); cycles];
+    for i in 0..cycles as i32 {
         for y in 0..map.len() as i32 {
             for x in 0..map[y as usize].len() as i32 {
                 let p = match map[y as usize].as_bytes()[x as usize] {

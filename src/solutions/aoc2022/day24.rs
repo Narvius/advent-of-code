@@ -52,7 +52,7 @@ impl Map {
                 continue;
             }
 
-            if (x, y) == target && completions == target_completions {
+            if completions == target_completions {
                 return steps;
             }
 

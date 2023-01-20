@@ -98,7 +98,7 @@ impl Program {
             }
             Op::JumpIf(cond) => {
                 let v = *self.resolve(1, modes.take()?)?;
-                self.pointer = if (v > 0) == cond {
+                self.pointer = if (v != 0) == cond {
                     usize::try_from(*self.resolve(2, modes.take()?)?)?
                 } else {
                     self.pointer + 3

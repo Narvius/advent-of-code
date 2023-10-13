@@ -73,20 +73,26 @@ enum Item {
 
 impl PartialOrd for Item {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Item {
+    fn cmp(&self, other: &Self) -> Ordering {
         use Item::*;
         match (self, other) {
-            (Value(lhs), Value(rhs)) => lhs.partial_cmp(rhs),
-            (lhs @ Value(_), rhs @ List(_)) => List(vec![lhs.clone()]).partial_cmp(rhs),
-            (lhs @ List(_), rhs @ Value(_)) => lhs.partial_cmp(&List(vec![rhs.clone()])),
+            (Value(lhs), Value(rhs)) => lhs.cmp(rhs),
+            (lhs @ Value(_), rhs @ List(_)) => List(vec![lhs.clone()]).cmp(rhs),
+            (lhs @ List(_), rhs @ Value(_)) => lhs.cmp(&List(vec![rhs.clone()])),
             (List(lhs), List(rhs)) => {
                 for i in 0.. {
                     match (i == lhs.len(), i == rhs.len()) {
-                        (true, true) => return Some(Ordering::Equal),
-                        (true, false) => return Some(Ordering::Less),
-                        (false, true) => return Some(Ordering::Greater),
+                        (true, true) => return Ordering::Equal,
+                        (true, false) => return Ordering::Less,
+                        (false, true) => return Ordering::Greater,
                         _ => {
-                            let cmp = lhs[i].partial_cmp(&rhs[i]);
-                            if cmp != Some(Ordering::Equal) {
+                            let cmp = lhs[i].cmp(&rhs[i]);
+                            if cmp != Ordering::Equal {
                                 return cmp;
                             }
                         }
@@ -96,11 +102,5 @@ impl PartialOrd for Item {
                 unreachable!()
             }
         }
-    }
-}
-
-impl Ord for Item {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.partial_cmp(other).unwrap()
     }
 }

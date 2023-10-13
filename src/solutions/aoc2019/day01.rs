@@ -6,7 +6,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// Find the total fuel weight if fuel weight also requires additional fuel.
 pub fn two(input: &str) -> crate::Result<i32> {
     run(input, |n| {
-        std::iter::successors(Some(n), |&n| (n > 6).then(|| n / 3 - 2))
+        std::iter::successors(Some(n), |&n| (n > 6).then_some(n / 3 - 2))
             .skip(1)
             .sum()
     })

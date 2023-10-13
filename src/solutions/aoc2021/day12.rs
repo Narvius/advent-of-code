@@ -66,7 +66,7 @@ impl Graph<'_> {
                     _ if target == g.end => 1,
                     // Small, open cave. Have to copy the "open_mask", with the corresponding
                     // entry set to false.
-                    (true, _) if (b'a'..=b'z').contains(&g.nodes[target].as_bytes()[0]) => {
+                    (true, _) if g.nodes[target].as_bytes()[0].is_ascii_lowercase() => {
                         sub_paths(g, target, open_mask & !(1 << target), grace)
                     }
                     // Big, open cave. No need to modify state.

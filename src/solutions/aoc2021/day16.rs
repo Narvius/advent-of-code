@@ -143,7 +143,7 @@ fn to_bits_string(s: &str) -> String {
     let mut bits = String::with_capacity(s.len() * 4);
     for &c in s.as_bytes() {
         bits.push_str(&match c {
-            c if (b'0'..=b'9').contains(&c) => format!("{:04b}", c - b'0'),
+            c if c.is_ascii_digit() => format!("{:04b}", c - b'0'),
             c if (b'A'..=b'F').contains(&c) => format!("{:04b}", 10 + c - b'A'),
             _ => String::new(),
         })

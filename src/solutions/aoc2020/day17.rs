@@ -7,7 +7,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
                 data.get((x as i32 + dx) as usize)?
                     .get((y as i32 + dy) as usize)?
                     .get((z as i32 + dz) as usize)?
-                    .then(|| ())
+                    .then_some(())
             })
             .count()
     }
@@ -50,7 +50,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
                     .get((y as i32 + dy) as usize)?
                     .get((z as i32 + dz) as usize)?
                     .get((w as i32 + dw) as usize)?
-                    .then(|| ())
+                    .then_some(())
             })
             .count()
     }

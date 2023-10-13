@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 // Running this solution takes about 73 seconds on my machine. I'm glad to be past this for now,
 // and I really don't like the "puzzles" that are just about calculating md5 real good, but I might
 // try to find a more efficient way in the future. There probably is a trick to this.
@@ -5,10 +7,11 @@
 /// Find eight hashes starting with five zeroes, and construct the password from their sixth
 /// bytes.
 pub fn one(input: &str) -> crate::Result<String> {
-    Ok(Hashes::new(input)
-        .take(8)
-        .map(|(c, _)| format!("{:x}", c))
-        .collect())
+    let mut s = String::new();
+    for hash in Hashes::new(input).take(8) {
+        write!(s, "{:x}", hash.0)?;
+    }
+    Ok(s)
 }
 
 /// Construct the password in a more complicated fashion using hashes starting with five zeroes.

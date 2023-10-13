@@ -122,14 +122,12 @@ fn parse(input: &str) -> Option<(usize, Valves)> {
         data.push((flow_rate.parse().ok()?, leads_to.split(", ")));
     }
 
-    let get_index = move |name: &str| names.iter().position(|&n| name == n);
+    let mut get_index = move |name: &str| names.iter().position(|&n| name == n);
     let starting_position = get_index("AA")?;
     Some((
         starting_position,
         data.into_iter()
-            .map(|(flow_rate, leads_to)| {
-                (flow_rate, leads_to.filter_map(|n| get_index(n)).collect())
-            })
+            .map(|(flow_rate, leads_to)| (flow_rate, leads_to.filter_map(&mut get_index).collect()))
             .collect(),
     ))
 }

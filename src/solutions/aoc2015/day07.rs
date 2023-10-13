@@ -86,7 +86,7 @@ fn parse(line: &str) -> Option<Instruction> {
 
 /// Converts a variable name from the input into a numeric representation.
 fn as_number(s: &str) -> Option<usize> {
-    Some(if s.bytes().all(|b| (b'a'..=b'z').contains(&b)) {
+    Some(if s.bytes().all(|b| b.is_ascii_lowercase()) {
         s.bytes().fold(0, |acc, b| (acc << 8) + b as usize)
     } else {
         None?

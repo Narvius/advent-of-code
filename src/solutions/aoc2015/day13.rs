@@ -20,29 +20,6 @@ type HappinessMatrix = HashMap<(usize, usize), i32>;
 
 /// Returns the total happiness values for all possible arrangements.
 fn all_arrangement_values(people: usize, matrix: HappinessMatrix) -> impl Iterator<Item = i32> {
-    // Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.
-    fn permutations(k: usize) -> Vec<Vec<usize>> {
-        fn inner(k: usize, values: &mut [usize]) -> Vec<Vec<usize>> {
-            let mut result = Vec::new();
-            if k <= 1 {
-                result.push(Vec::from(values));
-            } else {
-                result.extend(inner(k - 1, values));
-                for i in 0..(k - 1) {
-                    if k % 2 == 0 {
-                        values.swap(i, k - 1);
-                    } else {
-                        values.swap(0, k - 1);
-                    }
-                    result.extend(inner(k - 1, values));
-                }
-            }
-            result
-        }
-
-        inner(k, &mut (0..k).collect::<Vec<_>>())
-    }
-
     // Calculates the total happines for a seating arrangement.
     fn arrangement_value(order: &[usize], matrix: &HappinessMatrix) -> i32 {
         order
@@ -54,7 +31,7 @@ fn all_arrangement_values(people: usize, matrix: HappinessMatrix) -> impl Iterat
             .sum()
     }
 
-    permutations(people)
+    crate::common::permutations(people)
         .into_iter()
         .map(move |v| arrangement_value(&v[..], &matrix))
 }

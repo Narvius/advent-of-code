@@ -2,6 +2,7 @@
 //! Many of those solutions do not represent my first time ever solving the problems, but rather,
 //! the best Rust solution I am able to write as of... time of writing.
 
+mod common;
 #[macro_use]
 mod runner;
 

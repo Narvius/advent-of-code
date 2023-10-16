@@ -29,7 +29,7 @@ fn best_trip_distance(input: &str, include_return: bool) -> crate::Result<usize>
 
     // Use the cached dijkstra map information to quickly find the length of each possible
     // trip, and get the shortest one.
-    for order in permutations(maze.goals.len()) {
+    for order in crate::common::permutations(maze.goals.len()) {
         let mut result = start_map[&maze.goals[order[0]]];
         for w in order.windows(2) {
             result += maps[w[0]][&maze.goals[w[1]]];
@@ -61,29 +61,6 @@ fn dijkstra_map_for(maze: &Maze, start: (usize, usize)) -> HashMap<(usize, usize
     }
 
     map
-}
-
-/// Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.
-fn permutations(k: usize) -> Vec<Vec<usize>> {
-    fn inner(k: usize, values: &mut [usize]) -> Vec<Vec<usize>> {
-        let mut result = Vec::new();
-        if k <= 1 {
-            result.push(Vec::from(values));
-        } else {
-            result.extend(inner(k - 1, values));
-            for i in 0..(k - 1) {
-                if k % 2 == 0 {
-                    values.swap(i, k - 1);
-                } else {
-                    values.swap(0, k - 1);
-                }
-                result.extend(inner(k - 1, values));
-            }
-        }
-        result
-    }
-
-    inner(k, &mut (0..k).collect::<Vec<_>>())
 }
 
 /// Contains information about walkable tiles, as well as the starting and goal positions.

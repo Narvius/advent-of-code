@@ -20,29 +20,6 @@ type Distances = HashMap<(usize, usize), usize>;
 
 /// Returns the lengths of all possible routes.
 fn all_route_lengths(locations: usize, distances: Distances) -> impl Iterator<Item = usize> {
-    // Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.
-    fn permutations(k: usize) -> Vec<Vec<usize>> {
-        fn inner(k: usize, values: &mut [usize]) -> Vec<Vec<usize>> {
-            let mut result = Vec::new();
-            if k <= 1 {
-                result.push(Vec::from(values));
-            } else {
-                result.extend(inner(k - 1, values));
-                for i in 0..(k - 1) {
-                    if k % 2 == 0 {
-                        values.swap(i, k - 1);
-                    } else {
-                        values.swap(0, k - 1);
-                    }
-                    result.extend(inner(k - 1, values));
-                }
-            }
-            result
-        }
-
-        inner(k, &mut (0..k).collect::<Vec<_>>())
-    }
-
     // Calculates the length of a route.
     fn route_length(order: &[usize], distances: &Distances) -> usize {
         order
@@ -51,7 +28,7 @@ fn all_route_lengths(locations: usize, distances: Distances) -> impl Iterator<It
             .sum()
     }
 
-    permutations(locations)
+    crate::common::permutations(locations)
         .into_iter()
         .map(move |v| route_length(&v[..], &distances))
 }

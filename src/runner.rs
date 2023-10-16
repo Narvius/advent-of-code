@@ -5,7 +5,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::{Result, Solution, ASSUMED_YEAR, CONTENTS, LOWEST_YEAR};
+use crate::{Result, Solution, ASSUMED_YEAR, CONTENTS};
 
 /// Parses command line arguments and runs the corresponding solutions, printing the results
 /// back to standard output. If an error occurs, returns it.
@@ -37,9 +37,9 @@ pub fn run_from_cmd_args() -> Result<()> {
             let day = Input::from_day(args[1].as_ref())?;
 
             match (year, day) {
-                (All, All) => eval(LOWEST_YEAR..=last_year(), 1..=25),
+                (All, All) => eval(CONTENTS.iter().map(|v| v.0), 1..=25),
                 (Specific(year), All) => eval([year], 1..=25),
-                (All, Specific(day)) => eval(LOWEST_YEAR..=last_year(), [day]),
+                (All, Specific(day)) => eval(CONTENTS.iter().map(|v| v.0), [day]),
                 (Specific(year), Specific(day)) => eval([year], [day]),
             }
         }
@@ -81,10 +81,10 @@ impl Input {
                 year += 2000;
             }
 
-            if (LOWEST_YEAR..=last_year()).contains(&year) {
+            if CONTENTS.iter().any(|v| v.0 == year) {
                 Ok(Input::Specific(year))
             } else {
-                Err(Error::OutOfRange(year, LOWEST_YEAR, last_year()).into())
+                Err(Error::InvalidYear(year, CONTENTS.iter().map(|v| v.0).collect()).into())
             }
         } else {
             Err(Error::InvalidArg(arg.to_string()).into())
@@ -96,6 +96,7 @@ impl Input {
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum Error {
     WrongArgCount(usize),
+    InvalidYear(usize, Vec<usize>),
     OutOfRange(usize, usize, usize),
     InvalidArg(String),
     NoSolutions,
@@ -106,18 +107,18 @@ impl std::fmt::Display for Error {
         match self {
             Error::WrongArgCount(count) => write!(
                 f,
-                "expected between 0 and 2 arguments (inclusive); got {}",
-                count
+                "expected between 0 and 2 arguments (inclusive); got {count}",
             ),
+            Error::InvalidYear(given, expected) => {
+                write!(f, "years with solutions: {expected:?}; got {given}")
+            }
             Error::InvalidArg(content) => write!(
                 f,
-                "argument expected to be \".\" or a number; got {}",
-                content
+                "argument expected to be \".\" or a number; got {content}",
             ),
             Error::OutOfRange(actual, min, max) => write!(
                 f,
-                "argument expected to be in range ({}..={}); got {}",
-                min, max, actual
+                "argument expected to be in range ({min}..={max}); got {actual}",
             ),
             Error::NoSolutions => write!(f, "no solutions found"),
         }
@@ -215,21 +216,17 @@ fn format_duration(d: Duration) -> Cow<'static, str> {
 fn get_solution(year: usize, day: usize) -> Option<&'static Solution> {
     if valid_input(year, day) {
         CONTENTS
-            .get(year - LOWEST_YEAR)
+            .iter()
+            .find_map(|v| (v.0 == year).then_some(v.1))
             .and_then(|o| o.get(day - 1))
     } else {
         None
     }
 }
 
-/// Returns the highest year for which there are solutions.
-fn last_year() -> usize {
-    LOWEST_YEAR - 1 + CONTENTS.len()
-}
-
 /// Checks whether all input numbers are within their respective valid ranges.
 fn valid_input(year: usize, day: usize) -> bool {
-    (LOWEST_YEAR..=last_year()).contains(&year) && (1..=25).contains(&day)
+    CONTENTS.iter().any(|v| v.0 == year) && (1..=25).contains(&day)
 }
 
 /// Expands into a static variable named CONTENTS that holds all solutions, as well as the `mod`
@@ -241,7 +238,7 @@ fn valid_input(year: usize, day: usize) -> bool {
 /// - each dayXX.rs file contains two public functions called `one` and `two`
 /// - each one of those takes a `&str` argument and returns a [`Result<T>`](crate::Result).
 macro_rules! events {
-    ($($module:ident::{$($day:ident),*};)*) => {
+    ($($year:literal => $module:ident::{$($day:ident),*};)*) => {
         mod solutions {$(
             pub mod $module {$(
                 pub mod $day;
@@ -249,18 +246,21 @@ macro_rules! events {
         )*}
 
         /// The full space of Advent of Code solutions.
-        static CONTENTS: &'static [&'static [Solution]] = &[$(
-            &[$((
-                |input| $crate::solutions::$module::$day::one(input).map(|v| format!("{v}")),
-                |input| $crate::solutions::$module::$day::two(input).map(|v| format!("{v}")),
-                include_str!(concat!(
-                    "data/",
-                    stringify!($module),
-                    "/",
-                    stringify!($day),
-                    ".txt"
-                )),
-            )),*]
+        static CONTENTS: &'static [(usize, &'static [Solution])] = &[$(
+            (
+                $year,
+                &[$((
+                    |input| $crate::solutions::$module::$day::one(input).map(|v| format!("{v}")),
+                    |input| $crate::solutions::$module::$day::two(input).map(|v| format!("{v}")),
+                    include_str!(concat!(
+                        "data/",
+                        stringify!($module),
+                        "/",
+                        stringify!($day),
+                        ".txt"
+                    )),
+                )),*],
+            )
         ),*];
     }
 }

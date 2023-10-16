@@ -34,11 +34,9 @@ pub fn two(input: &str) -> crate::Result<usize> {
         map: &'a HashMap<&'a str, &'a str>,
         node: &'a str,
     ) -> impl Iterator<Item = (&'a str, usize)> {
-        Ancestors {
-            map,
-            current_node: node,
-            current_depth: 0,
-        }
+        std::iter::successors(Some((node, 0)), move |(n, d)| {
+            map.get(n).map(|&n| (n, d + 1))
+        })
     }
 
     for (a1, n1) in ancestors(&map, map["SAN"]) {
@@ -48,24 +46,4 @@ pub fn two(input: &str) -> crate::Result<usize> {
     }
 
     Err("no solution in data set".into())
-}
-
-/// An [`Iterator`] that returns a list of all ancestors alongside the number of jumps required
-/// to reach them, in order from closest to furthest.
-struct Ancestors<'a> {
-    map: &'a HashMap<&'a str, &'a str>,
-    current_node: &'a str,
-    current_depth: usize,
-}
-
-impl<'a> Iterator for Ancestors<'a> {
-    type Item = (&'a str, usize);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.current_depth += 1;
-        self.map.get(self.current_node).map(|&next| {
-            self.current_node = next;
-            (next, self.current_depth)
-        })
-    }
 }

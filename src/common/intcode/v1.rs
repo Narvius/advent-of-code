@@ -16,9 +16,6 @@ pub struct Program {
     pointer: usize,
 }
 
-/// Converts an integer into addressing [`Mode`]s.
-struct Modes(Int);
-
 /// An Intcode operation.
 enum Op {
     Arith(fn(Int, Int) -> Int),
@@ -61,13 +58,13 @@ impl Program {
         let Some(op) = self.code.get(self.pointer).copied() else {
             return Ok(Outcome::Halted);
         };
-        let (op, mut modes) = ((op % 100).try_into()?, Modes(op / 100));
 
+        let (op, m1, m2, m3) = decompose(op)?;
         match op {
             Op::Arith(f) => {
-                let a = *self.resolve(1, modes.take()?)?;
-                let b = *self.resolve(2, modes.take()?)?;
-                let target = self.resolve(3, modes.take()?)?;
+                let a = *self.resolve(1, m1)?;
+                let b = *self.resolve(2, m2)?;
+                let target = self.resolve(3, m3)?;
 
                 *target = f(a, b);
                 self.pointer += 4;
@@ -75,21 +72,21 @@ impl Program {
             Op::Halt => return Ok(Outcome::Halted),
             Op::Read => match self.input.pop_front() {
                 Some(v) => {
-                    let target = self.resolve(1, modes.take()?)?;
+                    let target = self.resolve(1, m1)?;
                     *target = v;
                     self.pointer += 2;
                 }
                 None => return Ok(Outcome::WaitingForInput),
             },
             Op::Write => {
-                let v = *self.resolve(1, modes.take()?)?;
+                let v = *self.resolve(1, m1)?;
                 self.output.push_back(v);
                 self.pointer += 2;
             }
             Op::JumpIf(cond) => {
-                let v = *self.resolve(1, modes.take()?)?;
+                let v = *self.resolve(1, m1)?;
                 self.pointer = if (v != 0) == cond {
-                    usize::try_from(*self.resolve(2, modes.take()?)?)?
+                    usize::try_from(*self.resolve(2, m2)?)?
                 } else {
                     self.pointer + 3
                 };
@@ -102,34 +99,21 @@ impl Program {
     /// Returns a mutable reference to the actual value referred to by the cell
     /// `pointer + offset`, taking the addressing `mode` into account.
     fn resolve(&mut self, offset: usize, mode: Mode) -> crate::Result<&mut Int> {
-        let code = &mut self.code;
-        match mode {
-            Mode::Position => {
-                let index = *code
-                    .get(self.pointer + offset)
-                    .ok_or("not enough operands")?;
-                Ok(code
-                    .get_mut(usize::try_from(index)?)
-                    .ok_or(format!("invalid indirect pointer {index}"))?)
-            }
-            Mode::Immediate => code
-                .get_mut(self.pointer + offset)
-                .ok_or_else(|| "not enough operands".into()),
-        }
+        let index = match mode {
+            Mode::Position => self.code[self.pointer + offset],
+            Mode::Immediate => (self.pointer + offset) as Int,
+        };
+        Ok(&mut self.code[usize::try_from(index)?])
     }
 }
 
-impl Modes {
-    /// Gets the next addressing mode, consuming it.
-    fn take(&mut self) -> crate::Result<Mode> {
-        let result = match self.0 % 10 {
-            0 => Mode::Position,
-            1 => Mode::Immediate,
-            _ => return Err(format!("unknown mode {}", self.0 % 10).into()),
-        };
-        self.0 /= 10;
-        Ok(result)
-    }
+fn decompose(code: Int) -> crate::Result<(Op, Mode, Mode, Mode)> {
+    Ok((
+        (code % 100).try_into()?,
+        ((code / 100) % 10).try_into()?,
+        ((code / 1000) % 10).try_into()?,
+        ((code / 10000) % 10).try_into()?,
+    ))
 }
 
 impl TryFrom<Int> for Op {
@@ -143,10 +127,22 @@ impl TryFrom<Int> for Op {
             4 => Op::Write,
             5 => Op::JumpIf(true),
             6 => Op::JumpIf(false),
-            7 => Op::Arith(|a, b| i32::from(a < b)),
-            8 => Op::Arith(|a, b| i32::from(a == b)),
+            7 => Op::Arith(|a, b| Int::from(a < b)),
+            8 => Op::Arith(|a, b| Int::from(a == b)),
             99 => Op::Halt,
             _ => return Err(format!("unknown opcode {value}").into()),
+        })
+    }
+}
+
+impl TryFrom<Int> for Mode {
+    type Error = Box<dyn std::error::Error>;
+
+    fn try_from(value: Int) -> Result<Self, Self::Error> {
+        Ok(match value {
+            0 => Mode::Position,
+            1 => Mode::Immediate,
+            _ => return Err(format!("unknown addressing mode {value}").into()),
         })
     }
 }

@@ -9,11 +9,10 @@ pub fn one(input: &str) -> crate::Result<usize> {
     }
 
     fn score(map: &HashMap<&str, Vec<&str>>, key: &str, depth: usize) -> usize {
-        depth
-            + match map.get(key) {
-                Some(v) => v.iter().map(|k| score(map, k, depth + 1)).sum::<usize>(),
-                None => 0,
-            }
+        match map.get(key) {
+            Some(v) => depth + v.iter().map(|k| score(map, k, depth + 1)).sum::<usize>(),
+            None => depth,
+        }
     }
 
     Ok(score(&map, "COM", 0))

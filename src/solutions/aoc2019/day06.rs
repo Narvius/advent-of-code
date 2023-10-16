@@ -33,9 +33,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
         map: &'a HashMap<&'a str, &'a str>,
         node: &'a str,
     ) -> impl Iterator<Item = (&'a str, usize)> {
-        std::iter::successors(Some((node, 0)), move |(n, d)| {
-            map.get(n).map(|&n| (n, d + 1))
-        })
+        std::iter::successors(Some((node, 0)), |(n, d)| map.get(n).map(|&n| (n, d + 1)))
     }
 
     for (a1, n1) in ancestors(&map, map["SAN"]) {

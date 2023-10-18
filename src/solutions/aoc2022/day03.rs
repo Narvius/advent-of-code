@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-/// For each line, find the common letter between the first and last line; sum the priorities
-/// of all such letters.
+/// For each line, find the common letter between the first and second half of the line;
+/// sum the priorities of all such letters.
 pub fn one(input: &str) -> crate::Result<i32> {
     Ok(input
         .lines()

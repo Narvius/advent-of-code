@@ -41,6 +41,11 @@ pub fn gcd(a: usize, b: usize) -> usize {
     a
 }
 
+/// Returns the least common multiple of `a` and `b`.
+pub fn lcm(a: usize, b: usize) -> usize {
+    a / gcd(a, b) * b
+}
+
 /// Constructs a pixel display banner, of the kind used to display the answer in a lot of
 /// image manipulation-type tasks.
 pub fn pixel_display(

@@ -8,16 +8,10 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// Draw a 40x6 image containing a text string, using the register values to decide which
 /// pixels are lit.
 pub fn two(input: &str) -> crate::Result<String> {
-    let mut crt = String::with_capacity(41 * 6);
     let mut values = RegisterValues::from_input(input);
-    for _ in 0..6 {
-        crt.push('\n');
-        for x in 0..40 {
-            let val = values.next().unwrap_or(0);
-            crt.push(if (x - val).abs() <= 1 { '#' } else { '.' });
-        }
-    }
-    Ok(crt)
+    Ok(crate::common::pixel_display(40, 6, |x, _| {
+        (x as i32 - values.next().unwrap_or(0)).abs() <= 1
+    }))
 }
 
 /// An iterator over the register values produced during execution of a program like the one

@@ -1,20 +1,10 @@
-use std::collections::HashSet;
-
 /// Decipher the message.
 pub fn one(input: &str) -> crate::Result<String> {
     let mut points = parse(input);
     advance_until_minimal(&mut points);
-    let (_, (lx, ly, hx, hy)) = bounding_rect(&points);
-    let points: HashSet<_> = points.into_iter().map(|p| p.0).collect();
-
-    let mut result = String::with_capacity(((hx - lx + 1) * (hy - ly)) as usize);
-    for y in ly..=hy {
-        result.push('\n');
-        for x in lx..=hx {
-            result.push(if points.contains(&(x, y)) { '#' } else { '.' });
-        }
-    }
-    Ok(result)
+    Ok(crate::common::pixel_display_from_set(
+        points.into_iter().map(|p| p.0).collect(),
+    ))
 }
 
 /// Find the amount of iterations needed to reach the message.

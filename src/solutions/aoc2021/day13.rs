@@ -13,7 +13,7 @@ pub fn two(input: &str) -> crate::Result<String> {
     for fold in folds {
         apply_fold(&mut points, fold);
     }
-    Ok(build_representation(&points).ok_or("failed output")?)
+    Ok(crate::common::pixel_display_from_set(points))
 }
 
 /// Applies a fold as described in the puzzle description.
@@ -31,23 +31,6 @@ fn apply_fold(points: &mut Points, (up, coord): (bool, i32)) {
             (2 * coord - p.0, p.1)
         });
     }
-}
-
-/// Turns the set of points into a human-readable representation.
-fn build_representation(points: &Points) -> Option<String> {
-    let xs = points.iter().min_by_key(|p| p.0)?.0..=points.iter().max_by_key(|p| p.0)?.0;
-    let ys = points.iter().min_by_key(|p| p.1)?.1..=points.iter().max_by_key(|p| p.1)?.1;
-    let mut output = String::with_capacity(1 + (1 + xs.size_hint().0) * ys.size_hint().0);
-    output.push('\n');
-
-    for y in ys {
-        for x in xs.clone() {
-            output.push(if points.contains(&(x, y)) { '#' } else { ' ' });
-        }
-        output.push('\n');
-    }
-
-    Some(output)
 }
 
 type Points = HashSet<(i32, i32)>;

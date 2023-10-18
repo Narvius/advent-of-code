@@ -29,12 +29,7 @@ pub fn two(input: &str) -> crate::Result<String> {
         },
     );
 
-    let mut s = String::with_capacity((WIDTH + 1) * HEIGHT);
-    for line in image.as_slice().chunks(WIDTH) {
-        s.push('\n');
-        for &c in line {
-            s.push(if c == b'1' { '#' } else { ' ' });
-        }
-    }
-    Ok(s)
+    Ok(crate::common::pixel_display(WIDTH, HEIGHT, |x, y| {
+        image[y * WIDTH + x] == b'1'
+    }))
 }

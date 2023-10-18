@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 pub mod intcode;
 
 /// Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.
@@ -37,4 +39,42 @@ pub fn gcd(a: usize, b: usize) -> usize {
     }
 
     a
+}
+
+/// Constructs a pixel display banner, of the kind used to display the answer in a lot of
+/// image manipulation-type tasks.
+pub fn pixel_display(
+    width: usize,
+    height: usize,
+    mut f: impl FnMut(usize, usize) -> bool,
+) -> String {
+    let mut display = String::with_capacity((width + 1) * height);
+    for y in 0..height {
+        display.push('\n');
+        for x in 0..width {
+            display.push(if f(x, y) { '#' } else { '.' });
+        }
+    }
+    display
+}
+
+/// Constructs a [pixel display](pixel_display) banner from a set of points.
+pub fn pixel_display_from_set(points: HashSet<(i32, i32)>) -> String {
+    let (lx, ly, hx, hy) = {
+        let (mut lx, mut ly, mut hx, mut hy) = (i32::MAX, i32::MAX, i32::MIN, i32::MIN);
+        for &(x, y) in &points {
+            lx = lx.min(x);
+            ly = ly.min(y);
+            hx = hx.max(x);
+            hy = hy.max(y);
+        }
+        (lx, ly, hx, hy)
+    };
+
+    let width = (1 + hx - lx) as usize;
+    let height = (1 + hy - ly) as usize;
+
+    pixel_display(width, height, |x, y| {
+        points.contains(&(lx + x as i32, ly + y as i32))
+    })
 }

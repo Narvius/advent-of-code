@@ -10,16 +10,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 /// Display the contents of the grid after running all instructions.
 pub fn two(input: &str) -> crate::Result<String> {
     let map = run_instructions(input);
-    let mut s = String::with_capacity(51 * 6);
-
-    for line in &map {
-        s.push('\n');
-        for &b in line {
-            s.push(if b { '#' } else { '.' });
-        }
-    }
-
-    Ok(s)
+    Ok(crate::common::pixel_display(50, 6, |x, y| map[y][x]))
 }
 
 /// Runs the instructions on a 50x6 grid of pixels and returns the resulting grid.

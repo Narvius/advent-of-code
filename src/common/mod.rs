@@ -22,3 +22,19 @@ pub fn permutations(k: usize) -> Vec<Vec<usize>> {
 
     inner(k, &mut (0..k).collect::<Vec<_>>())
 }
+
+/// Returns the greatest common denominator of `a` and `b`.
+pub fn gcd(a: usize, b: usize) -> usize {
+    let (mut a, mut b) = match a.cmp(&b) {
+        std::cmp::Ordering::Less => (b, a),
+        std::cmp::Ordering::Equal => return a,
+        std::cmp::Ordering::Greater => (a, b),
+    };
+
+    while b != 0 {
+        std::mem::swap(&mut a, &mut b);
+        b %= a;
+    }
+
+    a
+}

@@ -1,4 +1,4 @@
-/// Find the total caolories carried by the top elf.
+/// Find the total calories carried by the top elf.
 pub fn one(input: &str) -> crate::Result<i32> {
     parse(input).max().ok_or_else(|| "no result".into())
 }

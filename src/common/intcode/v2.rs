@@ -12,7 +12,7 @@ pub type Int = i64;
 /// An Intcode program, as per the puzzle description.
 #[derive(Clone, Default)]
 pub struct Program {
-    code: Vec<Int>,
+    pub code: Vec<Int>,
     pub input: VecDeque<Int>,
     pub output: VecDeque<Int>,
     pointer: usize,

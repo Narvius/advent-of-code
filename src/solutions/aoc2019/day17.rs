@@ -33,8 +33,6 @@ pub fn two(input: &str) -> crate::Result<Int> {
     let mut p = Program::with_capacity(input, 5000, [])?;
     p.code[0] = 2;
     for line in std::iter::once(main).chain(subs.into_iter()) {
-        println!("{}", line.trim_end_matches(','));
-
         for b in line.trim_end_matches(',').bytes() {
             p.input.push_back(b as Int);
         }

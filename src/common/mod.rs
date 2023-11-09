@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+pub mod astar;
 pub mod intcode;
 
 /// Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.

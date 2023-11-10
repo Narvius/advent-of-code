@@ -105,6 +105,7 @@ fn teleporter_info(map: &[Vec<u8>], (x, y): (i32, i32)) -> Option<((u8, u8), ((i
         return None;
     }
 
+    // Bounds within which a teleport is considered to be "inner".
     let ((il, it), (ir, ib)) = ((5, 5), (map[0].len() - 5, map.len() - 5));
 
     let mut pair = (b' ', b' ');
@@ -117,6 +118,9 @@ fn teleporter_info(map: &[Vec<u8>], (x, y): (i32, i32)) -> Option<((u8, u8), ((i
 
         match c {
             b'.' => {
+                // An adjacent open tile is the actual teleporter.
+                // It is `outer` if it's not within the inner bounds rectangle
+                // described by (il, it, ir, ib).
                 portal = Some((
                     (x + dx, y + dy),
                     !((il..=ir).contains(&(x as usize)) && (it..=ib).contains(&(y as usize))),

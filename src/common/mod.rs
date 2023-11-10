@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, VecDeque};
 
 pub mod astar;
 pub mod intcode;
@@ -83,4 +83,35 @@ pub fn pixel_display_from_set(points: HashSet<(i32, i32)>) -> String {
     pixel_display(width, height, |x, y| {
         points.contains(&(lx + x as i32, ly + y as i32))
     })
+}
+
+/// Performs a breadth-first search of a value space, returning the
+/// shortest amounts of step taken to reach an `end`.
+///
+/// `next` returns all reachable nodes from the given one, `end` checks
+/// if a given node counts as the end.
+pub fn bfs<N, I, Next, End>(start: N, mut next: Next, mut end: End) -> Option<usize>
+where
+    N: Clone + Eq + std::hash::Hash,
+    I: Iterator<Item = N>,
+    Next: FnMut(&N) -> I,
+    End: FnMut(&N) -> bool,
+{
+    let mut visited = HashSet::from([start.clone()]);
+    let mut queue = VecDeque::from([(start, 0)]);
+
+    while let Some((node, steps)) = queue.pop_front() {
+        for next in next(&node) {
+            if visited.contains(&next) {
+                continue;
+            }
+            if end(&next) {
+                return Some(steps + 1);
+            }
+            visited.insert(next.clone());
+            queue.push_back((next, steps + 1));
+        }
+    }
+
+    None
 }

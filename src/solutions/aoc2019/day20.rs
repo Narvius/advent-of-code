@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
-use crate::common::bfs_floodfill;
+use crate::common::bfs;
 
 /// Interpreting labels as teleports between each other, find the length of
 /// the shortest path from `AA` to `ZZ`.
 pub fn one(input: &str) -> crate::Result<usize> {
     let map = parse(input)?;
 
-    bfs_floodfill(
+    bfs(
         map.entrance,
         |&n| map.neighbours(n, None),
         |&n| n == map.exit,
@@ -21,7 +21,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 pub fn two(input: &str) -> crate::Result<usize> {
     let map = parse(input)?;
 
-    bfs_floodfill(
+    bfs(
         (map.entrance, 0),
         |&n| map.neighbours_layers(n),
         |&n| n == (map.exit, 0),

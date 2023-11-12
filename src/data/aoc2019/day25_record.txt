@@ -1,0 +1,120 @@
+east
+east
+take semiconductor
+north
+take planetoid
+north
+take antenna
+west
+east
+south
+west
+take food ration
+west
+west
+take monolith
+east
+east
+east
+south
+west
+west
+east
+east
+east
+south
+south
+east
+inv
+drop food ration
+drop antenna
+drop semiconductor
+east
+inv
+drop planetoid
+drop monolith
+take food ration
+east
+drop food ration
+take antenna
+east
+drop antenna
+take semiconductor
+east
+drop semiconductor
+west
+north
+north
+west
+north
+north
+west
+east
+south
+west
+north
+north
+north
+take weather machine
+south
+south
+take space law brochure
+take space law space brochure
+south
+east
+south
+east
+south
+south
+east
+east
+inv
+drop weather machine
+east
+west
+drop space law space brochure
+east
+take weather machine
+east
+drop weather machine
+east
+take food ration
+take weather machine
+east
+take antenna
+east
+take semiconductor
+east
+drop semiconductor
+take planetoid
+east
+drop planetoid
+take monolith
+east
+take planetoid
+east
+inv
+drop food ration
+take semiconductor
+east
+take food ration drop weather machine
+take food ration
+drop weather machine
+east
+i
+inv
+drop food ration
+east
+take food ration
+inv
+drop antenna
+east
+take antenna
+inv
+drop semiconductor
+east
+take semiconductor
+i
+inv
+drop planetoid
+east

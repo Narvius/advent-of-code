@@ -37,6 +37,7 @@ enum Mode {
 }
 
 /// Describes the outcome for stepping a [`Program`].
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Outcome {
     Halted,
     WaitingForInput,
@@ -69,6 +70,27 @@ impl Program {
             .code
             .extend(std::iter::repeat(0).take(capacity.saturating_sub(result.code.len())));
         Ok(result)
+    }
+
+    /// Convenience method that runs the program until is pauses or halts.
+    pub fn run(&mut self) -> crate::Result<Outcome> {
+        loop {
+            let outcome = self.step()?;
+            if outcome != Outcome::Ok {
+                return Ok(outcome);
+            }
+        }
+    }
+
+    /// Convenience method that takes some input, gives it to the program; then
+    /// runs it until it pauses or halts.
+    pub fn run_with<I, N>(&mut self, input: I) -> crate::Result<Outcome>
+    where
+        I: IntoIterator<Item = N>,
+        N: Into<Int>,
+    {
+        self.input.extend(input.into_iter().map(N::into));
+        self.run()
     }
 
     /// Executes one instruction of the program.

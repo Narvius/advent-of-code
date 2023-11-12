@@ -2,7 +2,7 @@ use crate::common::intcode::v2::*;
 
 /// Count the number of active squares in the nearest 50x50 region.
 pub fn one(input: &str) -> crate::Result<usize> {
-    let p = Program::with_capacity(input, 500, [])?;
+    let p = Program::with_capacity(input, 500)?;
     let mut result = 0;
     for x in 0..50 {
         for y in 0..50 {
@@ -18,7 +18,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 /// that is fully active.
 pub fn two(input: &str) -> crate::Result<Int> {
     const TARGET_SIZE: Int = 100;
-    let p = Program::with_capacity(input, 500, [])?;
+    let p = Program::with_capacity(input, 500)?;
 
     // Find an arbitrary starting point a bit along the cone, to avoid weirdness
     // relating to it being too thin in the beginning.
@@ -91,8 +91,7 @@ impl Iterator for SlopeFollower {
             let (x, y) = (x + i * sx + dx, y + i * sy + dy);
 
             let mut p = self.program.clone();
-            p.input.extend([x, y]);
-            while let Outcome::Ok = p.step().ok()? {}
+            p.run_with([x, y]).ok()?;
 
             if let Some(1) = p.output.pop_front() {
                 return Some(std::mem::replace(&mut self.previous, (x, y)));

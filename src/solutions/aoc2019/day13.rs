@@ -5,9 +5,9 @@ use crate::common::intcode::v2::*;
 /// Run the program until it pauses, count the number of block-type tiles on screen.
 pub fn one(input: &str) -> crate::Result<usize> {
     let mut screen = HashMap::new();
-    let mut p = Program::with_capacity(input, 3000, [])?;
+    let mut p = Program::with_capacity(input, 3000)?;
 
-    while let Outcome::Ok = p.step()? {}
+    p.run()?;
     while !p.output.is_empty() {
         let x = p.output.pop_front().ok_or("wrong amount of outputs")?;
         let y = p.output.pop_front().ok_or("wrong amount of outputs")?;
@@ -23,11 +23,11 @@ pub fn one(input: &str) -> crate::Result<usize> {
 pub fn two(input: &str) -> crate::Result<Int> {
     let mut blocks = HashSet::new();
     let (mut paddle, mut ball, mut score) = (0, 0, 0);
-    let mut p = Program::with_capacity(input, 3000, [])?;
+    let mut p = Program::with_capacity(input, 3000)?;
     p.code[0] = 2;
 
     loop {
-        while let Outcome::Ok = p.step()? {}
+        p.run()?;
         while !p.output.is_empty() {
             let x = p.output.pop_front().ok_or("wrong amount of outputs")?;
             let y = p.output.pop_front().ok_or("wrong amount of outputs")?;

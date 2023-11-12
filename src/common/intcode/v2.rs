@@ -47,25 +47,20 @@ pub enum Outcome {
 impl Program {
     /// Builds a new [`Program`], parsing the code from a puzzle input, and populating 'stdin'
     /// for the program with `input`.
-    pub fn new(code: &str, input: impl IntoIterator<Item = Int>) -> crate::Result<Self> {
+    pub fn new(code: &str) -> crate::Result<Self> {
         fn parse(input: &str) -> Result<Vec<Int>, impl std::error::Error> {
             input.trim().split(',').map(|n| n.parse::<Int>()).collect()
         }
 
         Ok(Self {
             code: parse(code)?,
-            input: input.into_iter().collect(),
             ..Default::default()
         })
     }
 
     /// Builds a new [`Program`], and pads the code to have at least `capacity` cells.
-    pub fn with_capacity(
-        code: &str,
-        capacity: usize,
-        input: impl IntoIterator<Item = Int>,
-    ) -> crate::Result<Self> {
-        let mut result = Self::new(code, input)?;
+    pub fn with_capacity(code: &str, capacity: usize) -> crate::Result<Self> {
+        let mut result = Self::new(code)?;
         result
             .code
             .extend(std::iter::repeat(0).take(capacity.saturating_sub(result.code.len())));

@@ -24,7 +24,7 @@ enum Mode {
 fn run_network(input: &str, mode: Mode) -> crate::Result<Int> {
     const MACHINES: usize = 50;
 
-    let p = Program::with_capacity(input, 2300, [])?;
+    let p = Program::with_capacity(input, 2300)?;
     let mut ps = vec![p; MACHINES];
 
     for (i, p) in ps.iter_mut().enumerate() {

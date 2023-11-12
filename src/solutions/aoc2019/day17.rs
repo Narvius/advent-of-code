@@ -30,7 +30,7 @@ pub fn two(input: &str) -> crate::Result<Int> {
     let (main, subs) = into_routines(to_walk_plan(data))?;
 
     // Prepare program, feed input lines it, feed hard-coded "n" for video feed to it.
-    let mut p = Program::with_capacity(input, 5000, [])?;
+    let mut p = Program::with_capacity(input, 5000)?;
     p.code[0] = 2;
     for line in std::iter::once(main).chain(subs.into_iter()) {
         for b in line.trim_end_matches(',').bytes() {
@@ -41,7 +41,7 @@ pub fn two(input: &str) -> crate::Result<Int> {
     p.input.push_back(b'n' as Int);
     p.input.push_back(10);
 
-    while let Outcome::Ok = p.step()? {}
+    p.run()?;
 
     // There's a bunch of output, the last one added is our result.
     p.output.pop_back().ok_or("no result".into())
@@ -133,12 +133,12 @@ fn to_walk_plan(Layout { map: data, robot }: Layout) -> String {
 
 /// Executes the input program and extracts the scaffolding map from it.
 fn read_layout(input: &str) -> crate::Result<Layout> {
-    let mut p = Program::with_capacity(input, 5000, [])?;
+    let mut p = Program::with_capacity(input, 5000)?;
     let mut map = vec![vec![]];
     let mut pos = (0, 0);
     let mut dir = (0, 0);
 
-    while let Outcome::Ok = p.step()? {}
+    p.run()?;
     while let Some(c) = p.output.pop_front() {
         match c as u8 {
             b'#' => map.last_mut().unwrap().push(true),

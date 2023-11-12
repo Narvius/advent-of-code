@@ -34,7 +34,7 @@ pub fn two(input: &str) -> crate::Result<Int> {
 /// Executes the provided springscript `script` using the provided `input`
 /// Intcode program.
 fn execute_script(input: &str, script: &[&str]) -> crate::Result<Int> {
-    let mut p = Program::with_capacity(input, 2200, [])?;
+    let mut p = Program::with_capacity(input, 2200)?;
 
     for line in script {
         for byte in line.bytes() {
@@ -43,8 +43,7 @@ fn execute_script(input: &str, script: &[&str]) -> crate::Result<Int> {
         p.input.push_back(10);
     }
 
-    while let Outcome::Ok = p.step()? {}
-
+    p.run()?;
     if p.output.back() > Some(&256) {
         return p.output.pop_back().ok_or("no result".into());
     }

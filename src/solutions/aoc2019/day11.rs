@@ -20,7 +20,7 @@ type Points = HashSet<(i32, i32)>;
 /// the coordinates of all tiles painted white; the second set contains the coordinates of
 /// all tiles that have been painted at least once.
 fn run_robot(input: &str, starting_panel_white: bool) -> crate::Result<(Points, Points)> {
-    let mut p = Program::with_capacity(input, 2000, [])?;
+    let mut p = Program::with_capacity(input, 2000)?;
     let (mut pos, mut dir) = ((0, 0), (0, -1));
     let mut panels = HashSet::new();
     let mut painted = HashSet::new();
@@ -28,9 +28,8 @@ fn run_robot(input: &str, starting_panel_white: bool) -> crate::Result<(Points, 
     if starting_panel_white {
         panels.insert((0, 0));
     }
-    p.input.push_back(Int::from(panels.contains(&pos)));
-    while let Outcome::Ok = p.step()? {}
 
+    p.run_with([panels.contains(&pos)])?;
     while !p.output.is_empty() {
         painted.insert(pos);
         match p.output.pop_front() {
@@ -46,8 +45,7 @@ fn run_robot(input: &str, starting_panel_white: bool) -> crate::Result<(Points, 
         };
 
         pos = (pos.0 + dir.0, pos.1 + dir.1);
-        p.input.push_back(Int::from(panels.contains(&pos)));
-        while let Outcome::Ok = p.step()? {}
+        p.run_with([panels.contains(&pos)])?;
     }
 
     Ok((panels, painted))

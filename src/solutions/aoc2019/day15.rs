@@ -4,13 +4,13 @@ use crate::common::intcode::v2::*;
 
 /// Explore the maze, find the number of steps required to reach the goal tile.
 pub fn one(input: &str) -> crate::Result<usize> {
-    let (map, goal) = flood_fill(Program::new(input, [])?)?;
+    let (map, goal) = flood_fill(Program::new(input)?)?;
     Ok(map[&goal])
 }
 
 /// Find the number of steps to reach the furthest tile from the original goal tile.
 pub fn two(input: &str) -> crate::Result<usize> {
-    let (mut map, goal) = flood_fill(Program::new(input, [])?)?;
+    let (mut map, goal) = flood_fill(Program::new(input)?)?;
     recenter(&mut map, goal);
     map.into_values().max().ok_or_else(|| "no result".into())
 }
@@ -48,8 +48,7 @@ fn flood_fill(p: Program) -> crate::Result<(HashMap<Point, usize>, Point)> {
             let (x, y) = (x + dx, y + dy);
             if depth + 1 < *visited.get(&(x, y)).unwrap_or(&usize::MAX) {
                 let mut p = p.clone();
-                p.input.push_back(dir);
-                while let Outcome::Ok = p.step()? {}
+                p.run_with([dir])?;
                 match p.output.pop_front() {
                     Some(1) => {
                         queue.push_back((p, (x, y), depth + 1));

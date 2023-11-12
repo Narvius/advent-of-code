@@ -1,3 +1,7 @@
+// Large swathes of solutions may be commented out any given time, which
+// produces spurious unused warnings from this module.
+#![allow(unused)]
+
 use std::collections::{HashSet, VecDeque};
 
 pub mod astar;

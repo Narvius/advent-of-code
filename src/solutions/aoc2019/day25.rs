@@ -12,6 +12,8 @@ use crate::common::intcode::v2::*;
 // - monolith
 const SCRIPT: &str = include_str!("../../data/aoc2019/day25_record.txt");
 
+/// Find the solution to the text adventure by running back a stored
+/// interactive session, filter out the answer from the final output.
 pub fn one(input: &str) -> crate::Result<String> {
     let mut p = Program::with_capacity(input, 5200)?;
     for line in SCRIPT.lines() {

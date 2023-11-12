@@ -1,19 +1,17 @@
-use crate::common::astar;
+use crate::common::astar::{self, AStarNode};
 
 /// Sort amphipods as efficiently as possible, return used energy.
 pub fn one(input: &str) -> crate::Result<i32> {
     let s = parse(input);
 
-    astar::shortest_path_length(s, |s| s.nexts(), |s| s.heuristic(), |s| s.done())
-        .ok_or("no result".into())
+    astar::shortest_path_length(s, &()).ok_or("no result".into())
 }
 
 /// Sort *more* amphipods as efficiently as possible, return used energy.
 pub fn two(input: &str) -> crate::Result<i32> {
     let s = parse_extended(input);
 
-    astar::shortest_path_length(s, |s| s.nexts(), |s| s.heuristic(), |s| s.done())
-        .ok_or("no result".into())
+    astar::shortest_path_length(s, &()).ok_or("no result".into())
 }
 
 /// A (compacted) state of the map. `rest` are rest spots outside the columns,
@@ -24,18 +22,37 @@ struct State<const COL_LEN: usize> {
     cols: [heapless::Vec<u8, COL_LEN>; 4],
 }
 
-impl<const COL_LEN: usize> State<COL_LEN> {
-    /// Checks if all amphipods are home.
-    fn done(&self) -> bool {
-        self.cols
-            .iter()
-            .enumerate()
-            .all(|(i, col)| col.is_full() && col.iter().all(|&b| b == (i as u8 + b'A')))
+impl<const COL_LEN: usize> AStarNode for State<COL_LEN> {
+    type Cost = i32;
+    type Env = ();
+
+    /// Produces all possible next states.
+    fn next(&self, _: &Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + '_> {
+        Box::new(self.moves().map(move |(m, cost)| {
+            let mut next = self.clone();
+            match (m.0, m.1) {
+                (Index::Column(s), Index::Column(t)) => {
+                    let val = next.cols[s].pop().unwrap();
+                    next.cols[t].push(val).unwrap();
+                }
+                (Index::Column(s), Index::Rest(r)) => {
+                    let val = next.cols[s].pop().unwrap();
+                    next.rest[r] = val;
+                }
+                (Index::Rest(r), Index::Column(t)) => {
+                    let val = next.rest[r];
+                    next.rest[r] = 0;
+                    next.cols[t].push(val).unwrap();
+                }
+                _ => unreachable!(),
+            }
+            (next, cost)
+        }))
     }
 
-    /// An A* search heuristic. Just counts as if each missing amphipod was
-    /// 1 step away from being home.
-    fn heuristic(&self) -> i32 {
+    /// Returns what it would cost if every missing amphipod was 1 step away
+    /// from home.
+    fn heuristic(&self, _: &Self::Env) -> Self::Cost {
         (0..4)
             .map(|n| {
                 let correct = self.cols[n].iter().take_while(|&&b| b == (n as u8 + b'A'));
@@ -44,36 +61,16 @@ impl<const COL_LEN: usize> State<COL_LEN> {
             .sum()
     }
 
-    /// Produces an iterator of all possible next states, alongside the energy
-    /// cost to reach them.
-    fn nexts(&self) -> impl Iterator<Item = (Self, i32)> {
-        let nexts: Vec<_> = self
-            .moves()
-            .map(move |(m, cost)| {
-                let mut next = self.clone();
-                match (m.0, m.1) {
-                    (Index::Column(s), Index::Column(t)) => {
-                        let val = next.cols[s].pop().unwrap();
-                        next.cols[t].push(val).unwrap();
-                    }
-                    (Index::Column(s), Index::Rest(r)) => {
-                        let val = next.cols[s].pop().unwrap();
-                        next.rest[r] = val;
-                    }
-                    (Index::Rest(r), Index::Column(t)) => {
-                        let val = next.rest[r];
-                        next.rest[r] = 0;
-                        next.cols[t].push(val).unwrap();
-                    }
-                    _ => unreachable!(),
-                }
-                (next, cost)
-            })
-            .collect();
-
-        nexts.into_iter()
+    /// Checks if all amphipods are home.
+    fn done(&self, _: &Self::Env) -> bool {
+        self.cols
+            .iter()
+            .enumerate()
+            .all(|(i, col)| col.is_full() && col.iter().all(|&b| b == (i as u8 + b'A')))
     }
+}
 
+impl<const COL_LEN: usize> State<COL_LEN> {
     /// A list of every possible move for the current state, alongside the cost to reach it.
     fn moves(&self) -> impl Iterator<Item = (Move, i32)> + '_ {
         let c2r = (0..4).flat_map(|c| (0..7).map(move |r| Move(Index::Column(c), Index::Rest(r))));

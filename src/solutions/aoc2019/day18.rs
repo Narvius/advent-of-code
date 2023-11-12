@@ -1,33 +1,11 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::common::astar::shortest_path_length;
+use crate::common::astar::{shortest_path_length, AStarNode};
 
 /// Find the shortest time to find all keys in the maze.
 pub fn one(input: &str) -> crate::Result<i32> {
     let distances = build_distances(input, false);
-
-    fn next(
-        distances: &HashMap<(u8, u8), (usize, u32)>,
-        (location, keys): (u8, u32),
-    ) -> impl Iterator<Item = ((u8, u32), i32)> + '_ {
-        (b'a'..=b'z').filter_map(move |target| {
-            let (distance, required_keys) = *distances.get(&(location, target))?;
-            let has_keys = keys & required_keys == required_keys;
-
-            has_keys.then_some((
-                (target, keys | (1 << (target - b'a') as u32)),
-                distance as i32,
-            ))
-        })
-    }
-
-    shortest_path_length(
-        (b'@', 0u32),
-        |s| next(&distances, *s),
-        |(_, keys)| (ALL_KEYS.count_ones() - keys.count_ones()) as i32,
-        |&(_, keys)| keys == ALL_KEYS,
-    )
-    .ok_or("no result".into())
+    shortest_path_length(State(b'@', 0u32), &distances).ok_or("no result".into())
 }
 
 /// Split the map into 4 separate maps, each with their own explorer. Only one
@@ -35,33 +13,69 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// keys.
 pub fn two(input: &str) -> crate::Result<i32> {
     let distances = build_distances(input, true);
+    shortest_path_length(State4(*b"@$%^", 0u32), &distances).ok_or("no result".into())
+}
 
-    fn next(
-        distances: &HashMap<(u8, u8), (usize, u32)>,
-        (rs, keys): ([u8; 4], u32),
-    ) -> impl Iterator<Item = (([u8; 4], u32), i32)> + '_ {
-        rs.into_iter().enumerate().flat_map(move |(i, location)| {
+#[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct State(u8, u32);
+
+impl AStarNode for State {
+    type Cost = i32;
+    type Env = HashMap<(u8, u8), (usize, u32)>;
+
+    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
+        let &Self(location, keys) = self;
+        Box::new((b'a'..=b'z').filter_map(move |target| {
+            let (distance, required_keys) = *env.get(&(location, target))?;
+            let has_keys = keys & required_keys == required_keys;
+
+            has_keys.then_some((
+                Self(target, keys | (1 << (target - b'a') as u32)),
+                distance as i32,
+            ))
+        }))
+    }
+
+    fn heuristic(&self, _: &Self::Env) -> Self::Cost {
+        (ALL_KEYS.count_ones() - self.1.count_ones()) as i32
+    }
+
+    fn done(&self, _: &Self::Env) -> bool {
+        self.1 == ALL_KEYS
+    }
+}
+
+#[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
+struct State4([u8; 4], u32);
+
+impl AStarNode for State4 {
+    type Cost = i32;
+    type Env = HashMap<(u8, u8), (usize, u32)>;
+
+    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
+        let &Self(rs, keys) = self;
+        Box::new(rs.into_iter().enumerate().flat_map(move |(i, location)| {
             (b'a'..=b'z').filter_map(move |target| {
-                let (distance, required_keys) = *distances.get(&(location, target))?;
+                let (distance, required_keys) = *env.get(&(location, target))?;
                 let has_keys = keys & required_keys == required_keys;
 
                 has_keys.then(|| {
                     let mut rs = rs;
                     rs[i] = target;
                     let keys = keys | (1 << (target - b'a') as u32);
-                    ((rs, keys), distance as i32)
+                    (Self(rs, keys), distance as i32)
                 })
             })
-        })
+        }))
     }
 
-    shortest_path_length(
-        ([b'@', b'$', b'%', b'^'], 0u32),
-        |s| next(&distances, *s),
-        |(_, keys)| (ALL_KEYS.count_ones() - keys.count_ones()) as i32,
-        |&(_, keys)| keys == ALL_KEYS,
-    )
-    .ok_or("no result".into())
+    fn heuristic(&self, _: &Self::Env) -> Self::Cost {
+        (ALL_KEYS.count_ones() - self.1.count_ones()) as i32
+    }
+
+    fn done(&self, _: &Self::Env) -> bool {
+        self.1 == ALL_KEYS
+    }
 }
 
 const ALL_KEYS: u32 = 0b00_00001_11111_11111_11111_11111_11111;

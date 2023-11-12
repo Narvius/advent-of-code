@@ -5,69 +5,72 @@ use std::{
     collections::{BinaryHeap, HashMap},
 };
 
-type Cost = i32;
-
 /// Metadata associated with a node.
-struct Meta {
+struct Meta<C> {
     is_closed: bool,
-    path: Cost,
+    path: C,
 }
 
 /// A node in the `open` list.
 /// Sorted by exclusively by `cost`, making it useful in a priority queue.
-struct Open<N> {
-    cost: Cost,
+struct Open<N, C: Eq + Ord> {
     node: N,
+    cost: C,
 }
 
-impl<N> PartialEq for Open<N> {
+impl<N, C: Eq + Ord> PartialEq for Open<N, C> {
     fn eq(&self, other: &Self) -> bool {
         self.cost == other.cost
     }
 }
 
-impl<N> Eq for Open<N> {}
+impl<N, C: Eq + Ord> Eq for Open<N, C> {}
 
-impl<N> PartialOrd for Open<N> {
+impl<N, C: Ord> PartialOrd for Open<N, C> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }
 }
 
-impl<N> Ord for Open<N> {
+impl<N, C: Ord> Ord for Open<N, C> {
     fn cmp(&self, other: &Self) -> Ordering {
         other.cost.cmp(&self.cost)
     }
 }
 
-/// Returns the lowest cost to reach a `done` state, given an `initial_node`,
-/// a `heuristic` and a function that produces `next` available nodes for
-/// a given node. Does not produce the actual path, just the cost.
-pub fn shortest_path_length<N, I, Next, Heuristic, Done>(
-    initial_node: N,
-    mut next: Next,
-    mut heuristic: Heuristic,
-    mut done: Done,
-) -> Option<Cost>
+/// A value that can be used as a node in an A* search.
+pub trait AStarNode: Clone + Eq + std::hash::Hash {
+    type Cost;
+    type Env;
+
+    /// Produces all reachable neighbours.
+    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a>;
+
+    /// A* heuristic, how much might it take to be done.
+    fn heuristic(&self, env: &Self::Env) -> Self::Cost;
+
+    /// Checks if this node is a finished state.
+    fn done(&self, env: &Self::Env) -> bool;
+}
+
+/// Finds the shortest
+pub fn shortest_path_length<N, C>(initial_node: N, env: &N::Env) -> Option<C>
 where
-    N: Clone + Eq + std::hash::Hash,
-    Next: FnMut(&N) -> I,
-    Heuristic: FnMut(&N) -> Cost,
-    Done: FnMut(&N) -> bool,
-    I: Iterator<Item = (N, Cost)>,
+    N: AStarNode<Cost = C>,
+    C: Copy + Default + std::ops::Add<Output = C> + Eq + Ord,
 {
     let mut opens = BinaryHeap::new();
     let mut metas = HashMap::new();
 
     opens.push(Open {
-        cost: heuristic(&initial_node),
         node: initial_node.clone(),
+        cost: initial_node.heuristic(env),
     });
     metas.insert(
         initial_node.clone(),
         Meta {
             is_closed: false,
-            path: 0,
+            path: C::default(),
         },
     );
 
@@ -78,12 +81,12 @@ where
             continue;
         }
 
-        if done(&open.node) {
+        if open.node.done(env) {
             return Some(meta.path);
         }
 
         let cost = meta.path;
-        for (node, edge_cost) in next(&open.node) {
+        for (node, edge_cost) in open.node.next(env) {
             let cost = cost + edge_cost;
             let cost = match metas.get_mut(&node) {
                 Some(target_meta) => {
@@ -102,7 +105,7 @@ where
                             path: cost,
                         },
                     );
-                    cost + heuristic(&node)
+                    cost + node.heuristic(env)
                 }
             };
             opens.push(Open { node, cost });

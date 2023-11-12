@@ -43,17 +43,17 @@ struct Map {
     /// entered is an outer (`true`) or inner (`false`) portal.
     ///
     /// This bool is relevant only in part 2.
-    portals: HashMap<(i32, i32), ((i32, i32), bool)>,
+    portals: HashMap<(i32, i32), PortalInfo>,
 }
 
 impl Map {
     /// Returns all walkable neighbours of a tile, including teleports as
     /// described in the first part of the puzzle.
-    fn neighbours<'a>(
-        &'a self,
+    fn neighbours(
+        &self,
         (x, y): (i32, i32),
         layer: Option<i32>,
-    ) -> impl Iterator<Item = (i32, i32)> + 'a {
+    ) -> impl Iterator<Item = (i32, i32)> + '_ {
         let direct = DELTAS
             .into_iter()
             .map(move |(dx, dy)| (x + dx, y + dy))
@@ -72,10 +72,10 @@ impl Map {
 
     /// Returns all walkable neighbours of a tile, including recursive
     /// teleports as described in the second part of the puzzle.
-    fn neighbours_layers<'a>(
-        &'a self,
+    fn neighbours_layers(
+        &self,
         ((x, y), layer): ((i32, i32), i32),
-    ) -> impl Iterator<Item = ((i32, i32), i32)> + 'a {
+    ) -> impl Iterator<Item = ((i32, i32), i32)> + '_ {
         let direct = DELTAS
             .into_iter()
             .map(move |(dx, dy)| ((x + dx, y + dy), layer))
@@ -92,6 +92,9 @@ impl Map {
 /// Position offsets to consider for basic neighbour lists.
 const DELTAS: [(i32, i32); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 
+type Label = (u8, u8);
+type PortalInfo = ((i32, i32), bool);
+
 /// Checks if the given tile is a teleporter label, and returns information
 /// about the associated teleporter. The information includes the two-byte
 /// label, the position of the teleporter tile, and whether it is an inner
@@ -99,7 +102,7 @@ const DELTAS: [(i32, i32); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
 ///
 /// A tile is a teleporter label if it is a letter directly adjacent to an open
 /// tile.
-fn teleporter_info(map: &[Vec<u8>], (x, y): (i32, i32)) -> Option<((u8, u8), ((i32, i32), bool))> {
+fn portal_info(map: &[Vec<u8>], (x, y): (i32, i32)) -> Option<(Label, PortalInfo)> {
     let center = map[y as usize][x as usize];
     if !center.is_ascii_alphabetic() {
         return None;
@@ -147,7 +150,7 @@ fn parse(input: &str) -> crate::Result<Map> {
     let mut one_side = HashMap::new();
     for (y, line) in input.lines().enumerate() {
         for (x, _) in line.bytes().enumerate() {
-            if let Some((label, (position, outer))) = teleporter_info(&map, (x as i32, y as i32)) {
+            if let Some((label, (position, outer))) = portal_info(&map, (x as i32, y as i32)) {
                 match one_side.remove(&label) {
                     Some((other_position, other_outer)) => {
                         portals.insert(position, (other_position, outer));

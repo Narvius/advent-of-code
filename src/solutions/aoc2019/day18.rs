@@ -6,10 +6,10 @@ use crate::common::astar::shortest_path_length;
 pub fn one(input: &str) -> crate::Result<i32> {
     let distances = build_distances(input, false);
 
-    fn next<'a>(
-        distances: &'a HashMap<(u8, u8), (usize, u32)>,
+    fn next(
+        distances: &HashMap<(u8, u8), (usize, u32)>,
         (location, keys): (u8, u32),
-    ) -> impl Iterator<Item = ((u8, u32), i32)> + 'a {
+    ) -> impl Iterator<Item = ((u8, u32), i32)> + '_ {
         (b'a'..=b'z').filter_map(move |target| {
             let (distance, required_keys) = *distances.get(&(location, target))?;
             let has_keys = keys & required_keys == required_keys;
@@ -36,10 +36,10 @@ pub fn one(input: &str) -> crate::Result<i32> {
 pub fn two(input: &str) -> crate::Result<i32> {
     let distances = build_distances(input, true);
 
-    fn next<'a>(
-        distances: &'a HashMap<(u8, u8), (usize, u32)>,
+    fn next(
+        distances: &HashMap<(u8, u8), (usize, u32)>,
         (rs, keys): ([u8; 4], u32),
-    ) -> impl Iterator<Item = (([u8; 4], u32), i32)> + 'a {
+    ) -> impl Iterator<Item = (([u8; 4], u32), i32)> + '_ {
         rs.into_iter().enumerate().flat_map(move |(i, location)| {
             (b'a'..=b'z').filter_map(move |target| {
                 let (distance, required_keys) = *distances.get(&(location, target))?;

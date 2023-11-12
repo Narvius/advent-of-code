@@ -6,6 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+heapless = "0.8.0"
 md5 = "0.7"
 regex = "1.5"
 serde_json = "1.0"

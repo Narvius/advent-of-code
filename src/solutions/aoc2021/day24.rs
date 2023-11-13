@@ -83,16 +83,19 @@ fn produce_monad_number(input: &str, largest: bool) -> crate::Result<String> {
 /// into `monad_step`, will produce `target_z`. There may be up to two such values, one produced
 /// from the if branch, and one produced from the else branch.
 fn backwards(w: i32, target_z: i32, check: i32, add: i32) -> Option<i32> {
-    if check > 9 {
-        // If `target_z` got produced, it would be from the if branch.
+    // As mentioned, `check` fully determines if we have to produce a `z` from the if or else
+    // branch in `monad_step`. If the check allows to enter the false branch (by being less than
+    // 9), we *have* to take a `z` that was produced from the false branch.
+    if check >= 9 {
+        // Producing a `z` from the if branch in `monad_step`.
         let partial = target_z - w - add;
         // `partial` here is equal to `26 * z`. So in order to have arrived here, it must be divisible
         // by 26. If it is, we divide it out the 26 factor to arrive at the original `z`.
         (partial % 26 == 0).then_some(partial / 26)
     } else {
-        // It `target_z` got produced, it would be from the else branch.
+        // Producing a `z` from the else branch in `monad_step`.
         let partial = w - check;
-        // `partial` here is equal to `z % 26`. For that to be possible, it must be in `(0..26)`. The
+        // `partial` here is equal to `z % 26`. For that to be possible, it must be in `0..26`. The
         // `z` we produce must fulfill two conditions: `z % 26 = partial`, and `z / 26 = target_z`.
         ((0..26).contains(&partial)).then_some(partial + target_z * 26)
     }

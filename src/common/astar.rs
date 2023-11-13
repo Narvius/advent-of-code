@@ -5,14 +5,17 @@ use std::{
     collections::{BinaryHeap, HashMap},
 };
 
-/// Metadata associated with a node.
-struct Meta<C> {
+/// Metadata associated with a node, tracked once per node.
+struct Info<C> {
     is_closed: bool,
-    path: C,
+    best: C,
 }
 
-/// A node in the `open` list.
-/// Sorted by exclusively by `cost`, making it useful in a priority queue.
+/// Value used for the `open` priority queue in the A* implementation, consisting of the node
+/// itself as well as the cost to reach it. The same node can be reached multiple times with
+/// different costs, so there can be multiple open list entries for the same one.
+///
+/// Sorted exclusively by `cost` ascending, for priority queue purposes.
 struct Open<N, C: Eq + Ord> {
     node: N,
     cost: C,
@@ -53,56 +56,60 @@ pub trait AStarNode: Clone + Eq + std::hash::Hash {
     fn done(&self, env: &Self::Env) -> bool;
 }
 
-/// Finds the shortest
+/// Finds the cost of the shortest path to a finished node, given some initial node. Does not
+/// compute the actual path.
+///
+/// `env` is some read-only data passed to every method in the [`AStarNode`] implementation for the
+/// node. Usually, this would be some map data or the like.
 pub fn shortest_path_length<N, C>(initial_node: N, env: &N::Env) -> Option<C>
 where
     N: AStarNode<Cost = C>,
     C: Copy + Default + std::ops::Add<Output = C> + Eq + Ord,
 {
     let mut opens = BinaryHeap::new();
-    let mut metas = HashMap::new();
+    let mut infos = HashMap::new();
 
     opens.push(Open {
         node: initial_node.clone(),
         cost: initial_node.heuristic(env),
     });
-    metas.insert(
+    infos.insert(
         initial_node.clone(),
-        Meta {
+        Info {
             is_closed: false,
-            path: C::default(),
+            best: C::default(),
         },
     );
 
     while let Some(open) = opens.pop() {
-        // SAFETY: We always insert `Meta`s for any `Open` that gets added.
-        let meta = metas.get_mut(&open.node).unwrap();
-        if std::mem::replace(&mut meta.is_closed, true) {
+        // SAFETY: We always insert `Info`s for any `Open` that gets added.
+        let info = infos.get_mut(&open.node).unwrap();
+        if std::mem::replace(&mut info.is_closed, true) {
             continue;
         }
 
         if open.node.done(env) {
-            return Some(meta.path);
+            return Some(info.best);
         }
 
-        let cost = meta.path;
+        let cost = info.best;
         for (node, edge_cost) in open.node.next(env) {
             let cost = cost + edge_cost;
-            let cost = match metas.get_mut(&node) {
-                Some(target_meta) => {
-                    if target_meta.is_closed || target_meta.path <= cost {
+            let cost = match infos.get_mut(&node) {
+                Some(target_info) => {
+                    if target_info.is_closed || target_info.best <= cost {
                         continue;
                     }
 
-                    target_meta.path = cost;
+                    target_info.best = cost;
                     cost
                 }
                 None => {
-                    metas.insert(
+                    infos.insert(
                         node.clone(),
-                        Meta {
+                        Info {
                             is_closed: false,
-                            path: cost,
+                            best: cost,
                         },
                     );
                     cost + node.heuristic(env)

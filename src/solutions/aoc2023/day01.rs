@@ -24,16 +24,13 @@ fn calibration_score(s: &str) -> Option<i32> {
 ///
 /// If numbers are overlapping, like for example `eightwo`, both are added.
 fn with_text_numbers(line: &str) -> String {
-    const S: [&str; 9] = [
-        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    ];
-    const T: [&str; 9] = [
-        "o1ne", "t2wo", "th3ree", "fo4ur", "fi5ve", "s6ix", "se7ven", "ei8ght", "ni9ne",
-    ];
-
-    let mut line = line.to_string();
-    for i in 0..9 {
-        line = line.replace(S[i], T[i]);
-    }
-    line
+    line.replace("one", "o1ne")
+        .replace("two", "t2wo")
+        .replace("three", "t3hree")
+        .replace("four", "f4our")
+        .replace("five", "f5ive")
+        .replace("six", "s6ix")
+        .replace("seven", "s7even")
+        .replace("eight", "e8ight")
+        .replace("nine", "n9ine")
 }

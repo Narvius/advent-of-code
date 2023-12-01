@@ -20,7 +20,7 @@ fn calibration_score(s: &str) -> Option<i32> {
 }
 
 /// For each number from 1 to 9 written in plain text (so `one`, `two`, `three`...), adds a
-/// numerical digit into the string.
+/// corresponding numerical digit into the string.
 ///
 /// If numbers are overlapping, like for example `eightwo`, both are added.
 fn with_text_numbers(line: &str) -> String {

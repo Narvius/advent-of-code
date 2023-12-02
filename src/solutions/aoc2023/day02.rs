@@ -17,9 +17,8 @@ pub fn two(input: &str) -> crate::Result<usize> {
 /// of red, green and blue cubes shown, respectively.
 fn parse(input: &str) -> impl Iterator<Item = (usize, usize, usize)> + '_ {
     input.lines().filter_map(|line| {
-        let (_, subsets) = line.split_once(": ")?;
         let (mut r, mut g, mut b) = (0, 0, 0);
-        for entry in subsets.split(&[':', ';', ','][..]) {
+        for entry in line.split(&[':', ';', ','][..]) {
             let (n, color) = entry.trim().split_once(' ')?;
             match color {
                 "red" => r = r.max(n.parse().ok()?),

@@ -52,27 +52,24 @@ fn adjacent_numbers(map: &[&[u8]], (x, y): (i32, i32)) -> (i32, i32) {
 /// Parses the number at the given position, and returns the number alongside two numbers that form
 /// the (exclusive) range of x coordinates that got parsed.
 fn number_at(map: &[&[u8]], (mut x, y): (i32, i32)) -> Option<(i32, usize, usize)> {
-    fn get(map: &[&[u8]], (x, y): (i32, i32)) -> Option<u8> {
+    fn is_digit(map: &[&[u8]], (x, y): (i32, i32)) -> Option<bool> {
         let (x, y) = (usize::try_from(x).ok()?, usize::try_from(y).ok()?);
-        map.get(y)?.get(x).copied()
+        Some(map.get(y)?.get(x)?.is_ascii_digit())
     }
 
-    if !get(map, (x, y))?.is_ascii_digit() {
+    if !is_digit(map, (x, y)).unwrap_or(false) {
         return None;
     }
 
     let mut stride = 1;
     // Scan left until we no longer hit a digit.
-    while get(map, (x - 1, y)).unwrap_or(b' ').is_ascii_digit() {
+    while is_digit(map, (x - 1, y)).unwrap_or(false) {
         x -= 1;
         stride += 1;
     }
 
     // Scan right until we no longer hit a digit.
-    while get(map, (x + stride as i32, y))
-        .unwrap_or(b' ')
-        .is_ascii_digit()
-    {
+    while is_digit(map, (x + stride as i32, y)).unwrap_or(false) {
         stride += 1;
     }
 

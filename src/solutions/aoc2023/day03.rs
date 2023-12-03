@@ -76,10 +76,8 @@ fn number_at(map: &[&[u8]], (mut x, y): (i32, i32)) -> Option<(i32, usize, usize
         stride += 1;
     }
 
-    // Actually parse the number. Unfortunately we allocate a new string here just for the parse;
-    // theoretically, that could be avoided by passing the original line as a string and slicing
-    // it; but not worth the effort probably.
+    // Actually parse the number.
     let (y, x) = (y as usize, x as usize);
-    let num = String::from_utf8(map[y][x..x + stride].to_vec()).ok()?;
+    let num = std::str::from_utf8(&map[y][x..x + stride]).ok()?;
     Some((num.parse().ok()?, x, x + stride))
 }

@@ -8,11 +8,11 @@ pub fn one(input: &str) -> crate::Result<u32> {
 
 /// Using recursive scratchcard rules, find the total number of scratchcards gained.
 pub fn two(input: &str) -> crate::Result<usize> {
-    let cards: Vec<_> = parse(input).collect();
-    let mut counts = vec![1; cards.len()];
+    let scores: Vec<_> = parse(input).collect();
+    let mut counts = vec![1; scores.len()];
 
-    for i in 0..cards.len() {
-        for n in 1..=cards[i] {
+    for i in 0..scores.len() {
+        for n in 1..=scores[i] {
             counts[i + n] += counts[i];
         }
     }
@@ -28,9 +28,9 @@ fn parse(input: &str) -> impl Iterator<Item = usize> + '_ {
 
     input.lines().filter_map(|line| {
         let (_, numbers) = line.split_once(": ")?;
-        let (cards, draws) = numbers.split_once(" | ")?;
-        let cards: Vec<_> = to_numbers(cards).collect();
+        let (card, draws) = numbers.split_once(" | ")?;
 
-        Some(to_numbers(draws).filter(|n| cards.contains(n)).count())
+        let card: Vec<_> = to_numbers(card).collect();
+        Some(to_numbers(draws).filter(|n| card.contains(n)).count())
     })
 }

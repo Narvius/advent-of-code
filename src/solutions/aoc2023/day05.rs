@@ -8,8 +8,7 @@ pub fn one(input: &str) -> crate::Result<i64> {
         for seed in &mut seeds {
             let offset = mapping
                 .iter()
-                .find(|(r, _)| r.contains(&*seed))
-                .map(|(_, o)| *o)
+                .find_map(|(r, o)| r.contains(&*seed).then_some(*o))
                 .unwrap_or(0);
 
             *seed += offset;

@@ -163,6 +163,10 @@ where
             "\nTotal runtime: {} (success: {success}; failed: {fail})",
             format_duration(runtime)
         );
+
+        #[cfg(feature = "peak_alloc")]
+        println!("Peak memory usage: {:>3.3}mb", peak_alloc::PeakAlloc.peak_usage_as_mb());
+
         Ok(())
     } else {
         Err(Error::NoSolutions.into())

@@ -17,6 +17,7 @@ version = "0.1.0"
 dependencies = [
  "heapless",
  "md5",
+ "peak_alloc",
  "regex",
  "serde_json",
 ]
@@ -63,6 +64,12 @@ name = "memchr"
 version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
+
+[[package]]
+name = "peak_alloc"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "84d3978b0aa7d46c34452384c28264ac859c652b67635f6acfd598e1b6608de5"
 
 [[package]]
 name = "regex"

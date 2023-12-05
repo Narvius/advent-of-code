@@ -6,6 +6,10 @@ mod common;
 #[macro_use]
 mod runner;
 
+#[cfg(feature = "peak_alloc")]
+#[global_allocator]
+static PEAK_ALLOC: peak_alloc::PeakAlloc = peak_alloc::PeakAlloc;
+
 /// During 0 or 1 argument invocations, this year is assumed. Changes based on what I work on,
 /// for convenience's sake.
 const ASSUMED_YEAR: usize = 2023;

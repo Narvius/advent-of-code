@@ -165,7 +165,7 @@ where
         );
 
         #[cfg(feature = "peak_alloc")]
-        println!("Peak memory usage: {:>3.3}mb", peak_alloc::PeakAlloc.peak_usage_as_mb());
+        println!("Peak memory usage: {:>3.3}mb", crate::PEAK_ALLOC.peak_usage_as_mb());
 
         Ok(())
     } else {

@@ -23,7 +23,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
 
 /// Finds the amount of ways the given race can be beaten.
 ///
-/// We know that the distanc travelled follows a quadratic formula:
+/// We know that the distance travelled follows a quadratic formula:
 /// `f(speed) = -speed^2 + time * speed`
 ///
 /// Also, we want to be further than the given distance:

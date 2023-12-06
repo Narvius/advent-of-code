@@ -32,8 +32,8 @@ pub fn two(input: &str) -> crate::Result<usize> {
 /// Resulting in this quadratic inequality with respect to `speed`:
 /// `-speed^2 + time * speed - distance > 0`
 ///
-/// So we can factor this any given `time` and `distance` and find the interval of `speed`s where
-/// the left-hand side is positive for essentially free.
+/// So we can factor this for any given `time` and `distance` and find the interval of `speed`s
+/// where the left-hand side is positive for essentially free.
 fn ways_to_beat((time, distance): Race) -> usize {
     let a = -1.0;
     let b = time as f64;
@@ -42,6 +42,7 @@ fn ways_to_beat((time, distance): Race) -> usize {
     let x1 = (-b + (b.powi(2) - 4.0 * a * c).sqrt()) / (2.0 * a);
     let x2 = (-b - (b.powi(2) - 4.0 * a * c).sqrt()) / (2.0 * a);
 
+    // We know for certain that x2 is larger than x1 because a is -1.
     let (x1, x2) = (x1.ceil() as usize, x2.floor() as usize);
     1 + x2 - x1
 }

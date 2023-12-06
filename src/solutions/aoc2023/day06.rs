@@ -22,36 +22,28 @@ pub fn two(input: &str) -> crate::Result<usize> {
 }
 
 /// Finds the amount of ways the given race can be beaten.
+///
+/// We know that the distanc travelled follows a quadratic formula:
+/// `f(speed) = -speed^2 + time * speed`
+///
+/// Also, we want to be further than the given distance:
+/// `f(speed) > distance`
+///
+/// Resulting in this quadratic inequality with respect to `speed`:
+/// `-speed^2 + time * speed - distance > 0`
+///
+/// So we can factor this any given `time` and `distance` and find the interval of `speed`s where
+/// the left-hand side is positive for essentially free.
 fn ways_to_beat((time, distance): Race) -> usize {
-    // Binary search; start at the exact middle (which is pretty much guaranteed to win), then take
-    // steps down until no longer winning, then steps up until winning again.
+    let a = -1.0;
+    let b = time as f64;
+    let c = -(distance as f64);
 
-    let wins = |speed| speed * (time - speed) > distance;
+    let x1 = (-b + (b.powi(2) - 4.0 * a * c).sqrt()) / (2.0 * a);
+    let x2 = (-b - (b.powi(2) - 4.0 * a * c).sqrt()) / (2.0 * a);
 
-    let mut speed = time / 2;
-    let mut step = speed / 2;
-
-    while step > 0 {
-        match wins(speed) {
-            true => speed -= step,
-            false => speed += step,
-        }
-        step /= 2;
-    }
-
-    // Microadjust up and down so we're exactly on the lowest winning speed.
-    while !wins(speed) {
-        speed += 1;
-    }
-
-    while wins(speed - 1) {
-        speed -= 1;
-    }
-
-    // Since the winning formula is a quadratic inequality (-speed^2 + time * speed > distance), we
-    // know that there's a symmetrical slice of the parabola above `y = distance`. This is the
-    // amount of numbers on that slice.
-    1 + time - 2 * speed
+    let (x1, x2) = (x1.ceil() as usize, x2.floor() as usize);
+    1 + x2 - x1
 }
 
 /// (Time, Distance)

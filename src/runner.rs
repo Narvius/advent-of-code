@@ -160,12 +160,15 @@ where
 
     if runtime.as_secs_f64() > 0.0 {
         println!(
-            "\nTotal runtime: {} (success: {success}; failed: {fail})",
+            "\nTotal runtime:   {} (success: {success}; failed: {fail})",
             format_duration(runtime)
         );
 
         #[cfg(feature = "peak_alloc")]
-        println!("Peak memory usage: {:>3.3}mb", crate::PEAK_ALLOC.peak_usage_as_mb());
+        println!(
+            "Peak memory usage: {:>3.3}mb",
+            crate::PEAK_ALLOC.peak_usage_as_mb()
+        );
 
         Ok(())
     } else {

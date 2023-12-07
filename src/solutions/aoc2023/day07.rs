@@ -26,12 +26,12 @@ const ORDER: &[u8] = b"23456789TJQKA";
 const JOKER_ORDER: &[u8] = b"J23456789TQKA";
 
 /// Creates a comparison key to sort poker hands by.
-fn hand_value(hand: &[u8], joker: bool) -> (u8, [usize; 5]) {
+fn hand_value(hand: [u8; 5], joker: bool) -> (u8, [usize; 5]) {
     // Count how much of which card we have.
     let mut joker_count = 0;
     let mut counts = vec![];
     let mut seen = vec![];
-    for &c in hand {
+    for c in hand {
         if joker && c == b'J' {
             joker_count += 1;
         } else if let Some(p) = seen.iter().position(|&card| c == card) {
@@ -66,15 +66,14 @@ fn hand_value(hand: &[u8], joker: bool) -> (u8, [usize; 5]) {
     // Convert raw cards into their strength.
     let order = if joker { JOKER_ORDER } else { ORDER };
     let card_value = |c| order.iter().position(|&b| c == b).unwrap();
-    let hand = [hand[0], hand[1], hand[2], hand[3], hand[4]].map(card_value);
 
-    (strength, hand)
+    (strength, hand.map(card_value))
 }
 
 /// Parses the puzzle input into a hand and the relevant bid value.
-fn parse(input: &str) -> impl Iterator<Item = (&[u8], usize)> + '_ {
+fn parse(input: &str) -> impl Iterator<Item = ([u8; 5], usize)> + '_ {
     input.lines().filter_map(|line| {
         let (hand, bid) = line.split_once(' ')?;
-        Some((hand.as_bytes(), bid.parse().ok()?))
+        Some((hand.as_bytes().try_into().ok()?, bid.parse().ok()?))
     })
 }

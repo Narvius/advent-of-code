@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 /// Find half the length of the loop.
 pub fn one(input: &str) -> crate::Result<usize> {
     let (map, (x, y), (dx, dy)) = parse(input).ok_or("parse failed")?;
@@ -15,31 +13,61 @@ pub fn one(input: &str) -> crate::Result<usize> {
 /// Count the number of tiles inside of the loop.
 pub fn two(input: &str) -> crate::Result<usize> {
     let (map, mut pos, mut dir) = parse(input).ok_or("parse failed")?;
+    let (w, h) = (map[0].len(), map.len());
 
-    // Find the whole shape, for collision detection.
-    let mut shape = HashSet::new();
+    // Find the whole shape, alongside the smallest rectangle it is contained in.
+    let mut shape = vec![vec![false; w]; h];
     loop {
-        if !shape.insert(pos) {
+        if shape[pos.1 as usize][pos.0 as usize] {
             break;
         }
 
+        shape[pos.1 as usize][pos.0 as usize] = true;
         (pos, dir) = step(&map, pos, dir);
     }
 
-    // Find the smallest rectangle containing the loop.
-    let (mut l, mut t, mut r, mut b) = (i32::MAX, i32::MAX, i32::MIN, i32::MIN);
-    for &(x, y) in &shape {
-        l = l.min(x);
-        t = t.min(y);
-        r = r.max(x);
-        b = b.max(y);
+    // Conceptually, we are casting a ray at a 45 degree angle to the top left and counting the
+    // intersections with the loop. If there's an odd number of intersections, the point is inside.
+    // Due to the angle chosen, L and 7 bends count as two intersections, while all other loop
+    // tiles count as one each.
+    //
+    // For the implementation, we are walking from the *end* of the ray backwards; this allows us
+    // to reuse calculations for all points whose ray is on the same parallel line.
+
+    // We consider every diagonal as starting on y = 0 in the rectangle. Some diagonals are cut off
+    // due to the rectangle shape; those start at negative x values, but skip the first couple
+    // points until they're in the rectangle.
+    let mut inside_points = 0;
+    for x in -(h as i32)..w as i32 {
+        // Calculate the x range the diagonal intersects the rectangle in.
+        let min_step = 0.max(-x);
+        let max_step = i32::min(w as i32 - x, h as i32);
+
+        // Run along the diagonal.
+        let mut next_is_inside = false;
+        for n in min_step..max_step {
+            if shape[n as usize][(x + n) as usize] {
+                let (x, y) = ((x + n) as usize, n as usize);
+                next_is_inside ^= match map[y][x] {
+                    b'-' | b'|' | b'F' | b'J' => true,
+                    b'S' => {
+                        // We unfortunately have to check which kind of bend the 'S' tile is.
+                        let left = b"-FL".contains(&map[y][x - 1]);
+                        let top = b"|F7".contains(&map[y - 1][x]);
+                        let right = b"-7J".contains(&map[y][x + 1]);
+                        let bottom = b"|JL".contains(&map[y + 1][x]);
+
+                        !((top && right) || (left && bottom))
+                    }
+                    _ => false,
+                };
+            } else if next_is_inside {
+                inside_points += 1;
+            }
+        }
     }
 
-    // Within that rectangle, count the number of tiles that are inside.
-    Ok((l..=r)
-        .flat_map(|x| (t..=b).map(move |y| (x, y)))
-        .filter(|&p| is_inside(&map, &shape, p, (r, b)))
-        .count())
+    Ok(inside_points)
 }
 
 /// Transforms a position and direction by taking a step along the loop.
@@ -57,45 +85,6 @@ fn step(map: &[&[u8]], (x, y): Pos, (dx, dy): Dir) -> (Pos, Dir) {
         _ => (dx, dy),
     };
     ((x, y), (dx, dy))
-}
-
-/// Checks if a given position is inside the loop. It does so by casting a ray at a 45 degree angle
-/// downwards to the right, and counting the intersections with the loop. If there's an odd number
-/// of intersections, the point is inside.
-///
-/// Due to the angle chosen, L and 7 bends count as two intersections, while all other loop tiles
-/// count as one each.
-///
-/// `max_x` and `max_y` are used as a stop point for the ray cast.
-fn is_inside(map: &[&[u8]], shape: &HashSet<Pos>, (x, y): Pos, (max_x, max_y): Pos) -> bool {
-    // If we're on the shape, we can't be inside.
-    if shape.contains(&(x, y)) {
-        return false;
-    }
-
-    // Count intersections of shape with a line going down-right at a 45 degree angle.
-    let steps = i32::min(max_x - x, max_y - y);
-    let mut intersects = 0;
-    for n in 1..=steps {
-        if shape.contains(&(x + n, y + n)) {
-            intersects += match map[(y + n) as usize][(x + n) as usize] {
-                b'L' | b'7' => 2,
-                b'-' | b'|' | b'F' | b'J' => 1,
-                b'S' => {
-                    // We unfortunately have to check which kind of bend the 'S' tile is.
-                    let (x, y) = ((x + n) as usize, (y + n) as usize);
-                    let left = b"-FL".contains(&map[y][x - 1]);
-                    let top = b"|F7".contains(&map[y - 1][x]);
-                    let right = b"-7J".contains(&map[y][x + 1]);
-                    let bottom = b"|JL".contains(&map[y - 1][x + 1]);
-
-                    1 + usize::from((top && right) || (left && bottom))
-                }
-                _ => 0,
-            };
-        }
-    }
-    intersects % 2 == 1
 }
 
 type Pos = (i32, i32);

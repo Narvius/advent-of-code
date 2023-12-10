@@ -1,13 +1,14 @@
 /// Find half the length of the loop.
 pub fn one(input: &str) -> crate::Result<usize> {
-    let (map, (x, y), (dx, dy)) = parse(input).ok_or("parse failed")?;
+    let (map, start_position, dir) = parse(input).ok_or("parse failed")?;
 
-    let (mut state, mut steps) = (step(&map, (x, y), (dx, dy)), 1);
-    while state.0 != (x, y) {
+    let (mut state, mut steps) = ((start_position, dir), 0);
+    loop {
         (state, steps) = (step(&map, state.0, state.1), steps + 1);
+        if state.0 == start_position {
+            return Ok(steps / 2);
+        }
     }
-
-    Ok(steps / 2)
 }
 
 /// Count the number of tiles inside of the loop.
@@ -46,8 +47,8 @@ pub fn two(input: &str) -> crate::Result<usize> {
         // Run along the diagonal.
         let mut next_is_inside = false;
         for n in min_step..max_step {
-            if shape[n as usize][(x + n) as usize] {
-                let (x, y) = ((x + n) as usize, n as usize);
+            let (x, y) = ((x + n) as usize, n as usize);
+            if shape[y][x] {
                 next_is_inside ^= match map[y][x] {
                     b'-' | b'|' | b'F' | b'J' => true,
                     b'S' => {

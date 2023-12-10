@@ -84,10 +84,10 @@ fn is_inside(map: &[&[u8]], shape: &HashSet<Pos>, (x, y): Pos, (max_x, max_y): P
                 b'S' => {
                     // We unfortunately have to check which kind of bend the 'S' tile is.
                     let (x, y) = ((x + n) as usize, (y + n) as usize);
-                    let left = b"-L7".contains(&map[y][x - 1]);
+                    let left = b"-FL".contains(&map[y][x - 1]);
                     let top = b"|F7".contains(&map[y - 1][x]);
                     let right = b"-7J".contains(&map[y][x + 1]);
-                    let bottom = b"|LJ".contains(&map[y - 1][x + 1]);
+                    let bottom = b"|JL".contains(&map[y - 1][x + 1]);
 
                     1 + usize::from((top && right) || (left && bottom))
                 }

@@ -13,10 +13,12 @@ pub fn one(input: &str) -> crate::Result<usize> {
 
 /// Count the number of points inside of the loop.
 ///
-/// Uses the [shoelace formula](https://en.wikipedia.org/wiki/Shoelace_formula) to calculate the
-/// "real" area of the polygon making up the shape, then [Pick's
-/// theorem](https://en.wikipedia.org/wiki/Pick%27s_theorem) to convert that "real" area to the
-/// number of integer points inside that shape.
+/// Uses the [shoelace formula] to calculate the "real" area of the polygon making up the shape,
+/// then [Pick's theorem] to convert that "real" area to the number of integer points inside that
+/// shape.
+///
+/// [shoelace formula]: https://en.wikipedia.org/wiki/Shoelace_formula
+/// [Pick's theorem]: https://en.wikipedia.org/wiki/Pick%27s_theorem
 pub fn two(input: &str) -> crate::Result<i32> {
     let (map, mut pos, mut dir) = parse(input).ok_or("parse failed")?;
 

@@ -208,7 +208,7 @@ fn eval_single(year: usize, day: usize, part: usize) -> std::result::Result<Dura
     }
 }
 
-/// Formats a [`Duration`](std::time::Duration) for output.
+/// Formats a [`Duration`] for output.
 fn format_duration(d: Duration) -> Cow<'static, str> {
     let d = d.as_secs_f64();
     if d < 0.001 {

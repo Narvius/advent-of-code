@@ -1,88 +1,92 @@
+use std::{borrow::Cow, collections::HashMap};
+
+/// Find the number of possible group arrangements.
 pub fn one(input: &str) -> crate::Result<usize> {
-    let mut total = 0;
-    let mut intervals = vec![];
-    for line in input.lines() {
-        let (pattern, groups) = line.split_once(' ').ok_or("invalid line")?;
-        let groups: Vec<usize> = groups.split(',').filter_map(|n| n.parse().ok()).collect();
-
-        intervals.clear();
-        intervals.push((0, groups[0] - 1));
-        for i in 1..groups.len() {
-            let start = intervals[i - 1].1 + 2;
-            intervals.push((start, start + groups[i] - 1));
-        }
-
-        loop {
-            if valid_arrangement(pattern.as_bytes(), &intervals) {
-                total += 1;
-            }
-
-            if !next_arrangement(intervals.as_mut_slice(), pattern.as_bytes().len()) {
-                break;
-            }
-        }
-    }
-    Ok(total)
+    run(input, false)
 }
 
-pub fn two(input: &str) -> crate::Result<&str> {
-    Err("unimplemented".into())
+/// Find the number of possible group arrangements with expanded data.
+pub fn two(input: &str) -> crate::Result<usize> {
+    run(input, true)
 }
 
-fn valid_arrangement(pattern: &[u8], intervals: &[(usize, usize)]) -> bool {
-    let mut i = 0;
+type Cache = HashMap<(usize, usize, usize), usize>;
 
-    for &(lo, hi) in intervals {
-        while i < lo {
-            if pattern[i] == b'#' {
-                return false;
+/// Shared code for both parts. `extended` decides if the input is expanded as per part 2.
+fn run(input: &str, extended: bool) -> crate::Result<usize> {
+    Ok(input
+        .lines()
+        .filter_map(|line| {
+            let mut cache = HashMap::new();
+            let (pattern, groups) = line.split_once(' ')?;
+
+            let pattern = match extended {
+                false => Cow::Borrowed(pattern),
+                true => Cow::Owned({
+                    let mut s = String::with_capacity(pattern.len() * 5 + 4);
+                    s.push_str(pattern);
+                    for _ in 1..5 {
+                        s.push('?');
+                        s.push_str(pattern);
+                    }
+                    s
+                }),
+            };
+
+            let mut groups: Vec<usize> = groups.split(',').filter_map(|n| n.parse().ok()).collect();
+            if extended {
+                groups.reserve(groups.len() * 4);
+                let len = groups.len();
+                for _ in 1..5 {
+                    for i in 0..len {
+                        groups.push(groups[i]);
+                    }
+                }
             }
-            i += 1;
-        }
 
-        while i <= hi {
-            if pattern[i] == b'.' {
-                return false;
-            }
-            i += 1;
-        }
-    }
-
-    while i < pattern.len() {
-        if pattern[i] == b'#' {
-            return false;
-        }
-        i += 1;
-    }
-
-    true
+            Some(arrangements(pattern.as_bytes(), 0, &groups, &mut cache))
+        })
+        .sum())
 }
 
-/// Modifies `group` to be the next arrangement, and returns whether it has done so successfully.
-/// When it returns `false`, all arrangements have been checked.
-fn next_arrangement(groups: &mut [(usize, usize)], length: usize) -> bool {
-    for i in (0..groups.len()).rev() {
-        // Check if there's space to the right.
-        let end = match groups.get(i + 1) {
-            Some(&(s, _)) => s - 2,
-            None => length - 1,
+/// Counts the number of possible arrangements of `groups` in the provided `s`tring, assuming we
+/// previously parsed `run` consecutive #s. `cache` memoizes previous results, indexed by
+/// (remaining string length, run length, remaining group count).
+fn arrangements(s: &[u8], run: usize, groups: &[usize], cache: &mut Cache) -> usize {
+    let cache_key = (s.len(), run, groups.len());
+
+    if s.is_empty() {
+        // String is empty. The current run must empty or equal to the last remaining group.
+        usize::from((run == 0 && groups.is_empty()) || groups == [run])
+    } else if run > *groups.first().unwrap_or(&0) {
+        // Our current run is too large for the current group. The whole branch can be discarded.
+        0
+    } else if let Some(&cached_result) = cache.get(&cache_key) {
+        cached_result
+    } else {
+        let count = match (s[0], run) {
+            (b'.', 0) => arrangements(&s[1..], 0, groups, cache),
+            (b'.', n) => match n == groups[0] {
+                true => arrangements(&s[1..], 0, &groups[1..], cache),
+                false => 0,
+            },
+
+            (b'#', n) => arrangements(&s[1..], n + 1, groups, cache),
+
+            // If we're not in a run, a ? could be either. Just count both options.
+            (b'?', 0) => {
+                arrangements(&s[1..], 1, groups, cache) + arrangements(&s[1..], 0, groups, cache)
+            }
+            // Already in a run. Whether we assume a # or . fully depends on the current group.
+            (b'?', n) => match n == groups[0] {
+                true => arrangements(&s[1..], 0, &groups[1..], cache),
+                false => arrangements(&s[1..], n + 1, groups, cache),
+            },
+
+            _ => unreachable!(),
         };
 
-        // If so, move current group one space to the right.
-        if groups[i].1 < end {
-            groups[i].0 += 1;
-            groups[i].1 += 1;
-
-            // Now we have to left-align all blocks after self.
-            for j in (i + 1)..groups.len() {
-                let new_start = groups[j - 1].1 + 2;
-                let length = groups[j].1 - groups[j].0;
-                groups[j] = (new_start, new_start + length);
-            }
-
-            return true;
-        }
+        cache.insert(cache_key, count);
+        count
     }
-
-    false
 }

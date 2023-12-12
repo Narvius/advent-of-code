@@ -64,23 +64,22 @@ fn arrangements(s: &[u8], run: usize, groups: &[usize], cache: &mut Cache) -> us
     } else if let Some(&cached_result) = cache.get(&cache_key) {
         cached_result
     } else {
-        let count = match (s[0], run) {
-            (b'.', 0) => arrangements(&s[1..], 0, groups, cache),
+        let (c, s) = (s[0], &s[1..]);
+        let count = match (c, run) {
+            (b'.', 0) => arrangements(s, 0, groups, cache),
             (b'.', n) => match n == groups[0] {
-                true => arrangements(&s[1..], 0, &groups[1..], cache),
+                true => arrangements(s, 0, &groups[1..], cache),
                 false => 0,
             },
 
-            (b'#', n) => arrangements(&s[1..], n + 1, groups, cache),
+            (b'#', n) => arrangements(s, n + 1, groups, cache),
 
             // If we're not in a run, a ? could be either. Just count both options.
-            (b'?', 0) => {
-                arrangements(&s[1..], 1, groups, cache) + arrangements(&s[1..], 0, groups, cache)
-            }
+            (b'?', 0) => arrangements(s, 1, groups, cache) + arrangements(s, 0, groups, cache),
             // Already in a run. Whether we assume a # or . fully depends on the current group.
             (b'?', n) => match n == groups[0] {
-                true => arrangements(&s[1..], 0, &groups[1..], cache),
-                false => arrangements(&s[1..], n + 1, groups, cache),
+                true => arrangements(s, 0, &groups[1..], cache),
+                false => arrangements(s, n + 1, groups, cache),
             },
 
             _ => unreachable!(),

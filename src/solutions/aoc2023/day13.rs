@@ -46,7 +46,7 @@ fn reflection_score(map: &[&[u8]], smudged: bool) -> usize {
         }
     }
 
-    // Find reflections around a horizontal line.
+    // Find reflection around a horizontal line.
     'outer: for y in 1..map.len() {
         let mut mistake = !smudged;
         let dy = usize::min(y, map.len() - y);

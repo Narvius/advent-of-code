@@ -29,38 +29,38 @@ fn total_reflection_score(input: &str, smudged: bool) -> usize {
 fn reflection_score(map: &[&[u8]], smudged: bool) -> usize {
     // Find reflection around a vertical line.
     'outer: for x in 1..map[0].len() {
-        let mut mistake = false;
+        let mut mistake = !smudged;
         let dx = usize::min(x, map[0].len() - x);
         for dx in 1..=dx {
             for row in map {
                 if row[x - dx] != row[x + dx - 1] {
-                    match !smudged || mistake {
+                    match mistake {
                         true => continue 'outer,
                         false => mistake = true,
                     }
                 }
             }
         }
-        if !smudged || mistake {
+        if mistake {
             return x;
         }
     }
 
     // Find reflections around a horizontal line.
     'outer: for y in 1..map.len() {
-        let mut mistake = false;
+        let mut mistake = !smudged;
         let dy = usize::min(y, map.len() - y);
         for dy in 1..=dy {
             for x in 0..map[0].len() {
                 if map[y - dy][x] != map[y + dy - 1][x] {
-                    match !smudged || mistake {
+                    match mistake {
                         true => continue 'outer,
                         false => mistake = true,
                     }
                 }
             }
         }
-        if !smudged || mistake {
+        if mistake {
             return y * 100;
         }
     }

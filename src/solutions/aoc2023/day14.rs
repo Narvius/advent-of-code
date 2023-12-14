@@ -29,33 +29,27 @@ pub fn one(input: &str) -> crate::Result<usize> {
 
 /// Simulate 1000000000 spin cycles, and find the weight on the northern support beams.
 pub fn two(input: &str) -> crate::Result<i32> {
-    let width = input.lines().next().map(str::len).unwrap_or(0);
-    let height = input.lines().count();
-    let mut seen = HashMap::new();
-
     let mut map = Map {
         data: input.bytes().filter(|c| !c.is_ascii_control()).collect(),
-        width: width as i32,
-        height: height as i32,
+        width: input.lines().next().map(str::len).unwrap_or(0) as i32,
+        height: input.lines().count() as i32,
     };
+    let mut seen = HashMap::from([(map.data.clone(), 0)]);
 
-    seen.insert(map.data.clone(), 0);
-    for i in 1.. {
+    for step in 1.. {
         spin_cycle(&mut map);
 
-        if let Some(v) = seen.insert(map.data.clone(), i) {
-            let left = (1000000000 - i) % (i - v);
-            for _ in 0..left {
-                spin_cycle(&mut map);
-            }
+        let repeat = seen.insert(map.data.clone(), step);
+        if let Some(repeat) = repeat {
+            let left = (1000000000 - step) % (step - repeat);
+            let (data, _) = seen.into_iter().find(|(_, v)| *v == repeat + left).unwrap();
 
-            let items = map.data.iter().enumerate();
-            return Ok(items
-                .map(|(i, t)| match t {
-                    b'O' => map.height - i as i32 / map.width,
-                    _ => 0,
-                })
-                .sum());
+            let weight = |(i, tile): (usize, &u8)| match tile {
+                b'O' => map.height - i as i32 / map.width,
+                _ => 0,
+            };
+
+            return Ok(data.iter().enumerate().map(weight).sum());
         }
     }
 

@@ -59,7 +59,7 @@ pub fn two(input: &str) -> crate::Result<i32> {
         }
     }
 
-    Err("unimplemented".into())
+    unreachable!()
 }
 
 struct Map {

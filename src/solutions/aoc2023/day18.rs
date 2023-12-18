@@ -45,9 +45,8 @@ fn parse(input: &str, decode: bool) -> impl Iterator<Item = (u8, i64)> + '_ {
         let (dir, rest) = line.split_once(' ')?;
         let (count, encoded) = rest.split_once(' ')?;
         Some(if decode {
-            let val = encoded.trim_matches(&['(', ')', '#'][..]);
-            let count = i64::from_str_radix(&val[0..5], 16).ok()?;
-            (val.as_bytes()[5], count)
+            let count = i64::from_str_radix(&encoded[2..7], 16).ok()?;
+            (encoded.as_bytes()[7], count)
         } else {
             (dir.as_bytes()[0], count.parse().ok()?)
         })

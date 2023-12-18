@@ -25,10 +25,10 @@ fn lagoon_size(input: &str, decode: bool) -> i64 {
     for (dir, count) in parse(input, decode) {
         points += count;
         let next_pos = match dir {
-            b'L' => (pos.0 - count, pos.1),
-            b'U' => (pos.0, pos.1 - count),
-            b'R' => (pos.0 + count, pos.1),
-            b'D' => (pos.0, pos.1 + count),
+            b'R' | b'0' => (pos.0 + count, pos.1),
+            b'D' | b'1' => (pos.0, pos.1 + count),
+            b'L' | b'2' => (pos.0 - count, pos.1),
+            b'U' | b'3' => (pos.0, pos.1 - count),
             _ => unreachable!(),
         };
         area += pos.0 * next_pos.1 - pos.1 * next_pos.0;
@@ -47,14 +47,7 @@ fn parse(input: &str, decode: bool) -> impl Iterator<Item = (u8, i64)> + '_ {
         Some(if decode {
             let val = encoded.trim_matches(&['(', ')', '#'][..]);
             let count = i64::from_str_radix(&val[0..5], 16).ok()?;
-            let dir = match val.as_bytes()[5] {
-                b'0' => b'R',
-                b'1' => b'D',
-                b'2' => b'L',
-                b'3' => b'U',
-                _ => unreachable!(),
-            };
-            (dir, count)
+            (val.as_bytes()[5], count)
         } else {
             (dir.as_bytes()[0], count.parse().ok()?)
         })

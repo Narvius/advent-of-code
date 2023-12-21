@@ -142,12 +142,17 @@ pub fn two(input: &str) -> crate::Result<usize> {
     let quarter_edge_close = mainline;
     let quarter_edge_far = quarter_edge_close + 1;
 
+    // For completely-filled maps, it doesn't matter *how* they got filled, so we can put them all
+    // in one bucket.
+    let total_evens = 4 * (mainline_evens + quarter_evens);
+    let total_odds = 1 + 4 * (mainline_odds + quarter_odds);
+
     // That's it, we have now counted the exact number of all relevant maps. All that remains is
     // doing the correct floodfills to get the number of target tiles in each kind, and multiply it
     // by the number of rooms.
 
     // Lists of all entrances used.
-    let centers: &[(usize, usize)] = &[(s / 2, s / 2)];
+    let center: &[(usize, usize)] = &[(s / 2, s / 2)];
     let middles = &[
         (0, s / 2),     // entering from left edge
         (s / 2, 0),     // entering from top edge
@@ -169,11 +174,8 @@ pub fn two(input: &str) -> crate::Result<usize> {
     // - and the step limit, if any.
     let combinations = [
         // Completely-filled maps
-        (1, centers, true, None),              // Center
-        (mainline_evens, middles, true, None), // Completely-filled mainline evens
-        (mainline_odds, middles, false, None), // Completely-filled mainline odds
-        (quarter_evens, corners, false, None), // Completely-filled quarter evens
-        (quarter_odds, corners, true, None),   // Completely-filled quarter odds
+        (total_odds, center, true, None),
+        (total_evens, center, false, None),
         // Partially-filled maps
         (1, middles, false, Some(s - 1)), // Final special mainline maps
         (quarter_edge_close, corners, true, Some(3 * s / 2 - 1)),

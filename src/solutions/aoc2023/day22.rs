@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Find the number of bricks that could individually be removed without making any other bricks
 /// fall further.
@@ -16,10 +16,10 @@ pub fn two(input: &str) -> crate::Result<usize> {
 
     Ok((0..supports.len())
         .map(|i| {
-            let mut disintegrated = vec![i];
+            let mut disintegrated = HashSet::from([i]);
             for (di, s) in supports[i..].iter().enumerate() {
                 if !s.is_empty() && s.iter().all(|n| disintegrated.contains(n)) {
-                    disintegrated.push(i + di);
+                    disintegrated.insert(i + di);
                 }
             }
             disintegrated.len() - 1

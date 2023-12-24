@@ -8,6 +8,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 
     let mut intersects = 0;
     for (i, &([x1, y1, _], [vx1, vy1, _])) in lines.iter().enumerate() {
+        // Adapted from https://paulbourke.net/geometry/pointlineplane/javascript.txt.
         let (ax1, ay1) = (x1, y1);
         let (ax2, ay2) = (x1 + vx1, y1 + vy1);
 
@@ -80,6 +81,8 @@ fn velocity_for_axis(lines: &[(P, P)], axis: usize) -> Option<f64> {
     let mut candidates = HashSet::new();
     for (i, &(p1, v1)) in lines.iter().enumerate() {
         for &(p2, v2) in lines[(i + 1)..].iter() {
+            // Originally, I wanted to save a list of constraints and calculate the final result
+            // from that, but this is fast enough.
             if v1[axis] == v2[axis] && v1[axis].abs() > 100.0 {
                 let mut set = HashSet::new();
                 for candidate in -400..=400 {

@@ -44,7 +44,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 pub fn two(input: &str) -> crate::Result<f64> {
     let lines: Vec<_> = parse(input).collect();
     // Find the velocity our magic rock has to have.
-    let [rvx, rvy, rvz] = [
+    let [vx, vy, vz] = [
         velocity_for_axis(&lines, 0).ok_or("no X velocity")?,
         velocity_for_axis(&lines, 1).ok_or("no Y velocity")?,
         velocity_for_axis(&lines, 2).ok_or("no Z velocity")?,
@@ -58,14 +58,14 @@ pub fn two(input: &str) -> crate::Result<f64> {
     let ([x1, y1, z1], [vx1, vy1, vz1]) = lines[0];
     let ([x2, y2, _], [vx2, vy2, _]) = lines[1];
 
-    let a1 = (vy1 - rvy) / (vx1 - rvx);
+    let a1 = (vy1 - vy) / (vx1 - vx);
     let b1 = y1 - a1 * x1;
-    let a2 = (vy2 - rvy) / (vx2 - rvx);
+    let a2 = (vy2 - vy) / (vx2 - vx);
     let b2 = y2 - a2 * x2;
 
     let x = (b2 - b1) / (a1 - a2);
     let y = a1 * x + b1;
-    let z = z1 + (vz1 - rvz) * ((x - x1) / (vx1 - rvx));
+    let z = z1 + (vz1 - vz) * ((x - x1) / (vx1 - vx));
 
     Ok(x + y + z)
 }
@@ -83,7 +83,7 @@ fn velocity_for_axis(lines: &[(P, P)], axis: usize) -> Option<f64> {
         for &(p2, v2) in lines[(i + 1)..].iter() {
             // Originally, I wanted to save a list of constraints and calculate the final result
             // from that, but this is fast enough.
-            if v1[axis] == v2[axis] && v1[axis].abs() > 100.0 {
+            if v1[axis] == v2[axis] && v1[axis].abs() > 128.0 {
                 let mut set = HashSet::new();
                 for candidate in -400..=400 {
                     let candidate = candidate as f64;

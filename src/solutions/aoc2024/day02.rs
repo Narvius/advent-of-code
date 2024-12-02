@@ -18,12 +18,9 @@ pub fn two(input: &str) -> crate::Result<usize> {
 
 /// Checks that a report is safe (the series is either montononically increasing or monotonically
 /// decreasing; and all differences between adjacent numbers are at least 1 and at most 3).
-fn safe(report: &[i32]) -> bool {
-    let monotonic =
-        report.windows(2).all(|w| w[0] < w[1]) || report.windows(2).all(|w| w[0] > w[1]);
-    let steady = report
-        .windows(2)
-        .all(|w| (1..=3).contains(&(w[0].abs_diff(w[1]))));
+fn safe(r: &[i32]) -> bool {
+    let monotonic = r.windows(2).all(|w| w[0] < w[1]) || r.windows(2).all(|w| w[0] > w[1]);
+    let steady = r.windows(2).all(|w| (1..=3).contains(&w[0].abs_diff(w[1])));
 
     monotonic && steady
 }

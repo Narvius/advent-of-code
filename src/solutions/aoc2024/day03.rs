@@ -6,7 +6,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// Find the sum of all enabled `mul` instructions.
 pub fn two(input: &str) -> crate::Result<i32> {
     // Find all the stretches of input data during which `mul`s are enabled.
-    let (leading_enabled, offs) = input.split_once("don't()").unwrap();
+    let (leading_enabled, offs) = input.split_once("don't()").unwrap_or((input, ""));
     let enabled_parts = offs
         .split("don't()")
         .filter_map(|part| Some(part.split_once("do()")?.1));

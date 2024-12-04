@@ -3,9 +3,8 @@ use crate::common;
 /// Count the number of `XMAS`es in the grid.
 pub fn one(input: &str) -> crate::Result<usize> {
     let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
-    let lines = common::product3(0..grid.len() as i32, 0..grid[0].len() as i32, DELTAS);
-    Ok(lines
-        .filter(|(x, y, (dx, dy))| {
+    Ok(common::product(common::grid_coordinates(&grid), DELTAS)
+        .filter(|((x, y), (dx, dy))| {
             (0..NEEDLE.len())
                 .all(|i| Some(NEEDLE[i]) == char_at(&grid, (x + dx * i as i32, y + dy * i as i32)))
         })
@@ -15,8 +14,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 /// Count the number of crossed `MAS`es in the grid.
 pub fn two(input: &str) -> crate::Result<usize> {
     let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
-    let tiles = common::product(0..grid.len() as i32, 0..grid[0].len() as i32);
-    Ok(tiles
+    Ok(common::grid_coordinates(&grid)
         .filter(|(x, y)| {
             let d1 = DIAG1.map(|(dx, dy)| char_at(&grid, (x + dx, y + dy)));
             let d2 = DIAG2.map(|(dx, dy)| char_at(&grid, (x + dx, y + dy)));

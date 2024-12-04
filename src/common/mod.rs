@@ -7,6 +7,41 @@ use std::collections::{HashSet, VecDeque};
 pub mod astar;
 pub mod intcode;
 
+/// Produces the carthesian product of two iterators.
+pub fn product<I1, I2, T1, T2>(i1: I1, i2: I2) -> impl Iterator<Item = (T1, T2)>
+where
+    I1: IntoIterator<Item = T1>,
+    I2: IntoIterator<Item = T2> + Clone,
+    T1: Clone,
+{
+    i1.into_iter()
+        .flat_map(move |t1| i2.clone().into_iter().map(move |t2| (t1.clone(), t2)))
+}
+
+/// Produces the carthesian product of three iterators.
+pub fn product3<I1, I2, I3, T1, T2, T3>(
+    i1: I1,
+    i2: I2,
+    i3: I3,
+) -> impl Iterator<Item = (T1, T2, T3)>
+where
+    I1: IntoIterator<Item = T1>,
+    I2: IntoIterator<Item = T2> + Clone,
+    I3: IntoIterator<Item = T3> + Clone,
+    T1: Clone,
+    T2: Clone,
+{
+    i1.into_iter().flat_map(move |t1| {
+        let i3 = i3.clone();
+        i2.clone().into_iter().flat_map(move |t2| {
+            let t1 = t1.clone();
+            i3.clone()
+                .into_iter()
+                .map(move |t3| (t1.clone(), t2.clone(), t3))
+        })
+    })
+}
+
 /// Returns all possible permutations of the numbers in `0..k`, using Heap's algorithm.
 pub fn permutations(k: usize) -> Vec<Vec<usize>> {
     fn inner(k: usize, values: &mut [usize]) -> Vec<Vec<usize>> {

@@ -7,6 +7,11 @@ use std::collections::{HashSet, VecDeque};
 pub mod astar;
 pub mod intcode;
 
+/// Produces all coordinates of a grid.
+pub fn grid_coordinates<'a, T>(grid: &'a [&'a [T]]) -> impl Iterator<Item = (i32, i32)> + 'a {
+    (0..grid.len()).flat_map(move |y| (0..grid[y].len()).map(move |x| (x as i32, y as i32)))
+}
+
 /// Produces the carthesian product of two iterators.
 pub fn product<I1, I2, T1, T2>(i1: I1, i2: I2) -> impl Iterator<Item = (T1, T2)>
 where

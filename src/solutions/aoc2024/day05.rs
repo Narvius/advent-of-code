@@ -7,16 +7,12 @@ use std::{
 pub fn one(input: &str) -> crate::Result<i32> {
     let (rules, updates) = parse(input).ok_or("no parse")?;
     Ok(updates
-        .filter_map(|xs| {
-            for i in 0..xs.len() {
-                for j in (i + 1)..xs.len() {
-                    if !right_order(xs[i], xs[j], &rules) {
-                        return None;
-                    }
-                }
-            }
-            Some(xs[xs.len() / 2])
+        .filter(|xs| {
+            xs.iter()
+                .enumerate()
+                .all(|(i, &x)| xs[i + 1..].iter().all(|&y| right_order(x, y, &rules)))
         })
+        .map(|xs| xs[xs.len() / 2])
         .sum())
 }
 

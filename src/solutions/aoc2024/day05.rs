@@ -10,7 +10,7 @@ pub fn one(input: &str) -> crate::Result<i32> {
         .filter(|xs| {
             xs.iter()
                 .enumerate()
-                .all(|(i, &x)| xs[i + 1..].iter().all(|&y| right_order(x, y, &rules)))
+                .all(|(i, &a)| xs[i + 1..].iter().all(|&b| right_order(a, b, &rules)))
         })
         .map(|xs| xs[xs.len() / 2])
         .sum())
@@ -32,24 +32,22 @@ pub fn two(input: &str) -> crate::Result<i32> {
 }
 
 /// Checks if two numbers are in the right order in accordance with the rule map.
-fn right_order(pre: i32, post: i32, rules: &RuleMap) -> bool {
-    !rules
-        .get(&post)
-        .map(|set| set.contains(&pre))
-        .unwrap_or(false)
+fn right_order(a: i32, b: i32, rules: &RuleMap) -> bool {
+    !rules.get(&b).map(|set| set.contains(&a)).unwrap_or(false)
 }
 
 /// All values for a given key must come after it in an update for it to be valid.
 type RuleMap = HashMap<i32, HashSet<i32>>;
+
 /// Parses the puzzle input into a map of rules and a list of updates to check.
 fn parse(input: &str) -> Option<(RuleMap, impl Iterator<Item = Vec<i32>> + '_)> {
     let (rules, updates) = input.split_once("\r\n\r\n")?;
-    let mut rule_map = HashMap::new();
+    let mut rule_map = RuleMap::new();
 
     for line in rules.lines() {
         let (pre, post) = line.split_once('|')?;
         let (pre, post) = (pre.parse().ok()?, post.parse().ok()?);
-        rule_map.entry(pre).or_insert(HashSet::new()).insert(post);
+        rule_map.entry(pre).or_default().insert(post);
     }
 
     let updates = updates.lines().map(|line| {

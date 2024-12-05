@@ -33,7 +33,7 @@ pub fn two(input: &str) -> crate::Result<i32> {
 
 /// Checks if two numbers are in the right order in accordance with the rule map.
 fn right_order(a: i32, b: i32, rules: &RuleMap) -> bool {
-    !rules.get(&b).map(|set| set.contains(&a)).unwrap_or(false)
+    !rules[&b].contains(&a)
 }
 
 /// All values for a given key must come after it in an update for it to be valid.

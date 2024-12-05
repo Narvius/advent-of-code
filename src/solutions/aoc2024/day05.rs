@@ -24,15 +24,15 @@ pub fn one(input: &str) -> crate::Result<i32> {
 pub fn two(input: &str) -> crate::Result<i32> {
     let (rules, updates) = parse(input).ok_or("no parse")?;
     Ok(updates
-        .map(|mut xs| {
+        .filter_map(|mut xs| {
+            let prev = xs.clone();
             xs.sort_unstable_by(|&a, &b| match right_order(a, b, &rules) {
                 true => Ordering::Less,
                 false => Ordering::Greater,
             });
-            xs[xs.len() / 2]
+            (prev != xs).then_some(xs[xs.len() / 2])
         })
-        .sum::<i32>()
-        - one(input)?)
+        .sum())
 }
 
 /// Checks if two numbers are in the right order in accordance with the rule map.

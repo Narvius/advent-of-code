@@ -11,45 +11,30 @@ pub fn two(input: &str) -> crate::Result<i64> {
 }
 
 /// Sums all formable expressions in the input. Uses only addition and multiplication when
-/// `with_concat` is false; also uses concatenation when it is `true`.
+/// `with_concat` is false; also uses `concatenate` when it is `true`.
 fn sum_formable_expressions(input: &str, with_concat: bool) -> crate::Result<i64> {
-    let step = if with_concat { step_with_concat } else { step };
-    let can_produce = |(total, numbers): &(i64, Vec<i64>)| {
-        numbers
-            .iter()
-            .skip(1)
-            .fold(vec![numbers[0]], step)
-            .iter()
-            .any(|x| x == total)
-    };
-
-    Ok(parse(input).filter(can_produce).map(|p| p.0).sum())
+    Ok(parse(input)
+        .filter(|(total, nums)| formable(&nums[1..], nums[0], *total, with_concat))
+        .map(|p| p.0)
+        .sum())
 }
 
-/// Given a list of partial results and the next number in the sequence, produces all possible
-/// partial results after incorporating this next number; such that after calling this with the
-/// entire sequence we end up with a list of ALL possible results for all combinations of
-/// operators.
-fn step(mut options: Vec<i64>, next: &i64) -> Vec<i64> {
-    options.reserve(options.len());
-    for i in 0..options.len() {
-        options.push(options[i] * next);
-        options[i] += next;
+/// Checks if the `target` is reachable using the remaining `nums`, the partially-processed result
+/// in `acc`, and admissible operators (+, *; and `concatenate` if `concat` is true).
+fn formable(nums: &[i64], acc: i64, target: i64, concat: bool) -> bool {
+    if nums.is_empty() || acc > target {
+        return acc == target;
     }
-    options
+
+    let (num, nums) = (nums[0], &nums[1..]);
+    (concat && formable(nums, concatenate(acc, num), target, concat))
+        || formable(nums, acc * num, target, concat)
+        || formable(nums, acc + num, target, concat)
 }
 
-/// Given a list of partial results and the next number in the sequences, produces all possible
-/// partial results after incorporating this next number. Compared to [`step`], also considers
-/// concatenation.
-fn step_with_concat(mut options: Vec<i64>, next: &i64) -> Vec<i64> {
-    options.reserve(options.len() * 2);
-    for i in 0..options.len() {
-        options.push(options[i] * next);
-        options.push(options[i] * 10i64.pow((f64::log10(*next as f64) + 1.0) as u32) + next);
-        options[i] += next;
-    }
-    options
+/// Concatenates two numbers.
+fn concatenate(left: i64, right: i64) -> i64 {
+    left * 10i64.pow((f64::log10(right as f64) + 1.0) as u32) + right
 }
 
 /// Parses the puzzle input into (expected result, numbers in expression) pairs.

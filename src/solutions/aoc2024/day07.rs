@@ -21,6 +21,10 @@ fn sum_formable_expressions(input: &str, with_concat: bool) -> crate::Result<i64
 
 /// Checks if the `target` is reachable using the remaining `nums`, the partially-processed result
 /// in `acc`, and admissible operators (+, *; and `concatenate` if `concat` is true).
+///
+/// Ordinarily, I would split this into two versions (one with concat, the other without) to avoid
+/// the additional branching, but tests indicated that the Rust compiler is clever enough to
+/// sufficiently optimize that part, and I saw no performance difference.
 fn formable(nums: &[i64], acc: i64, target: i64, concat: bool) -> bool {
     if nums.is_empty() || acc > target {
         return acc == target;

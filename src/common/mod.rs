@@ -7,6 +7,29 @@ use std::collections::{HashSet, VecDeque};
 pub mod astar;
 pub mod intcode;
 
+/// Checks whether a `sequence` has a cycle, using [Floyd's algorithm]. If the given iterator is
+/// infinite, only halts once a cycle is detected.
+///
+/// Uses additional memory (linear relative to size of cycle) to avoid cloning the input.
+///
+/// [Floyd's algorithm]: https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare
+pub fn has_cycle<T>(mut sequence: impl Iterator<Item = T>) -> bool
+where
+    T: Eq,
+{
+    let mut items = VecDeque::new();
+
+    while let (Some(a), Some(b)) = (sequence.next(), sequence.next()) {
+        items.push_back(a);
+        if items.pop_front().as_ref() == Some(&b) {
+            return true;
+        }
+        items.push_back(b);
+    }
+
+    false
+}
+
 /// Produces all coordinates of a grid.
 pub fn grid_coordinates<'a, T>(grid: &'a [&'a [T]]) -> impl Iterator<Item = (i32, i32)> + 'a {
     (0..grid.len()).flat_map(move |y| (0..grid[y].len()).map(move |x| (x as i32, y as i32)))

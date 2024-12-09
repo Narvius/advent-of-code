@@ -17,8 +17,7 @@ pub fn one(input: &str) -> crate::Result<usize> {
 pub fn two(input: &str) -> crate::Result<usize> {
     // Concept: Potential obstacle locations are on the path of the guard. So we do a regular walk
     // (the `outer` walk), and any time we would take a step forward, check if there would be a
-    // loop if there was an obstacle there. Cycle detection uses Floyd's.
-    // https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare
+    // loop if there was an obstacle there.
 
     let (pos, grid) = parse(input);
     let pd = Some((pos, (0, -1)));
@@ -34,10 +33,9 @@ pub fn two(input: &str) -> crate::Result<usize> {
 
         let pd = Some((prev_p, (-d.1, d.0)));
         let obstacle = Some(p);
-        let slow = iter::successors(pd, |&(p, d)| step(&grid, p, d, obstacle));
-        let fast = iter::successors(pd, |&(p, d)| step2(&grid, p, d, obstacle));
+        let inner_walk = iter::successors(pd, |&(p, d)| step(&grid, p, d, obstacle));
 
-        if slow.zip(fast).skip(1).any(|(s, f)| s == f) {
+        if common::has_cycle(inner_walk) {
             loops += 1;
         }
     }
@@ -65,12 +63,6 @@ fn step(grid: &[&[u8]], mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Optio
     }
 
     Some((pos, dir))
-}
-
-/// Performs two `step`s.
-fn step2(grid: &[&[u8]], mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Option<(V2, V2)> {
-    (pos, dir) = step(grid, pos, dir, obstacle)?;
-    step(grid, pos, dir, obstacle)
 }
 
 type V2 = (i32, i32);

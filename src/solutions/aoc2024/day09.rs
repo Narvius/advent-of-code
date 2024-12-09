@@ -54,13 +54,12 @@ pub fn one(input: &str) -> crate::Result<usize> {
 
 /// Compact all files, without fragmenting them, and find the resulting filesystem checksum.
 pub fn two(input: &str) -> crate::Result<usize> {
-    let p = input.trim().as_bytes();
     let (mut files, mut spaces) = (vec![], vec![]);
     let mut position = 0;
     let mut checksum = 0;
 
     // "Parse"--index all files and spaces.
-    for (i, c) in p.chunks(2).enumerate() {
+    for (i, c) in input.trim().as_bytes().chunks(2).enumerate() {
         let file = digit(c[0]);
         files.push((position, file, i));
         if c.len() == 2 {

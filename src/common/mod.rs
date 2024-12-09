@@ -7,7 +7,8 @@ use std::collections::{HashSet, VecDeque};
 pub mod astar;
 pub mod intcode;
 
-/// Checks whether a `sequence` has a cycle, using [Floyd's algorithm]. If the given iterator is
+/// Checks whether a `sequence` has a cycle, using the idea of [Floyd's algorithm], but adapted for
+/// usage with iterators rather than a known collection of items. If the given iterator is
 /// infinite, only halts once a cycle is detected.
 ///
 /// Uses additional memory (linear relative to size of cycle) to avoid cloning the input.

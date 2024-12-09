@@ -1,59 +1,45 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, iter};
 
 use crate::common;
 
 /// Count the number of unique tiles visited by the guard's walk.
 pub fn one(input: &str) -> crate::Result<usize> {
-    let (mut pos, grid) = parse(input);
-    let mut dir = (0, -1);
-    let mut visited = HashSet::from([pos]);
-
-    while let Some(after) = step(&grid, pos, dir, None) {
-        (pos, dir) = after;
-        visited.insert(pos);
-    }
-
-    Ok(visited.len())
+    let (starting_position, grid) = parse(input);
+    let pd = Some((starting_position, (0, -1)));
+    Ok(iter::successors(pd, |&(p, d)| step(&grid, p, d, None))
+        .map(|p| p.0)
+        .collect::<HashSet<_>>()
+        .len())
 }
 
 /// Find the number of unique tiles a single obstacle can be placed in to lock the guard into a
 /// loop.
 pub fn two(input: &str) -> crate::Result<usize> {
     // Concept: Potential obstacle locations are on the path of the guard. So we do a regular walk
-    // (the `outer` walk), and any time we would take a step forward, start a new, `inner` walk
-    // pretending there's an obstacle in that spot. If the inner walk detects the same
-    // position+orientation twice, it's a loop.
+    // (the `outer` walk), and any time we would take a step forward, check if there would be a
+    // loop if there was an obstacle there. Cycle detection uses Floyd's.
+    // https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare
 
-    let (mut pos, grid) = parse(input);
-    let mut dir = (0, -1);
+    let (pos, grid) = parse(input);
+    let pd = Some((pos, (0, -1)));
+    let outer_walk = iter::successors(pd, |&(p, d)| step(&grid, p, d, None));
+
+    let mut visited = HashSet::new();
     let mut loops = 0;
 
-    // `visited` is to keep track of paradoxical paths (see larger comment couple lines down);
-    // `visited_with_dir` is a performance optimization that makes it faster to detect loops.
-    let mut visited = HashSet::from([pos]);
-    let mut visited_with_dir = HashSet::from([(pos, dir)]);
-
-    // Outer walk.
-    while let Some(after) = step(&grid, pos, dir, None) {
-        if pos != after.0 && !visited.contains(&after.0) {
-            // Do the inner walk with one added obstacle if the tile ahead is open and hasn't been
-            // visited before in the outer walk. The latter condition is because if we placed an
-            // obstacle there, we wouldn't have reached the position we're in right now anyway.
-            let (mut pos, mut dir) = (pos, dir);
-            let mut visited = visited_with_dir.clone();
-
-            while let Some(after) = step(&grid, pos, dir, Some(after.0)) {
-                (pos, dir) = after;
-                if !visited.insert(after) {
-                    loops += 1;
-                    break;
-                }
-            }
+    for ((prev_p, _), (p, d)) in outer_walk.clone().zip(outer_walk.skip(1)) {
+        if !visited.insert(p) || prev_p == p {
+            continue;
         }
 
-        (pos, dir) = after;
-        visited.insert(pos);
-        visited_with_dir.insert((pos, dir));
+        let pd = Some((prev_p, (-d.1, d.0)));
+        let obstacle = Some(p);
+        let slow = iter::successors(pd, |&(p, d)| step(&grid, p, d, obstacle));
+        let fast = iter::successors(pd, |&(p, d)| step2(&grid, p, d, obstacle));
+
+        if slow.zip(fast).skip(1).any(|(s, f)| s == f) {
+            loops += 1;
+        }
     }
 
     Ok(loops)
@@ -64,12 +50,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
 ///
 /// If `obstacle` is given, those coordinates are treated as obstacle regardless of what's there on
 /// the `grid`.
-fn step(
-    grid: &[&[u8]],
-    mut pos: (i32, i32),
-    mut dir: (i32, i32),
-    obstacle: Option<(i32, i32)>,
-) -> Option<((i32, i32), (i32, i32))> {
+fn step(grid: &[&[u8]], mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Option<(V2, V2)> {
     let (Ok(x), Ok(y)) = (
         usize::try_from(pos.0 + dir.0),
         usize::try_from(pos.1 + dir.1),
@@ -85,6 +66,14 @@ fn step(
 
     Some((pos, dir))
 }
+
+/// Performs two `step`s.
+fn step2(grid: &[&[u8]], mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Option<(V2, V2)> {
+    (pos, dir) = step(grid, pos, dir, obstacle)?;
+    step(grid, pos, dir, obstacle)
+}
+
+type V2 = (i32, i32);
 
 /// Parses the puzzle input into a starting location and a grid.
 fn parse(input: &str) -> ((i32, i32), Vec<&[u8]>) {

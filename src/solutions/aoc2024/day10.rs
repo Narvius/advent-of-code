@@ -17,8 +17,7 @@ fn total_score_and_rating(input: &str) -> (usize, usize) {
     let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
     common::grid_coordinates(&grid)
         .map(|c| score_and_rating(&grid, c))
-        .reduce(|(a1, b1), (a2, b2)| (a1 + a2, b1 + b2))
-        .expect("at least one trail in the input")
+        .fold((0, 0), |(a1, b1), (a2, b2)| (a1 + a2, b1 + b2))
 }
 
 /// Finds the score and rating for a given trailhead.

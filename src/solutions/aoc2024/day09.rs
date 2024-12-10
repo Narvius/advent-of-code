@@ -2,16 +2,10 @@
 pub fn one(input: &str) -> crate::Result<usize> {
     let p = input.trim().as_bytes();
     let (mut start, mut end) = (1, p.len() - 1);
+    let (mut space, mut data) = (digit(p[start]), digit(p[end]));
     let mut position = digit(p[0]);
     let mut checksum = 0;
-    // Note: The current `id` is always half the pointer, with data packets at even positions, and
-    // empty packets at odd positions.
 
-    assert!(start % 2 == 1, "Left pointer should be on gaps");
-    assert!(end % 2 == 0, "Right pointe should be on data");
-
-    let mut space = digit(p[start]);
-    let mut data = digit(p[end]);
     while start < end {
         // Main routine. Keep using up space and data to increase checksum and position.
         while space > 0 && data > 0 {

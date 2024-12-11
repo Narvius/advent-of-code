@@ -15,7 +15,7 @@ pub fn two(input: &str) -> crate::Result<u128> {
 ///
 /// Note that while the puzzle specifies that "order is preserved", it never matters; so we can do
 /// a simple bucketing strategy.
-fn blink(input: &str, times: u128) -> u128 {
+fn blink(input: &str, times: usize) -> u128 {
     let mut rocks: HashMap<i64, u128> = input
         .split_ascii_whitespace()
         .filter_map(|n| Some((n.parse().ok()?, 1)))

@@ -15,26 +15,26 @@ pub fn two(input: &str) -> crate::Result<i128> {
 /// Return the win cost for a machine from the input; returns `None` if it isn't winnable.
 fn win_cost((x1, y1, x2, y2, x, y): Machine) -> Option<i128> {
     // Just algebra. You can derive it from:
-    // x = N * x1 + M * x2
-    // y = N * y1 + M * y2
+    // x = A * x1 + B * x2
+    // y = A * y1 + B * y2
 
-    let n_num = x2 * y - x * y2;
-    let n_denom = y1 * x2 - x1 * y2;
+    let a_num = x2 * y - x * y2;
+    let a_denom = y1 * x2 - x1 * y2;
 
-    if n_num % n_denom != 0 {
+    if a_num % a_denom != 0 {
         return None;
     }
 
-    let n = n_num / n_denom;
+    let a = a_num / a_denom;
 
-    let m_num = x - n * x1;
-    let m_denom = x2;
+    let b_num = x - a * x1;
+    let b_denom = x2;
 
-    if m_num % m_denom != 0 {
+    if b_num % b_denom != 0 {
         return None;
     }
 
-    Some(3 * n + m_num / m_denom)
+    Some(3 * a + b_num / b_denom)
 }
 
 /// Parses the puzzle input into a list of machine parameters.

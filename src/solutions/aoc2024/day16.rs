@@ -110,8 +110,7 @@ type V2 = (i32, i32);
 /// start and end nodes, respectively).
 fn parse(input: &str) -> (Grid<u8>, V2, V2) {
     let grid = Grid::from_input(input);
-    let start = grid.coordinates().find(|&c| grid.at(c) == Some(b'S'));
-    let end = grid.coordinates().find(|&c| grid.at(c) == Some(b'E'));
+    let (start, end) = (grid.find(|&e| e == b'S'), grid.find(|&e| e == b'E'));
 
     (grid, start.expect("a start"), end.expect("an end"))
 }

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::common;
+use crate::common::Grid;
 
 /// Appraise the total fencing cost if the perimeter cost is equal to the length of the perimeter.
 pub fn one(input: &str) -> crate::Result<usize> {
@@ -27,12 +27,11 @@ pub fn two(input: &str) -> crate::Result<usize> {
 /// Appraises the total cost for fencing all plots, using the `fencing` function to get the total
 /// multiplier from perimeter cost.
 fn appraise(input: &str, fencing: fn(Vec<(V2, V2)>) -> usize) -> usize {
-    let grid = input.trim().lines().map(str::as_bytes).collect::<Vec<_>>();
+    let grid = Grid::from_input(input);
     let mut visited = HashSet::new();
 
-    common::grid_coordinates(&grid)
-        .map(|p| {
-            let crop = get(&grid, p).unwrap();
+    grid.iter_with_position()
+        .map(|(p, crop)| {
             let mut stack = vec![p];
             let mut area = 0;
             let mut edge = vec![];
@@ -45,7 +44,7 @@ fn appraise(input: &str, fencing: fn(Vec<(V2, V2)>) -> usize) -> usize {
                 area += 1;
 
                 for (dx, dy) in [(-1, 0), (0, -1), (1, 0), (0, 1)] {
-                    if Some(crop) == get(&grid, (x + dx, y + dy)) {
+                    if Some(crop) == grid.get((x + dx, y + dy)) {
                         stack.push((x + dx, y + dy));
                     } else if dx == 0 {
                         edge.push(((dx, dy), (y, x)));
@@ -61,9 +60,3 @@ fn appraise(input: &str, fencing: fn(Vec<(V2, V2)>) -> usize) -> usize {
 }
 
 type V2 = (i32, i32);
-
-/// Gets a cell from a grid.
-fn get(grid: &[&[u8]], (x, y): V2) -> Option<u8> {
-    let (x, y) = (usize::try_from(x).ok()?, usize::try_from(y).ok()?);
-    grid.get(y).and_then(|line| line.get(x)).copied()
-}

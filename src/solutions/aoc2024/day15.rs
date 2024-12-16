@@ -128,10 +128,10 @@ type V2 = (i32, i32);
 /// with the expansion rules described in the puzzle.
 fn parse(input: &str, wide: bool) -> (V2, Grid<Cell>, impl Iterator<Item = u8> + '_) {
     let (map, instructions) = input.split_once("\r\n\r\n").expect("correct input");
-    let robot = Grid::from_input(map)
-        .iter_with_position()
-        .find(|(_, c)| **c == b'@')
-        .map(|((x, y), _)| if wide { (2 * x, y) } else { (x, y) });
+    let robot =
+        Grid::from_input(map)
+            .find(|&e| e == b'@')
+            .map(|(x, y)| if wide { (2 * x, y) } else { (x, y) });
 
     let map = Grid::from_iters(map.lines().map(|line| {
         line.bytes().flat_map(move |c| {

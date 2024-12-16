@@ -1,6 +1,6 @@
 use std::{collections::HashSet, iter};
 
-use crate::common;
+use crate::common::{self, Grid};
 
 /// Count the number of unique tiles visited by the guard's walk.
 pub fn one(input: &str) -> crate::Result<usize> {
@@ -48,17 +48,11 @@ pub fn two(input: &str) -> crate::Result<usize> {
 ///
 /// If `obstacle` is given, those coordinates are treated as obstacle regardless of what's there on
 /// the `grid`.
-fn step(grid: &[&[u8]], mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Option<(V2, V2)> {
-    let (Ok(x), Ok(y)) = (
-        usize::try_from(pos.0 + dir.0),
-        usize::try_from(pos.1 + dir.1),
-    ) else {
-        return None;
-    };
-
-    match grid.get(y).and_then(|line| line.get(x)) {
-        c if c == Some(&b'#') || Some((x as i32, y as i32)) == obstacle => dir = (-dir.1, dir.0),
-        Some(_) => pos = (x as i32, y as i32),
+fn step(grid: &Grid<u8>, mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Option<(V2, V2)> {
+    let (x, y) = (pos.0 + dir.0, pos.1 + dir.1);
+    match grid.get((x, y)) {
+        c if c == Some(&b'#') || Some((x, y)) == obstacle => dir = (-dir.1, dir.0),
+        Some(_) => pos = (x, y),
         None => return None,
     }
 
@@ -68,8 +62,8 @@ fn step(grid: &[&[u8]], mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Optio
 type V2 = (i32, i32);
 
 /// Parses the puzzle input into a starting location and a grid.
-fn parse(input: &str) -> (V2, Vec<&[u8]>) {
-    let grid: Vec<_> = input.lines().map(str::as_bytes).collect();
-    let pos = common::grid_coordinates(&grid).find(|&(x, y)| grid[y as usize][x as usize] == b'^');
+fn parse(input: &str) -> (V2, Grid<u8>) {
+    let grid = Grid::from_input(input);
+    let pos = grid.find(|&e| e == b'^');
     (pos.expect("no starting position"), grid)
 }

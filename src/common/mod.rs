@@ -5,7 +5,12 @@
 use std::collections::{HashSet, VecDeque};
 
 pub mod astar;
+mod dir;
+mod grid;
 pub mod intcode;
+
+pub use dir::{Dir, ALL_DIRS, CARDINAL};
+pub use grid::Grid;
 
 /// Checks whether a `sequence` has a cycle, using the idea of [Floyd's algorithm], but adapted for
 /// usage with iterators rather than a known collection of items. If the given iterator is

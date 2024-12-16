@@ -65,5 +65,5 @@ type V2 = (i32, i32);
 fn parse(input: &str) -> (V2, Grid<u8>) {
     let grid = Grid::from_input(input);
     let pos = grid.find(|&e| e == b'^');
-    (pos.expect("no starting position"), grid)
+    (pos.expect("a starting position"), grid)
 }

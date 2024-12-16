@@ -1,5 +1,7 @@
 use std::mem;
 
+use crate::common::Grid;
+
 /// Find the box checksum after performing all steps.
 pub fn one(input: &str) -> crate::Result<i32> {
     walk(input, false)
@@ -24,7 +26,7 @@ fn walk(input: &str, wide: bool) -> crate::Result<i32> {
         };
 
         let (x, y) = (robot.0 + delta.0, robot.1 + delta.1);
-        match get(&grid, (x, y)) {
+        match grid.get((x, y)) {
             Some(Cell::Wall) | None => { /* Blocks, nothing happens */ }
             Some(Cell::Empty) => robot = (x, y),
             Some(Cell::Box) | Some(Cell::BoxExt) => {
@@ -35,22 +37,23 @@ fn walk(input: &str, wide: bool) -> crate::Result<i32> {
             }
         }
     }
-    Ok((0..grid.len())
-        .flat_map(|y| (0..grid[y].len()).map(move |x| (x as i32, y as i32)))
-        .filter_map(|(x, y)| (get(&grid, (x, y)) == Some(Cell::Box)).then_some(100 * y + x))
+
+    Ok(grid
+        .iter_with_position()
+        .filter_map(|((x, y), c)| (*c == Cell::Box).then_some(100 * y + x))
         .sum())
 }
 
 /// Pushes the given box in the given direction. Respects wide mode. Assumes the move is possible
 /// and may not halt or panic if it isn't. Ends up a no-op if (x, y) is an open space.
-fn push_box(grid: &mut Grid, (x, y): V2, (dx, dy): V2) {
+fn push_box(grid: &mut Grid<Cell>, (x, y): V2, (dx, dy): V2) {
     match (dx, dy) {
         // Horizontal push. Identical in either mode.
         (_, 0) => {
-            let mut cell = mem::replace(&mut grid[y as usize][x as usize], Cell::Empty);
+            let mut cell = mem::replace(&mut grid[(x, y)], Cell::Empty);
             let mut i = 1;
             while cell != Cell::Empty {
-                mem::swap(&mut cell, &mut grid[y as usize][(x + i * dx) as usize]);
+                mem::swap(&mut cell, &mut grid[(x + i * dx, y)]);
                 i += 1;
             }
         }
@@ -62,13 +65,11 @@ fn push_box(grid: &mut Grid, (x, y): V2, (dx, dy): V2) {
             };
 
             push_box(grid, (lx + dx, ly + dy), (dx, dy));
-            grid[(y + dy) as usize][lx as usize] =
-                mem::replace(&mut grid[y as usize][lx as usize], Cell::Empty);
+            grid[(lx, y + dy)] = mem::replace(&mut grid[(lx, y)], Cell::Empty);
 
             if let Some((rx, ry)) = right {
                 push_box(grid, (rx + dx, ry + dy), (dx, dy));
-                grid[(y + dy) as usize][rx as usize] =
-                    mem::replace(&mut grid[y as usize][rx as usize], Cell::Empty);
+                grid[(rx, y + dy)] = mem::replace(&mut grid[(rx, y)], Cell::Empty);
             }
         }
 
@@ -77,9 +78,9 @@ fn push_box(grid: &mut Grid, (x, y): V2, (dx, dy): V2) {
 }
 
 /// Checks that a box can be pushed.
-fn can_push(grid: &Grid, p: V2, v: V2) -> bool {
-    fn free_spot(grid: &Grid, (x, y): V2, (dx, dy): V2) -> bool {
-        match get(grid, (x + dx, y + dy)) {
+fn can_push(grid: &Grid<Cell>, p: V2, v: V2) -> bool {
+    fn free_spot(grid: &Grid<Cell>, (x, y): V2, (dx, dy): V2) -> bool {
+        match grid.get((x + dx, y + dy)) {
             Some(Cell::Wall) | None => false,
             Some(Cell::Empty) => true,
             Some(Cell::Box | Cell::BoxExt) if dx != 0 => {
@@ -97,19 +98,13 @@ fn can_push(grid: &Grid, p: V2, v: V2) -> bool {
 }
 
 /// Returns both parts of the box at the given position. Effectively a no-op outside of wide mode.
-fn box_at(grid: &Grid, (x, y): V2) -> Option<(V2, Option<V2>)> {
-    match (get(grid, (x, y))?, get(grid, (x + 1, y))?) {
+fn box_at(grid: &Grid<Cell>, (x, y): V2) -> Option<(V2, Option<V2>)> {
+    match (grid.get((x, y))?, grid.get((x + 1, y))?) {
         (Cell::Box, Cell::BoxExt) => Some(((x, y), Some((x + 1, y)))),
         (Cell::BoxExt, _) => Some(((x - 1, y), Some((x, y)))),
         (Cell::Box, _) => Some(((x, y), None)),
         _ => None,
     }
-}
-
-/// Returns the grid cell at the given coordinates.
-fn get(grid: &Grid, p: (i32, i32)) -> Option<Cell> {
-    let (x, y) = (usize::try_from(p.0).ok()?, usize::try_from(p.1).ok()?);
-    grid.get(y).and_then(|line| line.get(x)).cloned()
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -127,47 +122,35 @@ enum Cell {
 }
 
 type V2 = (i32, i32);
-type Grid = Vec<Vec<Cell>>;
 
 /// Parses the puzzle input into the starting robot position, a grid of cells, and a list of
 /// instructions for the robot to follow. If `wide` is given, interprets the grid as twice as wide,
 /// with the expansion rules described in the puzzle.
-fn parse(input: &str, wide: bool) -> (V2, Grid, impl Iterator<Item = u8> + '_) {
-    let mut robot = None;
+fn parse(input: &str, wide: bool) -> (V2, Grid<Cell>, impl Iterator<Item = u8> + '_) {
     let (map, instructions) = input.split_once("\r\n\r\n").expect("correct input");
-    let map = map
-        .lines()
-        .enumerate()
-        .map(|(y, line)| {
-            line.bytes()
-                .enumerate()
-                .flat_map(|(x, c)| {
-                    if wide {
-                        (match c {
-                            b'#' => vec![Cell::Wall, Cell::Wall],
-                            b'O' => vec![Cell::Box, Cell::BoxExt],
-                            b'@' => {
-                                robot = Some((2 * x as i32, y as i32));
-                                vec![Cell::Empty, Cell::Empty]
-                            }
-                            _ => vec![Cell::Empty, Cell::Empty],
-                        })
-                        .into_boxed_slice()
-                    } else {
-                        Box::from(match c {
-                            b'#' => [Cell::Wall],
-                            b'O' => [Cell::Box],
-                            b'@' => {
-                                robot = Some((x as i32, y as i32));
-                                [Cell::Empty]
-                            }
-                            _ => [Cell::Empty],
-                        })
-                    }
+    let robot = Grid::from_input(map)
+        .iter_with_position()
+        .find(|(_, c)| **c == b'@')
+        .map(|((x, y), _)| if wide { (2 * x, y) } else { (x, y) });
+
+    let map = Grid::from_iters(map.lines().map(|line| {
+        line.bytes().flat_map(move |c| {
+            if wide {
+                (match c {
+                    b'#' => vec![Cell::Wall, Cell::Wall],
+                    b'O' => vec![Cell::Box, Cell::BoxExt],
+                    _ => vec![Cell::Empty, Cell::Empty],
                 })
-                .collect::<Vec<_>>()
+                .into_boxed_slice()
+            } else {
+                Box::from(match c {
+                    b'#' => [Cell::Wall],
+                    b'O' => [Cell::Box],
+                    _ => [Cell::Empty],
+                })
+            }
         })
-        .collect::<Vec<_>>();
+    }));
 
     (robot.expect("a robot on map"), map, instructions.bytes())
 }

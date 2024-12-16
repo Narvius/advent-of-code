@@ -96,6 +96,13 @@ where
         self.data.iter().flat_map(|line| line.as_ref())
     }
 
+    /// Returns the coordinates of the first occurence in reading order of `elem`, if any.
+    pub fn find(&self, mut f: impl FnMut(&T) -> bool) -> Option<(i32, i32)> {
+        self.iter_with_position()
+            .find(|(_, e)| f(e))
+            .map(|(p, _)| p)
+    }
+
     /// Get a reference to the cell at position `p`.
     pub fn get(&self, p: (i32, i32)) -> Option<&T> {
         let (x, y) = (usize::try_from(p.0).ok()?, usize::try_from(p.1).ok()?);

@@ -12,6 +12,26 @@ where
     data: Vec<Cow<'a, [T]>>,
 }
 
+impl<'a, T> std::ops::Index<(i32, i32)> for Grid<'a, T>
+where
+    [T]: ToOwned<Owned = Vec<T>>,
+{
+    type Output = T;
+
+    fn index(&self, index: (i32, i32)) -> &Self::Output {
+        self.get(index).expect("index in bounds")
+    }
+}
+
+impl<'a, T> std::ops::IndexMut<(i32, i32)> for Grid<'a, T>
+where
+    [T]: ToOwned<Owned = Vec<T>>,
+{
+    fn index_mut(&mut self, index: (i32, i32)) -> &mut Self::Output {
+        self.get_mut(index).expect("index in bounds")
+    }
+}
+
 impl<'a> Grid<'a, u8> {
     /// Advent of Code frequently gives you maps drawn from characters. With this call, it can be
     /// converted into a [`Grid`] with minimal calls and allocations.

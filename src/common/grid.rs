@@ -1,6 +1,6 @@
 //! A general-purpose 2D grid with constant width and height.
 
-use std::borrow::{BorrowMut, Cow};
+use std::{borrow::Cow, cmp::Ordering};
 
 /// A general-purpose 2D grid with constant width and height.
 pub struct Grid<'a, T>
@@ -104,6 +104,50 @@ where
         self.height
     }
 
+    /// Rotates the `y`th row to the right by `shift`. If `shift` is negative, rotates that many
+    /// steps to the left.
+    pub fn rotate_row(&mut self, y: usize, shift: i32) {
+        self.data[y]
+            .to_mut()
+            .rotate_right(shift.rem_euclid(self.width as i32) as usize);
+    }
+
+    /// Rotates the `x`th column down by `shift`. If `shift` is negative, rotates that many steps
+    /// up instead.
+    pub fn rotate_column(&mut self, x: usize, shift: i32) {
+        // `len` = number of elements left to process since last change of `shift`
+        // `shift` = how many indices to rotate by
+        let (mut len, mut shift) = (self.height, shift.rem_euclid(self.height as i32) as usize);
+        if shift == 0 {
+            return;
+        }
+
+        for y in (1..self.height).rev() {
+            if shift > y {
+                shift = (shift - len % shift) % shift;
+                len = y + 1;
+            }
+
+            self.swap((x as i32, y as i32), (x as i32, (y - shift) as i32));
+        }
+    }
+
+    /// Swaps two cells in the grid. Panics if `p` or `q` aren't valid coordinates. Does nothing if
+    /// they're equal.
+    pub fn swap(&mut self, p: (i32, i32), q: (i32, i32)) {
+        if p == q {
+            return;
+        }
+
+        let source = &raw mut *self.get_mut(p).expect("valid coordinates p");
+        let target = &raw mut *self.get_mut(q).expect("valid coordinates q");
+
+        unsafe {
+            // SAFETY: Because `p != q`, `source` and `target` are distinct, non-aliasing pointers.
+            core::ptr::swap(source, target);
+        }
+    }
+
     /// An iterator over all coordinates in the grid.
     pub fn coordinates(&self) -> impl Iterator<Item = (i32, i32)> + '_ {
         (0..self.height).flat_map(move |y| (0..self.width).map(move |x| (x as i32, y as i32)))
@@ -120,11 +164,16 @@ where
         self.data.iter().flat_map(|line| line.as_ref())
     }
 
-    /// Returns the coordinates of the first occurence in reading order of `elem`, if any.
+    /// Returns the coordinates of the first element in reading order matching `f`, if any.
     pub fn find(&self, mut f: impl FnMut(&T) -> bool) -> Option<(i32, i32)> {
         self.iter_with_position()
             .find(|(_, e)| f(e))
             .map(|(p, _)| p)
+    }
+
+    /// Counts how many cells match `f`.
+    pub fn count(&self, mut f: impl FnMut(&T) -> bool) -> usize {
+        self.iter().filter(|e| f(e)).count()
     }
 
     /// Get a reference to the cell at position `p`.

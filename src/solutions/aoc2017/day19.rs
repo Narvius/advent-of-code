@@ -1,3 +1,5 @@
+use crate::common::{Dir, Grid};
+
 /// Return the string seen after walking the routing diagram.
 pub fn one(input: &str) -> crate::Result<String> {
     Ok(walk(input)?.0)
@@ -11,57 +13,43 @@ pub fn two(input: &str) -> crate::Result<usize> {
 /// Walks the routing diagram and returns the seen string as well as the number of steps
 /// taken.
 fn walk(diagram: &str) -> crate::Result<(String, usize)> {
-    let map = parse(diagram);
-    let mut pos = {
-        let starting_x = map[0]
-            .iter()
-            .position(|&c| c.is_some())
-            .ok_or_else(|| "no starting position".to_owned())? as i32;
-        (starting_x, 0)
-    };
-    let mut dir = (0, 1);
-    let mut seen = String::new();
+    let grid = parse(diagram);
+    let initial = grid.find(|cell| cell.is_some()).map(|p| (p, Dir::S, None));
     let mut steps = 1; // walking ONTO the diagram counts as a step
 
-    while let Some((d, t)) = next_step(&map, pos, dir) {
-        (pos, dir, steps) = ((pos.0 + d.0, pos.1 + d.1), d, steps + 1);
-        if let Some(c) = t {
-            seen.push(c as char);
-        }
-    }
+    let seen = std::iter::successors(initial, |&(pos, dir, _)| {
+        next_step(&grid, pos, dir).map(|(d, cell)| (pos + d, d, cell))
+    })
+    .inspect(|_| steps += 1)
+    .filter_map(|(_, _, found)| found)
+    .collect();
 
     Ok((seen, steps))
 }
 
 /// Returns the direction and tile for the next step.
-fn next_step(map: &Map, p: (i32, i32), (x, y): (i32, i32)) -> Option<((i32, i32), Option<u8>)> {
-    [(x, y), (y, x), (-y, -x)]
+fn next_step(grid: &Grid<Cell>, p: V2, d: Dir) -> Option<(Dir, Option<char>)> {
+    [d, d.left(), d.right()]
         .into_iter()
-        .filter_map(|d| Some((d, map[(p.1 + d.1) as usize][(p.0 + d.0) as usize]?)))
-        .next()
+        .find(|d| grid[p + d].is_some())
+        .map(|d| Some((d, grid[p + d]?)))?
 }
 
-/// The type for a map used in this puzzle.
+type V2 = (i32, i32);
+
+/// Type used for map cells.
 ///
-/// From outermost to innermost type:
-/// - vector of rows
-/// - vector of cells
-/// - option: `Some` if walkable, `None` if not
-/// - option<u8>: contained letter
-type Map = Vec<Vec<Option<Option<u8>>>>;
+/// - outer option: `Some` if walkable, `None` if not
+/// - inner option: contained letter
+type Cell = Option<Option<char>>;
 
 /// Parses the puzzle input into a two-dimensional map.
-fn parse(input: &str) -> Map {
-    input
-        .lines()
-        .map(|line| {
-            line.bytes()
-                .map(|c| match c {
-                    b'|' | b'-' | b'+' => Some(None),
-                    b' ' => None,
-                    _ => Some(Some(c)),
-                })
-                .collect()
+fn parse(input: &str) -> Grid<Cell> {
+    Grid::from_iters(input.lines().map(|line| {
+        line.bytes().map(|b| match b {
+            b'|' | b'-' | b'+' => Some(None),
+            b' ' => None,
+            _ => Some(Some(b as char)),
         })
-        .collect()
+    }))
 }

@@ -1,41 +1,35 @@
+use crate::common::{self, Grid};
+
 /// Count the number of lit lights on the grid.
 pub fn one(input: &str) -> crate::Result<usize> {
-    Ok(run_instructions(input)
-        .into_iter()
-        .flatten()
-        .filter(|&b| b)
-        .count())
+    Ok(run_instructions(input).count(|&b| b))
 }
 
 /// Display the contents of the grid after running all instructions.
 pub fn two(input: &str) -> crate::Result<String> {
-    let map = run_instructions(input);
-    Ok(crate::common::pixel_display(50, 6, |x, y| map[y][x]))
+    let grid = run_instructions(input);
+    Ok(common::pixel_display(50, 6, |x, y| {
+        grid[(x as i32, y as i32)]
+    }))
 }
 
 /// Runs the instructions on a 50x6 grid of pixels and returns the resulting grid.
-fn run_instructions(input: &str) -> Vec<Vec<bool>> {
-    let mut map = vec![vec![false; 50]; 6];
+fn run_instructions(input: &str) -> Grid<bool> {
+    let mut grid = Grid::from_elem(50, 6, false);
     for line in parse(input) {
         match line {
             Line::Rect(x, y) => {
-                for line in map.iter_mut().take(y) {
-                    for b in line.iter_mut().take(x) {
-                        *b = true;
+                for x in 0..x as i32 {
+                    for y in 0..y as i32 {
+                        grid[(x, y)] = true;
                     }
                 }
             }
-            Line::RotRow(y, shift) => map[y].rotate_right(shift),
-            Line::RotCol(x, shift) => {
-                let mut buf: Vec<_> = (0..map.len()).map(|y| map[y][x]).collect();
-                buf.rotate_right(shift);
-                for y in 0..map.len() {
-                    map[y][x] = buf[y];
-                }
-            }
+            Line::RotRow(y, shift) => grid.rotate_row(y, shift as i32),
+            Line::RotCol(x, shift) => grid.rotate_column(x, shift as i32),
         }
     }
-    map
+    grid
 }
 
 /// A single instruction from the puzzle input.

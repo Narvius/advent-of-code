@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::common::astar::{shortest_path_length, AStarNode};
+use crate::common::astar;
 
 /// Find the shortest time to find all keys in the maze.
 pub fn one(input: &str) -> crate::Result<i32> {
     let distances = build_distances(input, false);
-    shortest_path_length(State(b'@', 0u32), &distances).ok_or("no result".into())
+    astar::shortest_path_length(State(b'@', 0u32), &distances).ok_or("no result".into())
 }
 
 /// Split the map into 4 separate maps, each with their own explorer. Only one
@@ -13,17 +13,17 @@ pub fn one(input: &str) -> crate::Result<i32> {
 /// keys.
 pub fn two(input: &str) -> crate::Result<i32> {
     let distances = build_distances(input, true);
-    shortest_path_length(State4(*b"@$%^", 0u32), &distances).ok_or("no result".into())
+    astar::shortest_path_length(State4(*b"@$%^", 0u32), &distances).ok_or("no result".into())
 }
 
 #[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct State(u8, u32);
 
-impl AStarNode for State {
+impl<'a> astar::Node<'a> for State {
     type Cost = i32;
     type Env = HashMap<(u8, u8), (usize, u32)>;
 
-    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
+    fn next(&self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
         let &Self(location, keys) = self;
         Box::new((b'a'..=b'z').filter_map(move |target| {
             let (distance, required_keys) = *env.get(&(location, target))?;
@@ -48,11 +48,11 @@ impl AStarNode for State {
 #[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]
 struct State4([u8; 4], u32);
 
-impl AStarNode for State4 {
+impl<'a> astar::Node<'a> for State4 {
     type Cost = i32;
     type Env = HashMap<(u8, u8), (usize, u32)>;
 
-    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
+    fn next(&self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
         let &Self(rs, keys) = self;
         Box::new(rs.into_iter().enumerate().flat_map(move |(i, location)| {
             (b'a'..=b'z').filter_map(move |target| {

@@ -42,18 +42,18 @@ impl<N, C: Ord> Ord for Open<N, C> {
 }
 
 /// A value that can be used as a node in an A* search.
-pub trait AStarNode: Clone + Eq + std::hash::Hash {
+pub trait Node<'a>: Clone + Eq + std::hash::Hash {
     type Cost;
     type Env;
 
     /// Produces all reachable neighbours.
-    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a>;
+    fn next(&self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a>;
 
     /// A* heuristic, how much might it take to be done.
-    fn heuristic(&self, env: &Self::Env) -> Self::Cost;
+    fn heuristic(&self, env: &'a Self::Env) -> Self::Cost;
 
     /// Checks if this node is a finished state.
-    fn done(&self, env: &Self::Env) -> bool;
+    fn done(&self, env: &'a Self::Env) -> bool;
 }
 
 /// Finds the cost of the shortest path to a finished node, given some initial node. Does not
@@ -61,9 +61,9 @@ pub trait AStarNode: Clone + Eq + std::hash::Hash {
 ///
 /// `env` is some read-only data passed to every method in the [`AStarNode`] implementation for the
 /// node. Usually, this would be some map data or the like.
-pub fn shortest_path_length<N, C>(initial_node: N, env: &N::Env) -> Option<C>
+pub fn shortest_path_length<'a, N, C>(initial_node: N, env: &'a N::Env) -> Option<C>
 where
-    N: AStarNode<Cost = C>,
+    N: Node<'a, Cost = C> + 'a,
     C: Copy + Default + std::ops::Add<Output = C> + Eq + Ord,
 {
     let mut opens = BinaryHeap::new();

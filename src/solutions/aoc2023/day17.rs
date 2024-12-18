@@ -69,11 +69,11 @@ impl Crucible {
     }
 }
 
-impl astar::AStarNode for Crucible {
+impl<'a> astar::Node<'a> for Crucible {
     type Cost = usize;
     type Env = Vec<Vec<u8>>;
 
-    fn next<'a>(&'a self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
+    fn next(&self, env: &'a Self::Env) -> Box<dyn Iterator<Item = (Self, Self::Cost)> + 'a> {
         let (dx, dy) = self.direction;
         let left = (dy, -dx);
         let right = (-dy, dx);

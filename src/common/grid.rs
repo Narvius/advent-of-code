@@ -12,7 +12,7 @@ where
     data: Vec<Cow<'a, [T]>>,
 }
 
-impl<'a, T> std::ops::Index<(i32, i32)> for Grid<'a, T>
+impl<T> std::ops::Index<(i32, i32)> for Grid<'_, T>
 where
     [T]: ToOwned<Owned = Vec<T>>,
 {
@@ -23,7 +23,7 @@ where
     }
 }
 
-impl<'a, T> std::ops::IndexMut<(i32, i32)> for Grid<'a, T>
+impl<T> std::ops::IndexMut<(i32, i32)> for Grid<'_, T>
 where
     [T]: ToOwned<Owned = Vec<T>>,
 {
@@ -43,6 +43,30 @@ impl<'a> Grid<'a, u8> {
                 .map(|line| Cow::from(line.as_bytes()))
                 .collect(),
         )
+    }
+}
+
+impl<T> Grid<'static, T>
+where
+    [T]: ToOwned<Owned = Vec<T>>,
+{
+    /// Constructs a new grid of the given size, filling each cell with the result of calling `f`
+    /// with its (x, y) coordinates. Cells are constructed in reading order.
+    pub fn from_fn(width: usize, height: usize, mut f: impl FnMut((i32, i32)) -> T) -> Self {
+        let mut data = vec![];
+        for y in 0..height {
+            let mut row = vec![];
+            for x in 0..width {
+                row.push(f((x as i32, y as i32)));
+            }
+            data.push(Cow::Owned(row));
+        }
+
+        Self {
+            width,
+            height,
+            data,
+        }
     }
 }
 
@@ -118,7 +142,7 @@ where
     }
 }
 
-impl<'a, T> Grid<'a, T>
+impl<T> Grid<'_, T>
 where
     [T]: ToOwned<Owned = Vec<T>>,
     T: Clone,

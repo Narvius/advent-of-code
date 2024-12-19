@@ -11,7 +11,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
 }
 
 /// Memoization cache for `count_arrangements`.
-type Cache<'a> = HashMap<&'a [u8], usize>;
+type Cache<'a> = HashMap<&'a str, usize>;
 
 /// Returns the answers to both parts.
 ///
@@ -19,8 +19,7 @@ type Cache<'a> = HashMap<&'a [u8], usize>;
 /// sub-patterns.
 fn solve(input: &str) -> (usize, usize) {
     let (towels, patterns) = parse(input);
-    let mut cache: Cache = HashMap::new();
-    cache.insert(&[], 1);
+    let mut cache = HashMap::from([("", 1)]);
 
     patterns
         .map(|pattern| count_arrangements(&towels, pattern, &mut cache))
@@ -29,7 +28,7 @@ fn solve(input: &str) -> (usize, usize) {
 }
 
 /// Counts how many ways `pattern` is formable.
-fn count_arrangements<'a>(towels: &[&[u8]], pattern: &'a [u8], cache: &mut Cache<'a>) -> usize {
+fn count_arrangements<'a>(towels: &[&str], pattern: &'a str, cache: &mut Cache<'a>) -> usize {
     if let Some(result) = cache.get(pattern) {
         return *result;
     }
@@ -45,8 +44,7 @@ fn count_arrangements<'a>(towels: &[&[u8]], pattern: &'a [u8], cache: &mut Cache
 }
 
 /// Parses the puzzle input into a list of towels (prefixes) and sequence of arrangements.
-fn parse(input: &str) -> (Vec<&[u8]>, impl Iterator<Item = &[u8]> + '_) {
+fn parse(input: &str) -> (Vec<&str>, impl Iterator<Item = &str> + '_) {
     let (towels, patterns) = input.split_once("\r\n\r\n").expect("two sections in input");
-    let towels: Vec<_> = towels.split(", ").map(|towel| towel.as_bytes()).collect();
-    (towels, patterns.lines().map(|pattern| pattern.as_bytes()))
+    (towels.split(", ").collect(), patterns.lines())
 }

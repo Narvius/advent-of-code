@@ -12,6 +12,15 @@ pub mod intcode;
 pub use dir::{Dir, ALL_DIRS, CARDINAL};
 pub use grid::Grid;
 
+/// Returns an iterator over all points within range `size` of originm using taxicab distance.
+pub fn diamond_deltas(size: usize) -> impl Iterator<Item = (i32, i32)> {
+    let n = size as i32;
+    (-n..=n).flat_map(move |y| {
+        let m = n - y.abs();
+        (-m..=m).map(move |x| (x, y))
+    })
+}
+
 /// Checks whether a `sequence` has a cycle, using the idea of [Floyd's algorithm], but adapted for
 /// usage with iterators rather than a known collection of items. If the given iterator is
 /// infinite, only halts once a cycle is detected.

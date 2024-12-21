@@ -21,14 +21,14 @@ pub fn two(input: &str) -> crate::Result<usize> {
 /// door robot.
 fn total_complexity(input: &str, robot_count: usize) -> usize {
     let (num, dir, codes) = parse(input);
-    let movement = find_best_movement(&num, &dir, robot_count);
+    let movement = numeric_move_cost(&num, &dir, robot_count);
 
     codes
         .map(|(multiplier, code)| {
             multiplier * {
                 let (mut result, mut pos) = (0, 'A');
                 for c in code.chars() {
-                    result += 1 + movement[&(robot_count, pos, c)];
+                    result += 1 + movement[&(pos, c)];
                     pos = c;
                 }
                 result
@@ -37,11 +37,8 @@ fn total_complexity(input: &str, robot_count: usize) -> usize {
         .sum()
 }
 
-/// Returns a `Movement` map, which can be used to efficiently solved the puzzle.
-///
-/// `num` is a [key => position] mapping for the numeric keypad, `dir` is the same for the
-/// directional keypad. `robot_count` is the amount of *additional* robots between you and and the
-/// final door robot.
+/// Returns a `Movement` map, which maps button pairs on the numerical keypad to the amount of
+/// manual inputs required to move the final robot between them.
 ///
 /// # Concept
 ///
@@ -64,12 +61,6 @@ fn total_complexity(input: &str, robot_count: usize) -> usize {
 /// So we have two `Movement` map entries:
 /// - `(0, 'A', '<') = 3`
 /// - `(0, '<', 'A') = 3`
-///
-/// Why are we going back to A? Because whenever the robot wants to press a button, we have to go
-/// back to A to do that. And the only reason to move is because the next robot in line needs to
-/// press a button--therefore we'll always start from 'A', press some buttons required to navigate
-/// it to what it wants to press, go back to 'A' to press it, so the next robot presses what they
-/// wanted.
 ///
 /// The trick now is that because after every `layer` button press, all previous layers are always
 /// at 'A', we can use previous layer data to build data for the next layer without having to care
@@ -100,43 +91,39 @@ fn total_complexity(input: &str, robot_count: usize) -> usize {
 /// And then in the end, the entries for layer `robot_count` are the cost (in terms of manual
 /// inputs) of moving between keys on the final numerical keypad, at which point you can easily
 /// find the cost of inputting codes.
-fn find_best_movement(num: &Keypad, dir: &Keypad, robot_count: usize) -> Movement {
-    let mut m = Movement::new();
-
-    // For layer 0 buttons (manual input), it doesn't matter what order we press buttons in--since
-    // nothing further down the line depends on the order. Thus we simply count the total amount of
-    // presses required.
-    m.extend(
+fn numeric_move_cost(num: &Keypad, dir: &Keypad, robot_count: usize) -> Movement {
+    let mut m = Movement::from_iter(
+        // For layer 0 buttons, it doesn't matter what order we press buttons in--since nothing
+        // further down the line depends on the order. Thus we simply count the total amount of
+        // presses required.
         product(dir.keys().copied(), dir.keys().copied())
             .filter(|&(s, t)| s != ' ' && t != ' ')
             .map(|(s, t)| {
                 let ((sx, sy), (tx, ty)) = (dir[&s], dir[&t]);
-                ((0, s, t), sx.abs_diff(tx) + sy.abs_diff(ty))
+                ((s, t), sx.abs_diff(tx) + sy.abs_diff(ty))
             }),
     );
 
     // All further robots try to find the shortest combinations they can for themselves, using the
     // previous layers.
-    for layer in 1..robot_count {
-        find_layer(&mut m, dir, layer, (0, 0));
+    for _ in 1..robot_count {
+        m = next_robot(m, dir, (0, 0));
     }
-    find_layer(&mut m, num, robot_count, (0, 3));
-
-    m
+    next_robot(m, num, (0, 3))
 }
 
-/// Given a `Movement` map completed for layers 0 through `layer - 1`, expands it by another layer;
-/// assuming the robot for that layer types on `keypad`. See the documentation for
-/// `find_best_movement` for more information.
+/// Given a `Movement` map for the previous robot, creates a new one for the next robot; using the
+/// provided `keypad`.
 ///
 /// `empty` is a convenience parameter--it denotes the missing button that would make the provided
 /// `keypad` a rectangle. Makes it easier to detect invalid paths (since robots are not allowed to
 /// ever point to a non-button).
-fn find_layer(movement: &mut Movement, keypad: &Keypad, layer: usize, empty: (usize, usize)) {
+fn next_robot(previous: Movement, keypad: &Keypad, empty: (usize, usize)) -> Movement {
+    let mut movement = Movement::new();
     for (s, t) in product(keypad.keys().copied(), keypad.keys().copied()) {
         // For an identical source and target, the previous pusher just needs to hit 'A' once.
         if s == t {
-            movement.insert((layer, s, t), 0);
+            movement.insert((s, t), 0);
             continue;
         }
 
@@ -170,7 +157,7 @@ fn find_layer(movement: &mut Movement, keypad: &Keypad, layer: usize, empty: (us
                 // 'A', so we also add cost[pos -> 'A'].
                 let (mut cost, mut pos) = (0, 'A');
                 for &c in path.iter().chain(once(&'A')) {
-                    cost += movement[&(layer - 1, pos, c)] + 1;
+                    cost += previous[&(pos, c)] + 1;
                     pos = c;
                 }
                 Some(cost - 1)
@@ -178,13 +165,14 @@ fn find_layer(movement: &mut Movement, keypad: &Keypad, layer: usize, empty: (us
             .min()
             .expect("at least one path");
 
-        movement.insert((layer, s, t), best_cost);
+        movement.insert((s, t), best_cost);
     }
+    movement
 }
 
 type V2 = (usize, usize);
 type Keypad = HashMap<char, V2>;
-type Movement = HashMap<(usize, char, char), usize>;
+type Movement = HashMap<(char, char), usize>;
 
 /// Returns the layouts of both relevant keypads, as well as the codes alongside their complexity
 /// multiplier.

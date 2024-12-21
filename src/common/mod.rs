@@ -79,6 +79,29 @@ pub fn permutations(k: usize) -> Vec<Vec<usize>> {
     inner(k, &mut (0..k).collect::<Vec<_>>())
 }
 
+/// Returns the `permutations` of a Vec.
+pub fn permutations_of<T: Clone>(mut items: Vec<T>) -> Vec<Vec<T>> {
+    fn inner<T: Clone>(k: usize, values: &mut [T]) -> Vec<Vec<T>> {
+        let mut result = Vec::new();
+        if k <= 1 {
+            result.push(Vec::from(values));
+        } else {
+            result.extend(inner(k - 1, values));
+            for i in 0..(k - 1) {
+                if k % 2 == 0 {
+                    values.swap(i, k - 1);
+                } else {
+                    values.swap(0, k - 1);
+                }
+                result.extend(inner(k - 1, values));
+            }
+        }
+        result
+    }
+
+    inner(items.len(), &mut items)
+}
+
 /// Returns the greatest common denominator of `a` and `b`.
 pub fn gcd(a: usize, b: usize) -> usize {
     let (mut a, mut b) = match a.cmp(&b) {

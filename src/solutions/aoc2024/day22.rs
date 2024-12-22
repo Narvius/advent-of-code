@@ -1,14 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, iter::successors};
 
 /// Find the sum of the 2000th generated secret number of each buyer.
 pub fn one(input: &str) -> crate::Result<usize> {
-    let mut buyers: Vec<_> = parse(input).collect();
-    for _ in 0..2000 {
-        for n in &mut buyers {
-            *n = step(*n);
-        }
-    }
-    Ok(buyers.into_iter().sum())
+    Ok(parse(input)
+        .map(|n| successors(Some(n), |&n| Some(step(n))).nth(2000).unwrap())
+        .sum())
 }
 
 /// Find the best amount of bananas obtainable from selling through they negotiating monkey.

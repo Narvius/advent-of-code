@@ -1,9 +1,9 @@
-use std::{collections::HashMap, iter::successors};
+use std::collections::HashMap;
 
 /// Find the sum of the 2000th generated secret number of each buyer.
 pub fn one(input: &str) -> crate::Result<usize> {
     Ok(parse(input)
-        .map(|n| successors(Some(n), |&n| Some(step(n))).nth(2000).unwrap())
+        .map(|n| (0..2000).fold(n, |n, _| step(n)))
         .sum())
 }
 

@@ -92,7 +92,7 @@ fn total_complexity(input: &str, robot_count: usize) -> usize {
 /// inputs) of moving between keys on the final numerical keypad, at which point you can easily
 /// find the cost of inputting codes.
 fn numeric_move_cost(num: &Keypad, dir: &Keypad, robot_count: usize) -> Movement {
-    let mut m = Movement::from_iter(
+    let m = Movement::from_iter(
         // For layer 0 buttons, it doesn't matter what order we press buttons in--since nothing
         // further down the line depends on the order. Thus we simply count the total amount of
         // presses required.
@@ -106,9 +106,7 @@ fn numeric_move_cost(num: &Keypad, dir: &Keypad, robot_count: usize) -> Movement
 
     // All further robots try to find the shortest combinations they can for themselves, using the
     // previous layers.
-    for _ in 1..robot_count {
-        m = next_robot(m, dir, (0, 0));
-    }
+    let m = (1..robot_count).fold(m, |m, _| next_robot(m, dir, (0, 0)));
     next_robot(m, num, (0, 3))
 }
 
@@ -136,31 +134,29 @@ fn next_robot(previous: Movement, keypad: &Keypad, empty: (usize, usize)) -> Mov
             .collect();
 
         let best_cost = (permutations_of(base).into_iter())
-            .filter_map(|path| {
+            .filter(|path| {
                 // We have to reject all paths that route through the empty tile.
-                let (mut x, mut y) = (sx, sy);
-                for &c in &path {
-                    match c {
-                        '<' => x -= 1,
-                        '^' => y -= 1,
-                        '>' => x += 1,
-                        'v' => y += 1,
-                        _ => {}
-                    };
-
-                    if (x, y) == empty {
-                        return None;
-                    }
-                }
-
+                path.iter()
+                    .scan((sx, sy), |p, c| {
+                        match c {
+                            '<' => p.0 -= 1,
+                            '^' => p.1 -= 1,
+                            '>' => p.0 += 1,
+                            'v' => p.1 += 1,
+                            _ => {}
+                        }
+                        Some(*p)
+                    })
+                    .all(|p| p != empty)
+            })
+            .map(|path| {
                 // Now calculate the total cost. We have to leave the previous layer position at
                 // 'A', so we also add cost[pos -> 'A'].
-                let (mut cost, mut pos) = (0, 'A');
-                for &c in path.iter().chain(once(&'A')) {
-                    cost += previous[&(pos, c)] + 1;
-                    pos = c;
-                }
-                Some(cost - 1)
+                let (cost, _) = (path.iter().chain(once(&'A')))
+                    .fold((0, 'A'), |(cost, pos), &c| {
+                        (cost + previous[&(pos, c)] + 1, c)
+                    });
+                cost - 1
             })
             .min()
             .expect("at least one path");

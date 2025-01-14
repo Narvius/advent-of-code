@@ -17,20 +17,14 @@ pub fn two(input: &str) -> crate::Result<usize> {
 fn count_antinodes(input: &str, harmonics: bool) -> usize {
     let mut antinodes = HashSet::new();
     let ((w, h), frequencies) = parse(input);
-    let in_bounds = |(x, y)| (0..w).contains(&x) && (0..h).contains(&y);
+    let in_bounds = |(x, y): &(i32, i32)| (0..w).contains(x) && (0..h).contains(y);
 
     for points in frequencies.into_values() {
         for (i, &(x1, y1)) in points.iter().enumerate() {
             for &(x2, y2) in points[(i + 1)..].iter() {
                 let (dx, dy) = (x2 - x1, y2 - y1);
                 for (start, dir) in [((x1, y1), (-dx, -dy)), ((x2, y2), (dx, dy))] {
-                    for p in resonances(start, dir, harmonics) {
-                        if in_bounds(p) {
-                            antinodes.insert(p);
-                        } else {
-                            break;
-                        }
-                    }
+                    antinodes.extend(resonances(start, dir, harmonics).take_while(in_bounds));
                 }
             }
         }

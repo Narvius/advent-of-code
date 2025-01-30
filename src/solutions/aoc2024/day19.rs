@@ -29,18 +29,13 @@ fn solve(input: &str) -> (usize, usize) {
 
 /// Counts how many ways `pattern` is formable.
 fn count_arrangements<'a>(towels: &[&str], pattern: &'a str, cache: &mut Cache<'a>) -> usize {
-    if let Some(result) = cache.get(pattern) {
-        return *result;
-    }
-
-    let count = towels
-        .iter()
-        .filter_map(|&towel| pattern.strip_prefix(towel))
-        .map(|pattern| count_arrangements(towels, pattern, cache))
-        .sum();
-
-    cache.insert(pattern, count);
-    count
+    *cache.entry(pattern).or_insert_with(|| {
+        towels
+            .iter()
+            .filter_map(|&towel| pattern.strip_prefix(towel))
+            .map(|pattern| count_arrangements(towels, pattern, cache))
+            .sum()
+    })
 }
 
 /// Parses the puzzle input into a list of towels (prefixes) and sequence of arrangements.

@@ -1,6 +1,6 @@
-use std::collections::HashSet;
+use std::{cmp::Ordering, collections::HashSet};
 
-use crate::common::{astar, CARDINAL};
+use crate::common::{astar, binary_search, CARDINAL};
 
 /// Find the shortest path through the maze formed by the first 1024 input obstacles.
 pub fn one(input: &str) -> crate::Result<i32> {
@@ -8,34 +8,17 @@ pub fn one(input: &str) -> crate::Result<i32> {
     astar::shortest_path_length(V2(0, 0), &obstacles).ok_or("no path".into())
 }
 
-/// Find the indices of the first obstacle that would block the exit.
+/// Find the coordinates of the first obstacle that would block the exit.
 pub fn two(input: &str) -> crate::Result<&str> {
-    // Do a binary search; but instead of looking for a specific element, we're running it to find
-    // the boundary between unblocked and blocked runs.
-    let (mut l, mut r) = (0, input.lines().count());
-    let mut result = None;
-
-    while l < r {
-        let m = (l + r) / 2;
-
-        let obstacles = parse(input, m);
-        result = astar::shortest_path_length(V2(0, 0), &obstacles);
-
-        match result {
-            Some(_) => l = m + 1,
-            None => r = m - 1,
+    // Use a binary search to find the exact amount of input obstacles required to first block.
+    let obstacle_count = binary_search((0, input.lines().count()), |m| {
+        match astar::shortest_path_length(V2(0, 0), &parse(input, m)) {
+            Some(_) => Ordering::Less, // There's a path, so we need to add more obstacles.
+            None => Ordering::Greater, // There's no path, so we need to remove obstacles.
         }
-    }
+    });
 
-    // Pick final index depending on whether the binary search ended up on the "unblocked" or
-    // "blocked" side of the boundary.
-    let index = match result {
-        Some(_) => l,
-        None => l - 1,
-    };
-
-    // Funnily enough, we don't actually need to create an owned string here.
-    Ok(input.lines().nth(index).unwrap())
+    Ok(input.lines().nth(obstacle_count.unwrap_err() - 1).unwrap())
 }
 
 /// 2D coordinates; implements [`astar::Node`].

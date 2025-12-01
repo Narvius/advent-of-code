@@ -9,7 +9,7 @@ pub fn two(input: &str) -> crate::Result<usize> {
 }
 
 /// Counts how many times the dial reaches position 0. If `count_passes` is false, only counts
-/// zeroes reached at the end of individual movements; if it is true, reaches any zero passed at
+/// zeroes reached at the end of individual movements; if it is true, counts any zero passed at
 /// any point in any movement.
 fn count_zeroes(input: &str, count_passes: bool) -> crate::Result<usize> {
     let (mut count, mut dial) = (0, 50);

@@ -195,7 +195,7 @@ type Map<'a> = HashMap<&'a str, (&'a str, &'a str, &'a str)>;
 type Line<'a> = (&'a str, &'a str, &'a str, &'a str, usize);
 
 /// Parses the puzzle input into a list of initial inputs and list of lines in the program.
-fn parse(input: &str) -> (HashMap<&str, bool>, impl Iterator<Item = Line> + '_) {
+fn parse(input: &str) -> (HashMap<&str, bool>, impl Iterator<Item = Line<'_>> + '_) {
     let (inputs, ops) = input.split_once("\n\n").expect("two sections");
     let inputs = inputs
         .lines()

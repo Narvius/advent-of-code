@@ -108,7 +108,7 @@ type V2 = (i32, i32);
 
 /// Parses the puzzle input into a graph of nodes, and a pair of indices into the graph (of the
 /// start and end nodes, respectively).
-fn parse(input: &str) -> (Grid<u8>, V2, V2) {
+fn parse(input: &str) -> (Grid<'_, u8>, V2, V2) {
     let grid = Grid::from_input(input);
     let (start, end) = (grid.find(|&e| e == b'S'), grid.find(|&e| e == b'E'));
 

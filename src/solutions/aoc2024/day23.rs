@@ -74,7 +74,7 @@ type Network<'a> = HashMap<&'a str, HashSet<&'a str>>;
 
 /// Parses the puzzle input into a graph in the form of a hash map of node to hash set of nodes it
 /// is connected to.
-fn parse(input: &str) -> Network {
+fn parse(input: &str) -> Network<'_> {
     (input.lines())
         .filter_map(|s| s.split_once('-'))
         .fold(Network::new(), |mut net, (a, b)| {

@@ -117,7 +117,7 @@ enum Cell {
     /// Either a standalone box, or the left side of a box in wide mode. Must always be moved
     /// together with its matching [`Cell::BoxExt`].
     Box,
-    /// The right side of a box. Must always be moved together with its matching [`Cell::Wall`].
+    /// The right side of a box. Must always be moved together with its matching [`Cell::Box`].
     BoxExt,
 }
 
@@ -126,7 +126,7 @@ type V2 = (i32, i32);
 /// Parses the puzzle input into the starting robot position, a grid of cells, and a list of
 /// instructions for the robot to follow. If `wide` is given, interprets the grid as twice as wide,
 /// with the expansion rules described in the puzzle.
-fn parse(input: &str, wide: bool) -> (V2, Grid<Cell>, impl Iterator<Item = u8> + '_) {
+fn parse(input: &str, wide: bool) -> (V2, Grid<'_, Cell>, impl Iterator<Item = u8> + '_) {
     let (map, instructions) = input.split_once("\r\n\r\n").expect("correct input");
     let robot =
         Grid::from_input(map)

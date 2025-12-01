@@ -62,7 +62,7 @@ fn step(grid: &Grid<u8>, mut pos: V2, mut dir: V2, obstacle: Option<V2>) -> Opti
 type V2 = (i32, i32);
 
 /// Parses the puzzle input into a starting location and a grid.
-fn parse(input: &str) -> (V2, Grid<u8>) {
+fn parse(input: &str) -> (V2, Grid<'_, u8>) {
     let grid = Grid::from_input(input);
     let pos = grid.find(|&e| e == b'^');
     (pos.expect("a starting position"), grid)

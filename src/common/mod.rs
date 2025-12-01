@@ -22,9 +22,9 @@ pub use grid::Grid;
 /// are searching. Specifically, it should produce [`Ordering::Less`] if the target has a greater
 /// value, and [`Ordering::Greater`] if the target has a lesser value.
 ///
-/// On exact match, returns `Ok(index of match)`. If there isn't one, return `Err(index where match
-/// should be)`, which can be used with eg. [`slice::split_at`] to split the original collection
-/// into lesser and greater elements.
+/// On exact match, returns `Ok(index of match)`. If there isn't one, returns `Err(index where
+/// match should be)`, which can be used with eg. [`slice::split_at`] to split the original
+/// collection into lesser and greater elements.
 pub fn binary_search(
     range: (usize, usize),
     mut f: impl FnMut(usize) -> Ordering,
@@ -47,15 +47,6 @@ pub fn binary_search(
     // If we reach this point, there was no exact match, but we're either on the lowest `Greater`
     // or the highest `Less`. In that case, we always return the lowest `Greater`.
     Err(l + usize::from(last == Ordering::Less))
-}
-
-/// Returns an iterator over all points within range `size` of originm using taxicab distance.
-pub fn diamond_deltas(size: usize) -> impl Iterator<Item = (i32, i32)> {
-    let n = size as i32;
-    (-n..=n).flat_map(move |y| {
-        let m = n - y.abs();
-        (-m..=m).map(move |x| (x, y))
-    })
 }
 
 /// Checks whether a `sequence` has a cycle, using the idea of [Floyd's algorithm], but adapted for

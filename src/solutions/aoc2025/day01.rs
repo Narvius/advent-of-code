@@ -16,7 +16,7 @@ fn count_zeroes(input: &str, count_passes: bool) -> crate::Result<usize> {
     for line in input.lines() {
         let n = if &line[0..1] == "L" { -1 } else { 1 } * line[1..].parse::<i32>()?;
         if count_passes {
-            let (guaranteed, n) = (n.abs() as usize / 100, n % 100);
+            let (guaranteed, n) = (n.unsigned_abs() as usize / 100, n % 100);
             count += guaranteed + usize::from(dial != 0 && (dial + n) < 0 || (dial + n) > 100);
         }
         dial = (dial + n).rem_euclid(100);

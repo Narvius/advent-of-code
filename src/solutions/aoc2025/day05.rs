@@ -7,12 +7,16 @@ pub fn one(input: &str) -> crate::Result<usize> {
         .count())
 }
 
+/// Count how many possible fresh ingredients there are based on the fresh ingredient ranges.
 pub fn two(input: &str) -> crate::Result<u64> {
+    // The trick in this one is that the ranges overlap, so if you naively just count the number of
+    // ingredients in each range, you'll double up on some.
+    //
+    // Thus we eliminate overlaps by fusing overlapping ranges. Since ranges get removed during
+    // this, we're using indices instead of iterators; only ever positions larger than `i` get
+    // removed though, so technically it would be fine, we just can't prove it to the compiler.
     let (mut ranges, _) = parse(input);
 
-    // Eliminate overlaps by fusing overlapping ranges. Since ranges get removed during this, we're
-    // using indices instead of iterators; only ever positions larger than `i` get removed though,
-    // so technically it would be fine, we just can't prove it to the compiler.
     let mut i = 0;
     while i < ranges.len() {
         while let Some(j) = (i + 1..ranges.len()).find(|&j| overlap(ranges[i], ranges[j]).is_some())

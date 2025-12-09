@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 /// Find the size of the largest axis-aligned rectangle that can be formed by taking two points
 /// from the input as its opposite corners.
-pub fn one(input: &str) -> crate::Result<i64> {
+pub fn one(input: &str) -> crate::Result<u64> {
     let points = Vec::from_iter(input.lines().filter_map(|line| {
         let (a, b) = line.split_once(',')?;
         Some((a.parse::<i64>().ok()?, b.parse::<i64>().ok()?))
@@ -12,7 +12,7 @@ pub fn one(input: &str) -> crate::Result<i64> {
     for i in 0..points.len() {
         for j in i + 1..points.len() {
             let ((x1, y1), (x2, y2)) = (points[i], points[j]);
-            largest = largest.max(((x1 - x2 + 1) * (y1 - y2 + 1)).abs());
+            largest = largest.max((x1.abs_diff(x2) + 1) * (y1.abs_diff(y2) + 1));
         }
     }
 
@@ -21,31 +21,34 @@ pub fn one(input: &str) -> crate::Result<i64> {
 
 /// Find the largest axis-aligned rectangle fully contained within the polygon formed by the input
 /// points.
-pub fn two(input: &str) -> crate::Result<i64> {
+pub fn two(input: &str) -> crate::Result<u64> {
     let points = Vec::from_iter(input.lines().filter_map(|line| {
         let (a, b) = line.split_once(',')?;
         Some((a.parse::<i64>().ok()?, b.parse::<i64>().ok()?))
     }));
-    let mut verticals: HashMap<i64, (i64, i64)> = HashMap::new();
 
     // Collect all vertical lines in the input, as a mapping of `x => (y1..y2)`.
-    for w in points
+    let verticals: HashMap<i64, (i64, i64)> = points
         .windows(2)
         .chain(std::iter::once(&[points[points.len() - 1], points[0]][..]))
-    {
-        if w[0].0 == w[1].0 {
-            verticals.insert(w[0].0, (w[0].1.min(w[1].1), w[0].1.max(w[1].1)));
-        }
-    }
+        .filter(|w| w[0].0 == w[1].0)
+        .map(|w| (w[0].0, (w[0].1.min(w[1].1), w[0].1.max(w[1].1))))
+        .collect();
 
     // Get our "lattice points". In the input polygon, all edges are axis-aligned. As such we can
     // reduce it into a grid of rectangles, what I call the "lattice". This lattice splits at every
     // `x` and `y` coordinate that shows up in the input, so we collect those here, in sorted
     // order.
-    //
+    let (mut xs, mut ys): (Vec<_>, Vec<_>) = points.iter().copied().unzip();
+    xs.sort_unstable();
+    ys.sort_unstable();
+    xs.dedup();
+    ys.dedup();
+
     // For example, the example shown in the puzzle input has a 3x3 lattice, because there's 4
-    // distinct X and Y coordinates each. The original polygon looks like this (with surrounding
-    // space trimmed off):
+    // distinct X and Y coordinates each, and we only care about sections between the lowest and
+    // highest coordinate. The original polygon looks like this (with surrounding space trimmed
+    // off):
     //
     // .....#XXX#
     // .....X...X
@@ -84,12 +87,6 @@ pub fn two(input: &str) -> crate::Result<i64> {
     // ..#
     //
     // And that is the lattice.
-    let (mut xs, mut ys): (Vec<_>, Vec<_>) = points.iter().copied().unzip();
-    xs.sort_unstable();
-    ys.sort_unstable();
-    xs.dedup();
-    ys.dedup();
-
     let mut lattice = Vec::with_capacity((xs.len() - 1) * (ys.len() - 1));
 
     // We do one raycast per lattice row, using an arbitrary y value contained inside that row of
@@ -111,12 +108,14 @@ pub fn two(input: &str) -> crate::Result<i64> {
     }
 
     // Now we can check if rectangles are contained within the polygon via the lattice, though we
-    // only bother for rectangles that would actually be larger.
+    // only bother for rectangles that would actually be larger. A fun side effect of this data
+    // model is that it would be very easy to find the solution even if the "opposite corners must
+    // be vertices of the polygon" restriction was lifted.
     let mut largest = 0;
     for i in 0..points.len() {
         'next_rect: for j in i + 1..points.len() {
             let ((x1, y1), (x2, y2)) = (points[i], points[j]);
-            let size = (x1.abs_diff(x2) as i64 + 1) * (y1.abs_diff(y2) as i64 + 1);
+            let size = (x1.abs_diff(x2) + 1) * (y1.abs_diff(y2) + 1);
 
             if size > largest {
                 let i1 = xs.iter().position(|&x| x == x1).unwrap();

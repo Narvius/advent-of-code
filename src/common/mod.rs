@@ -15,6 +15,15 @@ pub mod intcode;
 pub use dir::{Dir, ALL_DIRS, CARDINAL};
 pub use grid::Grid;
 
+/// Returns an iterator over all the bit indices that are a one.
+pub fn one_indices(v: u32) -> impl Iterator<Item = usize> {
+    std::iter::successors(Some(v), |&v| (v > 1).then_some(v >> 1))
+        .map(|v| v & 1)
+        .enumerate()
+        .filter(|(_, v)| *v > 0)
+        .map(|(i, _)| i)
+}
+
 /// Generic implementation of binary search. Finds the index in `range` for which `f` produces
 /// [`Ordering::Equal`].
 ///
